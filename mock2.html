@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Copilot - Full Multi-Language</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .risk-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .risk-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .node-inactive { opacity: 0.4; filter: grayscale(100%); transition: all 0.3s; }
+        .node-active { opacity: 1; filter: grayscale(0%); transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .progress-bar-fill { transition: width 1s ease-in-out; }
+    </style>
+</head>
+<body class="text-slate-800 relative pb-20">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-40 mt-1">
+        <div class="max-w-6xl mx-auto p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold text-blue-700"><i class="fas fa-brain mr-2"></i>AI Health Copilot</h1>
+                <p class="text-xs text-slate-500 font-medium" id="ui-main-subtitle">NCDs Analysis & Medical Tourism</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar">
+                    <button onclick="switchTab(1)" id="nav-btn-1" class="px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white whitespace-nowrap shadow-sm"><i class="fas fa-upload mr-1"></i> <span id="tab-label-1">1. Input</span></button>
+                    <button onclick="switchTab(2)" id="nav-btn-2" class="px-4 py-2 text-sm font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition"><i class="fas fa-chart-line mr-1"></i> <span id="tab-label-2">2. Analysis</span></button>
+                    <button onclick="switchTab(3)" id="nav-btn-3" class="px-4 py-2 text-sm font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition"><i class="fas fa-plane-medical mr-1"></i> <span id="tab-label-3">3. Medical Tourism</span></button>
+                    <button onclick="switchTab(4)" id="nav-btn-4" class="px-4 py-2 text-sm font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition"><i class="fas fa-robot mr-1"></i> <span id="tab-label-4">4. AI Chat</span></button>
+                </div>
+                <select id="lang-switcher" onchange="changeLanguage()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <option value="th">🇹🇭 ไทย</option>
+                    <option value="en">🇺🇸 English</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        
+        <div id="tab-1" class="tab-content active text-center py-10">
+            <h2 class="text-2xl font-bold mb-2" id="ui-t1-title">อัปโหลดผลตรวจสุขภาพ</h2>
+            <p class="text-slate-500 mb-8" id="ui-t1-desc">วิเคราะห์ข้อมูลสุขภาพเบื้องต้น (NCDs) เพื่อประเมินความเสี่ยงและวางแผนการรักษา</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-8">
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 bg-white hover:border-blue-500 transition-colors cursor-pointer flex flex-col items-center justify-center shadow-sm">
+                    <i class="fas fa-file-upload text-4xl text-blue-300 mb-3"></i>
+                    <h3 class="font-bold text-base mb-1 text-slate-700" id="ui-t1-up1">อัปโหลดไฟล์ (Upload)</h3>
+                </div>
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 bg-white hover:border-blue-500 transition-colors cursor-pointer flex flex-col items-center justify-center shadow-sm">
+                    <i class="fas fa-camera text-4xl text-blue-300 mb-3"></i>
+                    <h3 class="font-bold text-base mb-1 text-slate-700" id="ui-t1-up2">เปิดกล้อง (Camera)</h3>
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto border-t border-slate-200 pt-8">
+                <p class="text-sm font-bold text-slate-500 mb-4 uppercase tracking-wide" id="ui-t1-demo">หรือเลือกเคสตัวอย่างเพื่อดูผลวิเคราะห์ (Demo Cases)</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="loadDemoCase('low')" class="px-6 py-3 text-sm rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-bold transition-colors shadow-sm"><i class="fas fa-user-check mr-2"></i> Case 1: Low Risk</button>
+                    <button onclick="loadDemoCase('moderate')" class="px-6 py-3 text-sm rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 font-bold transition-colors shadow-sm"><i class="fas fa-user-shield mr-2"></i> Case 2: Moderate Risk</button>
+                    <button onclick="loadDemoCase('high')" class="px-6 py-3 text-sm rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold transition-colors shadow-sm"><i class="fas fa-user-injured mr-2"></i> Case 3: High Risk</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-2" class="tab-content">
+            <div class="mb-6 flex justify-between items-end">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1" id="ui-t2-title">Risk Dashboard & Predictive Reasoning</h2>
+                    <p class="text-slate-500" id="ui-t2-desc">ประเมินความเสี่ยง NCDs พร้อมแสดงเปอร์เซ็นต์โอกาสเกิดโรคในอนาคต</p>
+                </div>
+                <span id="active-case-badge" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full hidden">Active: <span id="badge-case-name">None</span></span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm p-5 border-t-4 border-orange-500 risk-card relative">
+                    <h3 class="font-bold text-sm mb-2 text-slate-700"><i class="fas fa-heart text-orange-500 mr-2"></i>CVD Risk (10-Yr)</h3>
+                    <p class="text-3xl font-bold text-slate-800 mb-1" id="dash-cvd">-</p>
+                    <p class="text-xs text-slate-500 leading-tight" id="dash-cvd-reason">กรุณาเลือกเคสตัวอย่าง</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-t-4 border-yellow-500 risk-card relative">
+                    <h3 class="font-bold text-sm mb-2 text-slate-700"><i class="fas fa-tint text-yellow-500 mr-2"></i>Glucose Risk</h3>
+                    <p class="text-xl font-bold text-slate-800 mb-1" id="dash-predm">-</p>
+                    <p class="text-xs text-slate-500 leading-tight" id="dash-predm-reason">-</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-t-4 border-red-500 risk-card relative">
+                    <h3 class="font-bold text-sm mb-2 text-slate-700"><i class="fas fa-weight text-red-500 mr-2"></i>Metabolic Syndrome</h3>
+                    <p class="text-xl font-bold text-slate-800 mb-1" id="dash-metabolic">-</p>
+                    <p class="text-xs text-slate-500 leading-tight" id="dash-metabolic-reason">-</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-t-4 border-indigo-500 risk-card relative">
+                    <h3 class="font-bold text-sm mb-2 text-slate-700"><i class="fas fa-kidneys text-indigo-500 mr-2"></i>Kidney Signal</h3>
+                    <p class="text-xl font-bold text-slate-800 mb-1" id="dash-kidney">-</p>
+                    <p class="text-xs text-slate-500 leading-tight" id="dash-kidney-reason">-</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800" id="ui-t2-pred-title"><i class="fas fa-percentage text-blue-500 mr-2"></i>โอกาสเกิดโรคที่อาจจะเกิดขึ้น (Predicted Risk)</h3>
+                    <div class="space-y-4" id="predicted-risks-container">
+                        <p class="text-sm text-slate-500">รอการประมวลผลข้อมูล...</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex flex-col justify-center">
+                    <h3 class="font-bold text-lg mb-6 text-center text-slate-800" id="ui-t2-flow-title">Cross-Disease Reasoning Flow</h3>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                        <div class="flex flex-col gap-3 w-full md:w-40">
+                            <div id="node-obesity" class="bg-slate-50 border border-slate-200 py-2 px-2 rounded-lg text-center w-full node-inactive">
+                                <p class="font-bold text-slate-700 text-xs">Central Obesity</p>
+                                <span id="badge-obesity" class="block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-slate-100 text-slate-500">-</span>
+                            </div>
+                            <div id="node-htn" class="bg-slate-50 border border-slate-200 py-2 px-2 rounded-lg text-center w-full node-inactive">
+                                <p class="font-bold text-slate-700 text-xs">Hypertension</p>
+                                <span id="badge-htn" class="block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-slate-100 text-slate-500">-</span>
+                            </div>
+                            <div id="node-glucose" class="bg-slate-50 border border-slate-200 py-2 px-2 rounded-lg text-center w-full node-inactive">
+                                <p class="font-bold text-slate-700 text-xs">Impaired Glucose</p>
+                                <span id="badge-glucose" class="block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-slate-100 text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="hidden md:flex flex-col justify-around h-full text-slate-300"><i class="fas fa-arrow-right text-xl"></i></div>
+                        <div class="flex flex-col gap-6 w-full md:w-40">
+                            <div class="bg-purple-100 border border-purple-300 p-3 rounded-xl text-center w-full shadow-sm">
+                                <p class="font-bold text-purple-800 text-xs">Insulin Resistance & Vascular Burden</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-3" class="tab-content">
+            <h2 class="text-2xl font-bold mb-1" id="ui-t3-title">Medical Tourism Cost Calculator</h2>
+            <p class="text-slate-500 mb-6" id="ui-t3-desc">คำนวณค่าใช้จ่ายโดยรวม (All-inclusive) สำหรับชาวต่างชาติที่มารักษาในไทย</p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-4 bg-white rounded-2xl shadow-sm p-6 border border-slate-200 self-start">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800"><i class="fas fa-sliders-h text-blue-500 mr-2"></i><span id="ui-t3-form-h">ข้อมูลทริปรักษา</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1" id="l-dis">1. โรค (Disease)</label>
+                            <select id="tour-disease" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50" onchange="calculateTourism()">
+                                <option value="copd">โรคปอดอุดกั้นเรื้อรัง (COPD)</option>
+                                <option value="diabetes">โรคเบาหวาน (Diabetes)</option>
+                                <option value="htn">โรคความดันโลหิตสูง (Hypertension)</option>
+                                <option value="cancer" selected>โรคมะเร็ง (Cancer)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1" id="l-cou">2. ประเทศต้นทาง</label>
+                            <select id="tour-country" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50" onchange="calculateTourism()">
+                                <option value="USA" selected>สหรัฐอเมริกา (USA)</option>
+                                <option value="France">ฝรั่งเศส (France)</option>
+                                <option value="Germany">เยอรมัน (Germany)</option>
+                                <option value="China">จีน (China)</option>
+                                <option value="Japan">ญี่ปุ่น (Japan)</option>
+                                <option value="South Korea">เกาหลีใต้ (South Korea)</option>
+                                <option value="Russia">รัสเซีย (Russia)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1" id="l-hos">3. โรงพยาบาลเอกชนในไทย</label>
+                            <select id="tour-hospital" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50" onchange="calculateTourism()">
+                                <option value="Bumrungrad">บำรุงราษฎร์ (Bumrungrad)</option>
+                                <option value="Siriraj">ศิริราช (Siriraj)</option>
+                                <option value="Phuket" selected>ภูเก็ต (Bangkok Hosp. Phuket)</option>
+                                <option value="ChiangMai">เชียงใหม่ (Chiang Mai Ram)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1" id="l-bud">4. งบประมาณ (Budget - USD)</label>
+                            <input id="tour-budget" type="number" value="30000" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50" oninput="calculateTourism()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-emerald-500 relative">
+                            <p class="text-sm text-slate-600 mb-1" id="ui-t3-out1">ค่าใช้จ่ายรวมทั้งทริป (ประมาณการ)</p>
+                            <p class="text-3xl font-bold text-slate-900 mb-2" id="out-total-cost">$0</p>
+                            <p class="text-sm text-slate-500 mb-1">Budget: <span id="out-budget">$0</span></p>
+                            <p class="text-sm font-bold text-emerald-600" id="out-status">-</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#fcfaff] rounded-xl shadow-sm p-6 border border-purple-100 relative overflow-hidden">
+                        <div class="flex items-center gap-2 mb-4 relative z-10">
+                            <i class="fas fa-sparkles text-purple-600"></i>
+                            <h3 class="font-bold text-lg text-purple-900">AI Medical Concierge</h3>
+                        </div>
+                        <div class="text-sm text-slate-700 space-y-4 relative z-10" id="ai-concierge-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-4" class="tab-content">
+            <h2 class="text-2xl font-bold mb-2" id="ui-t4-title">AI Health Assistant & Thai Wellness</h2>
+            <p class="text-slate-500 mb-6" id="ui-t4-desc">ปรึกษาปัญหา NCDs พร้อมรับคำแนะนำแพ็กเกจสมุนไพรและบริการฟื้นฟูของไทย</p>
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-w-3xl mx-auto h-[600px]">
+                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 flex justify-between items-center">
+                    <h3 class="font-bold"><i class="fas fa-robot mr-2 text-blue-200"></i>AI Care Navigator</h3>
+                </div>
+                <div class="p-6 bg-slate-50 text-sm text-slate-600 flex-1 overflow-y-auto space-y-4" id="page-chat-messages">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 max-w-[85%] inline-block" id="chat-greeting-box">
+                        <strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong> <span id="chat-greeting-text">สวัสดีครับ! ผมคือผู้ช่วย AI จากแพลตฟอร์มของเรา คุณสามารถสอบถามข้อมูลสุขภาพ หรือให้ผมแนะนำผลิตภัณฑ์สมุนไพรและบริการ Wellness ของไทยที่เหมาะกับโรคของคุณได้ครับ</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+                    <button onclick="simulateChat('diabetes')" class="flex-1 text-left text-[11px] sm:text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-700 p-2.5 rounded-lg border border-slate-200 transition">
+                        <i class="fas fa-leaf text-emerald-500 mr-1"></i> <span id="btn-chat-dm">สมุนไพรสำหรับเบาหวาน</span>
+                    </button>
+                    <button onclick="simulateChat('htn')" class="flex-1 text-left text-[11px] sm:text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-700 p-2.5 rounded-lg border border-slate-200 transition">
+                        <i class="fas fa-spa text-purple-500 mr-1"></i> <span id="btn-chat-htn">แพ็กเกจพักฟื้นความดันสูง</span>
+                    </button>
+                    <button onclick="simulateChat('cancer')" class="flex-1 text-left text-[11px] sm:text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-700 p-2.5 rounded-lg border border-slate-200 transition">
+                        <i class="fas fa-heart text-rose-500 mr-1"></i> <span id="btn-chat-ca">การฟื้นฟูผู้ป่วยมะเร็ง</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Full Translations Dictionary ---
+        const TRANSLATIONS = {
+            th: {
+                tab1: "1. นำเข้าข้อมูล", tab2: "2. วิเคราะห์ผล", tab3: "3. ท่องเที่ยวการแพทย์", tab4: "4. แชท AI",
+                t1Title: "อัปโหลดผลตรวจสุขภาพ", t1Desc: "วิเคราะห์ข้อมูลสุขภาพเบื้องต้น (NCDs) เพื่อประเมินความเสี่ยงและวางแผนการรักษา",
+                t1Up1: "อัปโหลดไฟล์ (Upload)", t1Up2: "เปิดกล้อง (Camera)", t1Demo: "หรือเลือกเคสตัวอย่างเพื่อดูผลวิเคราะห์ (Demo Cases)",
+                t2Title: "Risk Dashboard & Predictive Reasoning", t2Desc: "ประเมินความเสี่ยง NCDs พร้อมแสดงเปอร์เซ็นต์โอกาสเกิดโรคในอนาคต",
+                t2Pred: "โอกาสเกิดโรคที่อาจจะเกิดขึ้น (Predicted Risk)", t2Flow: "Cross-Disease Reasoning Flow",
+                t3Title: "Medical Tourism Cost Calculator", t3Desc: "คำนวณค่าใช้จ่ายโดยรวม (All-inclusive) สำหรับชาวต่างชาติที่มารักษาในไทย",
+                t3FormH: "ข้อมูลทริปรักษา", lDis: "1. โรค (Disease)", lCou: "2. ประเทศต้นทาง", lHos: "3. โรงพยาบาลในไทย", lBud: "4. งบประมาณ (USD)",
+                t3Out1: "ค่าใช้จ่ายรวมทั้งทริป (ประมาณการ 14 วัน)",
+                dCopd: "โรคปอดอุดกั้นเรื้อรัง (COPD)", dDm: "โรคเบาหวาน (Diabetes)", dHtn: "โรคความดันโลหิตสูง (Hypertension)", dCa: "โรคมะเร็ง (Cancer)",
+                cUSA: "สหรัฐอเมริกา (USA)", cFra: "ฝรั่งเศส (France)", cGer: "เยอรมัน (Germany)", cChi: "จีน (China)", cJap: "ญี่ปุ่น (Japan)", cKor: "เกาหลีใต้ (South Korea)", cRus: "รัสเซีย (Russia)",
+                t4Title: "AI Health Assistant & Thai Wellness", t4Desc: "ปรึกษาปัญหา NCDs พร้อมรับคำแนะนำแพ็กเกจสมุนไพรและบริการฟื้นฟูของไทย",
+                greeting: "สวัสดีครับ! ผมคือผู้ช่วย AI คุณสามารถสอบถามข้อมูลสุขภาพ หรือให้ผมแนะนำผลิตภัณฑ์สมุนไพรและบริการ Wellness ของไทยที่เหมาะกับโรคของคุณได้ครับ",
+                btnDm: "สมุนไพรสำหรับเบาหวาน", btnHtn: "แพ็กเกจพักฟื้นความดันสูง", btnCa: "การฟื้นฟูผู้ป่วยมะเร็ง"
+            },
+            en: {
+                tab1: "1. Input", tab2: "2. Analysis", tab3: "3. Medical Tourism", tab4: "4. AI Chat",
+                t1Title: "Upload Health Report", t1Desc: "Analyze baseline health data (NCDs) for risk assessment and care planning.",
+                t1Up1: "Upload File", t1Up2: "Open Camera", t1Demo: "Or select a demo case below to see the analysis",
+                t2Title: "Risk Dashboard & Predictive Reasoning", t2Desc: "Assess NCD risks with predictive probabilities for future conditions.",
+                t2Pred: "Predicted Risk for Future Conditions", t2Flow: "Cross-Disease Reasoning Flow",
+                t3Title: "Medical Tourism Cost Calculator", t3Desc: "Calculate all-inclusive costs for international patients traveling to Thailand.",
+                t3FormH: "Trip Details", lDis: "1. Condition", lCou: "2. Origin Country", lHos: "3. Thai Private Hospital", lBud: "4. Budget (USD)",
+                t3Out1: "Total Estimated Trip Cost (14 Days)",
+                dCopd: "COPD", dDm: "Diabetes", dHtn: "Hypertension", dCa: "Cancer",
+                cUSA: "USA", cFra: "France", cGer: "Germany", cChi: "China", cJap: "Japan", cKor: "South Korea", cRus: "Russia",
+                t4Title: "AI Health Assistant & Thai Wellness", t4Desc: "Consult about NCDs and get premium Thai wellness & herbal recommendations.",
+                greeting: "Hello! I am your AI assistant. You can ask about health risks or let me recommend premium Thai herbal products and holistic Wellness services tailored to your condition.",
+                btnDm: "Herbs for Diabetes", btnHtn: "Hypertension Wellness", btnCa: "Cancer Recovery Retreat"
+            },
+            zh: {
+                tab1: "1. 导入数据", tab2: "2. 健康分析", tab3: "3. 医疗旅游", tab4: "4. AI 咨询",
+                t1Title: "上传体检报告", t1Desc: "分析基础健康数据 (NCDs) 以进行风险评估和护理规划。",
+                t1Up1: "上传文件", t1Up2: "开启相机", t1Demo: "或选择以下演示案例查看分析结果",
+                t2Title: "风险仪表盘与预测推理", t2Desc: "评估 NCD 风险并显示未来疾病的预测概率。",
+                t2Pred: "未来潜在疾病预测风险", t2Flow: "跨疾病推理流程",
+                t3Title: "医疗旅游费用计算器", t3Desc: "计算国际患者前往泰国就医的全包费用。",
+                t3FormH: "行程信息", lDis: "1. 疾病", lCou: "2. 客源国", lHos: "3. 泰国私立医院", lBud: "4. 预算 (USD)",
+                t3Out1: "预计总行程费用 (14天)",
+                dCopd: "慢性阻塞性肺病 (COPD)", dDm: "糖尿病", dHtn: "高血压", dCa: "癌症",
+                cUSA: "美国", cFra: "法国", cGer: "德国", cChi: "中国", cJap: "日本", cKor: "韩国", cRus: "俄罗斯",
+                t4Title: "AI 健康助手与泰式养生", t4Desc: "咨询 NCD 问题并获取优质泰国草药和康复套餐推荐。",
+                greeting: "您好！我是您的AI助手。您可以咨询健康问题，或者让我为您推荐适合您病情的泰国传统草药产品及全面康复养生服务。",
+                btnDm: "糖尿病草药疗法", btnHtn: "高血压康复套餐", btnCa: "癌症休养疗程"
+            },
+            ja: {
+                tab1: "1. 入力", tab2: "2. 分析", tab3: "3. 医療ツーリズム", tab4: "4. AI チャット",
+                t1Title: "健康診断書のアップロード", t1Desc: "NCDsデータを分析し、リスク評価と治療計画を作成します。",
+                t1Up1: "ファイルアップロード", t1Up2: "カメラを開く", t1Demo: "またはデモケースを選択して分析結果を表示",
+                t2Title: "リスクダッシュボードと予測", t2Desc: "NCDリスクを評価し、将来の疾患の予測確率を表示します。",
+                t2Pred: "将来の疾患の予測リスク", t2Flow: "疾患間の推論フロー",
+                t3Title: "医療ツーリズム費用計算ツール", t3Desc: "タイへ渡航する国際患者の総費用を計算します。",
+                t3FormH: "渡航詳細", lDis: "1. 疾患", lCou: "2. 出発国", lHos: "3. タイの私立病院", lBud: "4. 予算 (USD)",
+                t3Out1: "旅行の総見積費用 (14日間)",
+                dCopd: "慢性閉塞性肺疾患 (COPD)", dDm: "糖尿病", dHtn: "高血圧", dCa: "がん",
+                cUSA: "アメリカ", cFra: "フランス", cGer: "ドイツ", cChi: "中国", cJap: "日本", cKor: "韓国", cRus: "ロシア",
+                t4Title: "AIヘルスアシスタント＆タイウェルネス", t4Desc: "NCDに関する相談や、タイのハーブ・回復パッケージの推奨を受けられます。",
+                greeting: "こんにちは！AIアシスタントです。健康に関する質問や、タイの伝統的なハーブ製品、症状に合わせたウェルネスサービスについてご案内します。",
+                btnDm: "糖尿病向けハーブ", btnHtn: "高血圧回復パッケージ", btnCa: "がん治療後の静養"
+            },
+            ko: {
+                tab1: "1. 입력", tab2: "2. 분석", tab3: "3. 의료 관광", tab4: "4. AI 챗봇",
+                t1Title: "건강 검진 결과 업로드", t1Desc: "만성질환(NCDs) 데이터를 분석하여 위험을 평가하고 치료 계획을 세웁니다.",
+                t1Up1: "파일 업로드", t1Up2: "카메라 열기", t1Demo: "또는 데모 케이스를 선택하여 분석 확인",
+                t2Title: "위험 대시보드 및 예측", t2Desc: "NCD 위험을 평가하고 미래 질환의 예측 확률을 표시합니다.",
+                t2Pred: "미래 질환 예측 위험도", t2Flow: "교차 질환 추론 흐름",
+                t3Title: "의료 관광 비용 계산기", t3Desc: "태국으로 이동하는 국제 환자의 총 비용을 계산합니다.",
+                t3FormH: "여행 상세 정보", lDis: "1. 질환", lCou: "2. 출발 국가", lHos: "3. 태국 사립 병원", lBud: "4. 예산 (USD)",
+                t3Out1: "총 예상 여행 비용 (14일)",
+                dCopd: "만성폐쇄성폐질환 (COPD)", dDm: "당뇨병", dHtn: "고혈압", dCa: "암",
+                cUSA: "미국", cFra: "프랑스", cGer: "독일", cChi: "중국", cJap: "일본", cKor: "대한민국", cRus: "러시아",
+                t4Title: "AI 건강 어시스턴트 및 태국 웰니스", t4Desc: "건강 문제를 상담하고 태국 허브 및 웰니스 패키지를 추천받으세요.",
+                greeting: "안녕하세요! 저는 AI 어시스턴트입니다. 건강 상태에 대해 묻거나, 증상에 맞는 태국의 프리미엄 허브 제품 및 웰니스 서비스를 추천받아 보세요.",
+                btnDm: "당뇨병 개선 허브", btnHtn: "고혈압 회복 패키지", btnCa: "암 환자 힐링 캠프"
+            },
+            fr: {
+                tab1: "1. Entrée", tab2: "2. Analyse", tab3: "3. Tourisme Médical", tab4: "4. Chat IA",
+                t1Title: "Télécharger le Bilan de Santé", t1Desc: "Analysez les données (MNT) pour l'évaluation des risques et la planification.",
+                t1Up1: "Télécharger", t1Up2: "Caméra", t1Demo: "Ou sélectionnez un cas de démonstration ci-dessous",
+                t2Title: "Tableau de Bord et Prévisions", t2Desc: "Évaluez les risques de MNT avec des probabilités prédictives.",
+                t2Pred: "Risque Prédit", t2Flow: "Flux de Raisonnement Croisé",
+                t3Title: "Calculateur de Tourisme Médical", t3Desc: "Calculez les coûts tout compris pour les patients voyageant en Thaïlande.",
+                t3FormH: "Détails du Voyage", lDis: "1. Maladie", lCou: "2. Pays d'Origine", lHos: "3. Hôpital Thaïlandais", lBud: "4. Budget (USD)",
+                t3Out1: "Coût Total Estimé du Voyage (14 Jours)",
+                dCopd: "BPCO", dDm: "Diabète", dHtn: "Hypertension", dCa: "Cancer",
+                cUSA: "États-Unis", cFra: "France", cGer: "Allemagne", cChi: "Chine", cJap: "Japon", cKor: "Corée du Sud", cRus: "Russie",
+                t4Title: "Assistant Santé IA & Bien-être Thaï", t4Desc: "Consultez et obtenez des recommandations de produits thaïlandais.",
+                greeting: "Bonjour ! Je suis votre assistant IA. Renseignez-vous sur votre santé ou laissez-moi vous recommander des produits à base de plantes thaïlandaises.",
+                btnDm: "Plantes pour Diabète", btnHtn: "Bien-être Hypertension", btnCa: "Retraite post-Cancer"
+            },
+            de: {
+                tab1: "1. Eingabe", tab2: "2. Analyse", tab3: "3. Medizintourismus", tab4: "4. KI-Chat",
+                t1Title: "Gesundheitsbericht Hochladen", t1Desc: "Analysieren Sie Gesundheitsdaten zur Risikobewertung.",
+                t1Up1: "Datei Hochladen", t1Up2: "Kamera Öffnen", t1Demo: "Oder wählen Sie einen Demo-Fall unten aus",
+                t2Title: "Risiko-Dashboard & Prognosen", t2Desc: "Bewerten Sie Risiken mit prädiktiven Wahrscheinlichkeiten.",
+                t2Pred: "Vorhergesagtes Risiko", t2Flow: "Krankheitsübergreifender Fluss",
+                t3Title: "Kostenrechner Medizintourismus", t3Desc: "Berechnen Sie All-Inclusive-Kosten für internationale Patienten.",
+                t3FormH: "Reisedetails", lDis: "1. Krankheit", lCou: "2. Herkunftsland", lHos: "3. Thai Krankenhaus", lBud: "4. Budget (USD)",
+                t3Out1: "Geschätzte Gesamtkosten (14 Tage)",
+                dCopd: "COPD", dDm: "Diabetes", dHtn: "Bluthochdruck", dCa: "Krebs",
+                cUSA: "USA", cFra: "Frankreich", cGer: "Deutschland", cChi: "China", cJap: "Japan", cKor: "Südkorea", cRus: "Russland",
+                t4Title: "KI Gesundheitsassistent & Thai Wellness", t4Desc: "Konsultieren Sie uns und erhalten Sie Empfehlungen für Kräuterpakete.",
+                greeting: "Hallo! Ich bin Ihr KI-Assistent. Fragen Sie mich nach Gesundheitsrisiken oder lassen Sie sich thailändische Kräuterprodukte empfehlen.",
+                btnDm: "Kräuter für Diabetes", btnHtn: "Bluthochdruck-Wellness", btnCa: "Krebs-Erholung"
+            },
+            ru: {
+                tab1: "1. Ввод", tab2: "2. Анализ", tab3: "3. Мед. туризм", tab4: "4. ИИ-чат",
+                t1Title: "Загрузить медицинский отчет", t1Desc: "Анализ данных для оценки рисков и планирования лечения.",
+                t1Up1: "Загрузить файл", t1Up2: "Открыть камеру", t1Demo: "Или выберите демо-случай ниже",
+                t2Title: "Панель рисков и прогнозирование", t2Desc: "Оценка рисков с прогностическими вероятностями.",
+                t2Pred: "Прогнозируемый риск", t2Flow: "Схема связи заболеваний",
+                t3Title: "Калькулятор медицинского туризма", t3Desc: "Рассчитайте стоимость по системе «все включено» для пациентов в Таиланде.",
+                t3FormH: "Детали поездки", lDis: "1. Заболевание", lCou: "2. Страна", lHos: "3. Больница в Таиланде", lBud: "4. Бюджет (USD)",
+                t3Out1: "Общая стоимость поездки (14 дней)",
+                dCopd: "ХОБЛ", dDm: "Диабет", dHtn: "Гипертония", dCa: "Рак",
+                cUSA: "США", cFra: "Франция", cGer: "Германия", cChi: "Китай", cJap: "Япония", cKor: "Южная Корея", cRus: "Россия",
+                t4Title: "ИИ-помощник по здоровью и Wellness", t4Desc: "Получите рекомендации по тайским травяным пакетам.",
+                greeting: "Здравствуйте! Я ваш ИИ-помощник. Вы можете задать вопросы о здоровье или позволить мне порекомендовать тайские травяные продукты.",
+                btnDm: "Травы от диабета", btnHtn: "Уход при гипертонии", btnCa: "Восстановление после рака"
+            }
+        };
+
+        let currentLang = 'th';
+
+        function changeLanguage() {
+            currentLang = document.getElementById('lang-switcher').value;
+            const t = TRANSLATIONS[currentLang];
+            
+            // Update Tabs Menu
+            document.getElementById('tab-label-1').innerText = t.tab1;
+            document.getElementById('tab-label-2').innerText = t.tab2;
+            document.getElementById('tab-label-3').innerText = t.tab3;
+            document.getElementById('tab-label-4').innerText = t.tab4;
+
+            // Update Tab 1 UI
+            document.getElementById('ui-t1-title').innerText = t.t1Title;
+            document.getElementById('ui-t1-desc').innerText = t.t1Desc;
+            document.getElementById('ui-t1-up1').innerText = t.t1Up1;
+            document.getElementById('ui-t1-up2').innerText = t.t1Up2;
+            document.getElementById('ui-t1-demo').innerText = t.t1Demo;
+
+            // Update Tab 2 UI
+            document.getElementById('ui-t2-title').innerText = t.t2Title;
+            document.getElementById('ui-t2-desc').innerText = t.t2Desc;
+            document.getElementById('ui-t2-pred-title').innerHTML = `<i class="fas fa-percentage text-blue-500 mr-2"></i>${t.t2Pred}`;
+            document.getElementById('ui-t2-flow-title').innerText = t.t2Flow;
+
+            // Update Tab 3 UI
+            document.getElementById('ui-t3-title').innerText = t.t3Title;
+            document.getElementById('ui-t3-desc').innerText = t.t3Desc;
+            document.getElementById('ui-t3-form-h').innerText = t.t3FormH;
+            document.getElementById('l-dis').innerText = t.lDis;
+            document.getElementById('l-cou').innerText = t.lCou;
+            document.getElementById('l-hos').innerText = t.lHos;
+            document.getElementById('l-bud').innerText = t.lBud;
+            document.getElementById('ui-t3-out1').innerText = t.t3Out1;
+
+            // Update Tab 4 UI
+            document.getElementById('ui-t4-title').innerText = t.t4Title;
+            document.getElementById('ui-t4-desc').innerText = t.t4Desc;
+            document.getElementById('chat-greeting-text').innerText = t.greeting;
+            document.getElementById('btn-chat-dm').innerText = t.btnDm;
+            document.getElementById('btn-chat-htn').innerText = t.btnHtn;
+            document.getElementById('btn-chat-ca').innerText = t.btnCa;
+
+            // Update Dropdown Options (Disease)
+            const dSel = document.getElementById('tour-disease');
+            dSel.options[0].text = t.dCopd;
+            dSel.options[1].text = t.dDm;
+            dSel.options[2].text = t.dHtn;
+            dSel.options[3].text = t.dCa;
+
+            // Update Dropdown Options (Country)
+            const cSel = document.getElementById('tour-country');
+            cSel.options[0].text = t.cUSA;
+            cSel.options[1].text = t.cFra;
+            cSel.options[2].text = t.cGer;
+            cSel.options[3].text = t.cChi;
+            cSel.options[4].text = t.cJap;
+            cSel.options[5].text = t.cKor;
+            cSel.options[6].text = t.cRus;
+
+            // Default country mapping based on selected UI language
+            const langToCountry = { 'en': 'USA', 'fr': 'France', 'de': 'Germany', 'zh': 'China', 'ja': 'Japan', 'ko': 'South Korea', 'ru': 'Russia' };
+            if(langToCountry[currentLang]) {
+                cSel.value = langToCountry[currentLang];
+            }
+
+            calculateTourism(); // Recalculate and update output texts
+        }
+
+        // --- Tab Logic ---
+        function switchTab(tabIndex) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabIndex}`).classList.add('active');
+            
+            for(let i=1; i<=4; i++) {
+                const btn = document.getElementById(`nav-btn-${i}`);
+                if(i === tabIndex) {
+                    btn.className = "px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white whitespace-nowrap shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 text-sm font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition";
+                }
+            }
+            if(tabIndex === 3) calculateTourism();
+        }
+
+        // --- Tab 2: Analysis Data (RESTORED FULL DATA) ---
+        const DEMO_CASES = {
+            low: { 
+                name: "Case 1: Low Risk", cvd: "1.2%", cvdReason: "อยู่ในเกณฑ์ปกติ", predm: "ความเสี่ยงต่ำ", predmReason: "FBS ปกติ", met: "ไม่เข้าเกณฑ์", metReason: "ปกติ", kidney: "ปกติ", kidneyReason: "eGFR ปกติ", 
+                obesityBadge: "Not dominant", htnBadge: "Not dominant", glucoseBadge: "Not dominant",
+                risks: { diabetes: 8, htn: 12, copd: 2, cancer: 5 }
+            },
+            moderate: { 
+                name: "Case 2: Moderate Risk", cvd: "8.5%", cvdReason: "High BP + Central Obesity", predm: "เฝ้าระวัง", predmReason: "FBS เริ่มสูง (112)", met: "เข้าเกณฑ์ 3/5 ข้อ", metReason: "อ้วนลงพุง, BP สูง, น้ำตาลเริ่มสูง", kidney: "เฝ้าระวัง", kidneyReason: "eGFR ลดลงร่วมกับความดัน",
+                obesityBadge: "Detected", htnBadge: "Detected", glucoseBadge: "Borderline",
+                risks: { diabetes: 45, htn: 65, copd: 15, cancer: 12 }
+            },
+            high: { 
+                name: "Case 3: High Risk", cvd: "24.0%", cvdReason: "High BP + Hyperglycemia + Dyslipidemia", predm: "เสี่ยงสูง", predmReason: "FBS สูงมาก (132)", met: "เข้าเกณฑ์ 4/5 ข้อ", metReason: "อ้วน, BP สูง, น้ำตาลสูง, TG สูง", kidney: "ติดตามด่วน", kidneyReason: "eGFR < 60 + เบาหวาน",
+                obesityBadge: "Detected", htnBadge: "Detected", glucoseBadge: "Detected",
+                risks: { diabetes: 85, htn: 92, copd: 22, cancer: 18 }
+            }
+        };
+
+        const DISEASE_LABELS = {
+            diabetes: { icon: "fa-tint", color: "text-blue-500", bg: "bg-blue-500", name: "Diabetes" },
+            htn: { icon: "fa-heartbeat", color: "text-rose-500", bg: "bg-rose-500", name: "Hypertension" },
+            copd: { icon: "fa-lungs", color: "text-amber-500", bg: "bg-amber-500", name: "COPD" },
+            cancer: { icon: "fa-disease", color: "text-purple-500", bg: "bg-purple-500", name: "Cancer Risk Base" }
+        };
+
+        function loadDemoCase(level) {
+            const data = DEMO_CASES[level];
+            document.getElementById('badge-case-name').innerText = data.name;
+            document.getElementById('active-case-badge').classList.remove('hidden');
+            
+            // Update Dashboard texts
+            document.getElementById('dash-cvd').innerText = data.cvd;
+            document.getElementById('dash-cvd-reason').innerText = data.cvdReason;
+            document.getElementById('dash-predm').innerText = data.predm;
+            document.getElementById('dash-predm-reason').innerText = data.predmReason;
+            document.getElementById('dash-metabolic').innerText = data.met;
+            document.getElementById('dash-metabolic-reason').innerText = data.metReason;
+            document.getElementById('dash-kidney').innerText = data.kidney;
+            document.getElementById('dash-kidney-reason').innerText = data.kidneyReason;
+
+            // Update Nodes status
+            const updateNode = (id, status) => {
+                const badge = document.getElementById(`badge-${id}`);
+                const node = document.getElementById(`node-${id}`);
+                if(status === 'Detected') {
+                    badge.innerText = status; badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-red-100 text-red-700';
+                    node.className = 'bg-red-50 border border-red-200 py-2 px-2 rounded-lg text-center w-full node-active';
+                } else if(status === 'Borderline') {
+                    badge.innerText = status; badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-yellow-100 text-yellow-700';
+                    node.className = 'bg-yellow-50 border border-yellow-200 py-2 px-2 rounded-lg text-center w-full node-active';
+                } else {
+                    badge.innerText = status; badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-slate-100 text-slate-500';
+                    node.className = 'bg-slate-50 border border-slate-200 py-2 px-2 rounded-lg text-center w-full node-inactive';
+                }
+            };
+            updateNode('obesity', data.obesityBadge);
+            updateNode('htn', data.htnBadge);
+            updateNode('glucose', data.glucoseBadge);
+
+            // Render Predictive Percentages
+            const riskContainer = document.getElementById('predicted-risks-container');
+            riskContainer.innerHTML = '';
+            
+            Object.keys(data.risks).forEach(key => {
+                const pct = data.risks[key];
+                const meta = DISEASE_LABELS[key];
+                
+                // Get translated disease name
+                const t = TRANSLATIONS[currentLang];
+                let translatedName = meta.name;
+                if(key === 'diabetes') translatedName = t.dDm;
+                if(key === 'htn') translatedName = t.dHtn;
+                if(key === 'copd') translatedName = t.dCopd;
+                if(key === 'cancer') translatedName = t.dCa;
+
+                // Simple logic for risk status text
+                let riskText = pct > 70 ? (currentLang==='th' ? "ความเสี่ยงสูงมาก" : "High Risk") : pct > 40 ? (currentLang==='th' ? "ความเสี่ยงปานกลาง" : "Moderate Risk") : (currentLang==='th' ? "ความเสี่ยงต่ำ" : "Low Risk");
+                
+                riskContainer.innerHTML += `
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-bold text-slate-700"><i class="fas ${meta.icon} ${meta.color} mr-2"></i>${translatedName}</span>
+                            <span class="text-sm font-bold ${pct > 70 ? 'text-red-600' : 'text-slate-600'}">${pct}% <span class="text-xs font-normal text-slate-500">(${riskText})</span></span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5">
+                            <div class="${meta.bg} h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            setTimeout(() => {
+                const bars = riskContainer.querySelectorAll('.progress-bar-fill');
+                Object.keys(data.risks).forEach((key, index) => {
+                    bars[index].style.width = `${data.risks[key]}%`;
+                });
+            }, 100);
+
+            switchTab(2);
+        }
+
+        // --- Tab 3: Medical Tourism ---
+        const BASE_COSTS = { 'copd': 5500, 'diabetes': 3000, 'htn': 2500, 'cancer': 15000 };
+        const HOSP_MULTIPLIER = { 'Bumrungrad': 1.6, 'Siriraj': 0.8, 'Phuket': 1.3, 'ChiangMai': 1.0 };
+        const COUNTRY_FLIGHT_HOTEL = { 'USA': 3500, 'France': 2800, 'Germany': 2800, 'China': 1200, 'Japan': 1500, 'South Korea': 1400, 'Russia': 2200 };
+
+        function formatCurrency(num) { return '$' + Math.round(num).toLocaleString(); }
+
+        function calculateTourism() {
+            const d = document.getElementById('tour-disease').value;
+            const h = document.getElementById('tour-hospital').value;
+            const c = document.getElementById('tour-country').value;
+            const b = parseFloat(document.getElementById('tour-budget').value) || 0;
+            
+            let medicalCost = BASE_COSTS[d] * HOSP_MULTIPLIER[h];
+            let logisticsCost = COUNTRY_FLIGHT_HOTEL[c] || 2000;
+            let totalCost = medicalCost + logisticsCost;
+            let remaining = b - totalCost;
+
+            document.getElementById('out-total-cost').innerText = formatCurrency(totalCost);
+            document.getElementById('out-budget').innerText = formatCurrency(b);
+            
+            const statusEl = document.getElementById('out-status');
+            if(remaining >= 0) {
+                statusEl.innerText = (currentLang === 'th') ? `เพียงพอ (คงเหลือ ${formatCurrency(remaining)})` : `Sufficient (Remaining: ${formatCurrency(remaining)})`;
+                statusEl.className = "text-sm font-bold text-emerald-600";
+            } else {
+                statusEl.innerText = (currentLang === 'th') ? `เกินงบประมาณ (ต้องเพิ่ม ${formatCurrency(Math.abs(remaining))})` : `Over Budget (Need ${formatCurrency(Math.abs(remaining))})`;
+                statusEl.className = "text-sm font-bold text-red-500";
+            }
+
+            const t = TRANSLATIONS[currentLang];
+            let dName = t[`d${d.charAt(0).toUpperCase() + d.slice(1)}`] || d;
+            if (d === 'htn') dName = t.dHtn; // Handle specific mapping
+            if (d === 'diabetes') dName = t.dDm;
+            if (d === 'cancer') dName = t.dCa;
+
+            let cName = t[`c${c.substring(0,3)}`] || c;
+            if(c === 'South Korea') cName = t.cKor;
+            
+            let hName = document.getElementById('tour-hospital').options[document.getElementById('tour-hospital').selectedIndex].text;
+
+            document.getElementById('ai-concierge-content').innerHTML = `
+                <p>Welcome to Thailand. Based on your origin (<strong>${cName}</strong>), we estimate total costs including flights, hotels, and top-tier treatment for <strong>${dName}</strong> at <strong>${hName}</strong>.</p>
+                <h4 class="font-bold mt-4 mb-1">🌿 Thai Wellness Integration</h4>
+                <p>To enhance your recovery, we offer exclusive add-ons such as <strong>Thai Traditional Medicine (TTM) herbal supplements</strong> and <strong>Medical Massage Therapy</strong>, highly recommended for chronic conditions.</p>
+            `;
+        }
+
+        // --- Tab 4: AI Chat (Selling Thai Products) ---
+        function simulateChat(topic) {
+            const chatBox = document.getElementById('page-chat-messages');
+            let userMsg = '...'; let aiMsg = '...';
+            
+            if(currentLang === 'en' || currentLang === 'fr' || currentLang === 'de' || currentLang === 'ru') {
+                if (topic === 'diabetes') {
+                    userMsg = 'I have a high risk of diabetes. Are there any Thai herbal products you recommend?';
+                    aiMsg = 'Based on your blood sugar levels, we highly recommend our **"Premium Bitter Melon Extract"** and **"Jiaogulan Tea"**. These are clinically proven Thai herbs that help regulate blood glucose. <br><br>📦 <i>We can ship these internationally, or include them in your Wellness Recovery Package when you visit Thailand!</i>';
+                } else if (topic === 'htn') {
+                    userMsg = 'I have high blood pressure and stress. What recovery services do you offer in Thailand?';
+                    aiMsg = 'For hypertension and stress management, we strongly recommend our **"Thai Applied Medicine Retreat"**. <br><br>🌿 It includes **Thai Aromatherapy Massage** to relieve vascular tension and a traditional Herbal Steam program.';
+                } else {
+                    userMsg = 'I am looking for holistic cancer recovery centers.';
+                    aiMsg = 'Thailand excels in this! After your main treatments at our top JCI-accredited hospitals, we provide a seamless transfer to a **Thai Wellness Retreat**. <br><br>✨ Here, you will be treated with an Anti-inflammatory Thai Diet and mindfulness meditation in nature.';
+                }
+            } else if (currentLang === 'zh') {
+                 if (topic === 'diabetes') {
+                    userMsg = '我有很高的糖尿病风险，有什么泰国草药推荐吗？';
+                    aiMsg = '根据您的血糖数据，我们强烈推荐泰国的 **"苦瓜提取物胶囊"** 和 **"绞股蓝茶"**。这些都是经过临床验证、有助于控制血糖的传统草药。<br><br>📦 <i>我们可以为您提供国际直邮！</i>';
+                } else if (topic === 'htn') {
+                    userMsg = '我患有高血压而且容易紧张，在泰国有什么好的康复服务？';
+                    aiMsg = '针对高血压和压力管理，我们推荐 **"泰式传统医学康复套餐"**。<br><br>🌿 其中包含有助于舒缓血管压力的 **泰式芳香精油按摩** 和传统草药蒸汽浴。';
+                } else {
+                    userMsg = '我在寻找提供全面康复护理的癌症休养中心。';
+                    aiMsg = '在顶尖医院完成主要治疗后，我们可以无缝衔接将您转送至 **泰式养生度假村**（如普吉岛或清迈）。<br><br>✨ 在那里，您将享受抗炎泰式饮食和自然冥想疗法，大幅提升身体的恢复速度。';
+                }
+            } else if (currentLang === 'ja' || currentLang === 'ko') {
+                if (topic === 'diabetes') {
+                    userMsg = '당뇨병/糖尿病 허브/ハーブ?';
+                    aiMsg = '혈당 수치 관리를 위해 태국의 **"고야 추출물 캡슐"**과 **"돌외차(Jiaogulan)"**를 강력히 추천합니다. / 血糖値の管理には、タイの **「ゴーヤ抽出カプセル」** と **「アマチャヅル茶(Jiaogulan)」** を強くお勧めします。';
+                } else if (topic === 'htn') {
+                    userMsg = '고혈압/高血圧 패키지/パッケージ?';
+                    aiMsg = '고혈압과 스트레스 완화를 위해 **"태국 전통 아로마테라피 마사지"**와 허브 스팀 스파가 포함된 패키지를 추천합니다. / 高血圧とストレス緩和には、**「タイ伝統アロマテラピーマッサージ」** とハーブスチームスパを含むパッケージをお勧めします。';
+                } else {
+                    userMsg = '암 회복/がん回復 힐링 센터/センター?';
+                    aiMsg = '치료를 마친 후, 푸껫이나 치앙마이의 **웰니스 리조트**로 이동하여 항염증 식단과 명상 치료를 받을 수 있습니다. / 治療後、プーケットやチェンマイの **ウェルネスリゾート** に移動し、抗炎症食と瞑想療法を受けることができます。';
+                }
+            } else { 
+                if (topic === 'diabetes') {
+                    userMsg = 'ฉันมีความเสี่ยงเบาหวานสูง มีสมุนไพรไทยหรือผลิตภัณฑ์อะไรแนะนำบ้างไหม?';
+                    aiMsg = 'จากผลเลือดของคุณ แพลตฟอร์มของเราขอแนะนำ **"แคปซูลสารสกัดมะระขี้นก (Bitter Melon Extract)"** และ **"ชาเจียวกู่หลาน"** <br><br>📦 <i>เรามีแพ็กเกจสมุนไพรพรีเมียมจัดส่งให้ถึงบ้าน หรือหากบินมารักษาที่ไทย สามารถจัดรวมใน Wellness Package ได้ครับ</i>';
+                } else if (topic === 'htn') {
+                    userMsg = 'มีความดันสูง เครียดง่าย ถ้าไปรักษาที่ไทยมีบริการอะไรแนะนำเพิ่มเติมไหม?';
+                    aiMsg = 'แนะนำ **"แพ็กเกจการแพทย์แผนไทยประยุกต์"** ครับ <br><br>🌿 ประกอบด้วย **การนวดน้ำมันหอมระเหยสมุนไพรไทย (Thai Aromatherapy)** เพื่อลดความตึงเครียดของหลอดเลือด และโปรแกรมสปาอบสมุนไพร (Herbal Steam) ครับ';
+                } else {
+                    userMsg = 'กำลังหาที่รักษามะเร็งและต้องการที่พักฟื้นที่ดูแลแบบองค์รวมด้วย';
+                    aiMsg = 'หากรับการให้คีโมหรือฉายแสงที่โรงพยาบาลชั้นนำเสร็จแล้ว เรามีบริการส่งต่อสถาบัน **Thai Wellness Retreat** (เช่น ที่ภูเก็ตหรือเชียงใหม่) <br><br>✨ ซึ่งมีแพทย์แผนไทยคอยดูแลเรื่องอาหารต้านการอักเสบ (Anti-inflammatory Thai Diet) และการฟื้นฟูจิตใจด้วยสมาธิบำบัดท่ามกลางธรรมชาติครับ';
+                }
+            }
+
+            chatBox.innerHTML += `<div class="text-right mb-4"><div class="bg-blue-100 text-blue-800 p-3 rounded-xl shadow-sm inline-block max-w-[85%] text-left">${userMsg}</div></div>`;
+            const loadingId = 'typing-' + Date.now();
+            chatBox.innerHTML += `<div id="${loadingId}" class="mb-4 text-left"><div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 inline-block text-slate-400"><i class="fas fa-ellipsis-h fa-fade"></i></div></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+                chatBox.innerHTML += `<div class="mb-4 text-left"><div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 inline-block max-w-[85%]"><strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong><br><span class="mt-2 block leading-relaxed">${aiMsg}</span></div></div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 800);
+        }
+
+        // Init Setup
+        changeLanguage();
+    </script>
+</body>
+</html>
