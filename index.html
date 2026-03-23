@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Health Copilot - Medical Grade Edition</title>
+    <title>Hydra NCDs - Medical Grade Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,6 +17,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Prompt', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .chat-bubble-enter { animation: popIn 0.25s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .hero-badge { backdrop-filter: blur(10px); }
         .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -26,6 +29,7 @@
         .node-active { opacity: 1; filter: grayscale(0%); transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        #page-chat-messages { scroll-behavior: smooth; }
         
         /* Scanner Animation */
         .scan-line { width: 100%; height: 4px; background: #3b82f6; position: absolute; top: 0; left: 0; box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6; animation: scan 1.5s infinite linear; }
@@ -39,7 +43,7 @@
             <i class="fas fa-file-medical text-6xl text-slate-500"></i>
             <div class="scan-line"></div>
         </div>
-        <h2 class="text-2xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-brain text-blue-400 fa-pulse"></i> <span id="scan-title">AI is scanning your data...</span></h2>
+        <h2 class="text-2xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-network-wired text-blue-400 fa-pulse"></i> <span id="scan-title">Hydra AI is scanning...</span></h2>
         <p class="text-slate-400 text-sm" id="scan-desc">Processing OCR & extracting clinical indicators</p>
     </div>
 
@@ -47,8 +51,8 @@
         <div class="max-w-6xl mx-auto p-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex justify-between w-full md:w-auto items-center">
                 <div>
-                    <h1 class="text-xl font-bold text-blue-700 dark:text-blue-400"><i class="fas fa-brain mr-2"></i>AI Health Copilot</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="ui-main-subtitle">NCDs Analysis & Medical Tourism</p>
+                    <h1 class="text-xl font-bold text-blue-700 dark:text-blue-400"><i class="fas fa-network-wired mr-2"></i>Hydra NCDs</h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium" id="ui-main-subtitle">AI Health Risk Screening • Recovery Planning • Wellness Explorer</p>
                 </div>
                 <button onclick="toggleTheme()" class="md:hidden w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-amber-400 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-600 transition">
                     <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:block"></i>
@@ -240,73 +244,172 @@
                 </button>
             </div>
 
-            <div id="export-content-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-50 dark:bg-slate-900">
-                <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-700 self-start w-full">
-                    <h3 class="font-bold text-lg mb-4 text-slate-800 dark:text-white"><i class="fas fa-sliders-h text-blue-500 mr-2"></i><span id="ui-t3-form-h">ข้อมูลทริปรักษา</span></h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-dis">1. โรค (Disease)</label>
-                            <select id="tour-disease" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="calculateTourism()">
-                                <option value="copd">COPD</option>
-                                <option value="diabetes">Diabetes</option>
-                                <option value="htn">Hypertension</option>
-                                <option value="cancer" selected>Cancer</option>
-                            </select>
+            <div id="export-content-container" class="bg-slate-50 dark:bg-slate-900 pb-4">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+                    <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-700 self-start w-full">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800 dark:text-white"><i class="fas fa-sliders-h text-blue-500 mr-2"></i><span id="ui-t3-form-h">ข้อมูลทริปรักษา</span></h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-dis">1. โรค (Disease)</label>
+                                <select id="tour-disease" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="calculateTourism()">
+                                    <option value="copd">COPD</option>
+                                    <option value="diabetes">Diabetes</option>
+                                    <option value="htn">Hypertension</option>
+                                    <option value="cancer" selected>Cancer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-cou">2. ประเทศต้นทาง</label>
+                                <select id="tour-country" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="updateCurrencyAndCalculate()">
+                                    <option value="USA" selected>USA</option>
+                                    <option value="France">France</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="China">China</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="South Korea">South Korea</option>
+                                    <option value="Russia">Russia</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-hos">3. โรงพยาบาลเอกชนในไทย</label>
+                                <select id="tour-hospital" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="calculateTourism()">
+                                    <option value="Bumrungrad">Bumrungrad</option>
+                                    <option value="Siriraj">SiPH</option>
+                                    <option value="Phuket" selected>Bangkok Hosp. Phuket</option>
+                                    <option value="ChiangMai">Chiang Mai Ram</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-bud">4. งบประมาณ (Budget)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 dark:text-slate-400 font-bold" id="currency-symbol">$</span>
+                                    <input id="tour-budget" type="number" value="30000" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-700 font-bold text-slate-800 dark:text-white" oninput="calculateTourism()">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-cou">2. ประเทศต้นทาง</label>
-                            <select id="tour-country" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="updateCurrencyAndCalculate()">
-                                <option value="USA" selected>USA</option>
-                                <option value="France">France</option>
-                                <option value="Germany">Germany</option>
-                                <option value="China">China</option>
-                                <option value="Japan">Japan</option>
-                                <option value="South Korea">South Korea</option>
-                                <option value="Russia">Russia</option>
-                            </select>
+                    </div>
+
+                    <div class="lg:col-span-8 space-y-4 flex flex-col w-full">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-emerald-500 relative">
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mb-1 font-medium" id="ui-t3-out1">ค่าใช้จ่ายรวมทั้งทริป (14 วัน)</p>
+                                <p class="text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight" id="out-total-cost">$0</p>
+                                <div class="flex justify-between items-center text-sm border-t border-slate-100 dark:border-slate-700 pt-2 mt-2">
+                                    <span class="text-slate-500 dark:text-slate-400" id="ui-t3-bud-label">Budget: <span id="out-budget" class="font-bold text-slate-700 dark:text-slate-200">$0</span></span>
+                                    <span class="font-bold px-2 py-1 rounded-md" id="out-status">-</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-hos">3. โรงพยาบาลเอกชนในไทย</label>
-                            <select id="tour-hospital" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white" onchange="calculateTourism()">
-                                <option value="Bumrungrad">Bumrungrad</option>
-                                <option value="Siriraj">SiPH</option>
-                                <option value="Phuket" selected>Bangkok Hosp. Phuket</option>
-                                <option value="ChiangMai">Chiang Mai Ram</option>
-                            </select>
+
+                        <div class="bg-[#fcfaff] dark:bg-indigo-950/20 rounded-xl shadow-sm p-6 border border-purple-100 dark:border-purple-900/50 relative overflow-hidden flex-1">
+                            <div class="flex items-center gap-2 mb-4 relative z-10">
+                                <i class="fas fa-sparkles text-purple-600 dark:text-purple-400"></i>
+                                <h3 class="font-bold text-lg text-purple-900 dark:text-purple-200" id="ui-t3-concierge-title">AI Medical Concierge</h3>
+                            </div>
+                            <div class="text-sm text-slate-700 dark:text-slate-300 space-y-4 relative z-10 leading-relaxed" id="ai-concierge-content"></div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1" id="l-bud">4. งบประมาณ (Budget)</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 dark:text-slate-400 font-bold" id="currency-symbol">$</span>
-                                <input id="tour-budget" type="number" value="30000" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-700 font-bold text-slate-800 dark:text-white" oninput="calculateTourism()">
+                    </div>
+                </div>
+
+                
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-700 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center" id="ui-t3-shop-title">
+                            <i class="fas fa-shopping-bag text-orange-500 mr-2"></i> ผลิตภัณฑ์เสริมอาหารแนะนำ (Sponsored)
+                        </h3>
+                        <span class="text-[11px] px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800">
+                            Demo catalog • ควรมีข้อมูล อย./ข้อควรระวัง ก่อนใช้งานจริง
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex gap-4 hover:border-orange-400 transition-colors bg-gradient-to-br from-white to-orange-50/60 dark:from-slate-800 dark:to-slate-800">
+                            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20320%20320%27%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%27bg%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%23fff7ed%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%23ffedd5%27/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%27320%27%20height%3D%27320%27%20rx%3D%2728%27%20fill%3D%27url%28%23bg%29%27/%3E%0A%3Crect%20x%3D%2792%27%20y%3D%2754%27%20width%3D%27136%27%20height%3D%27150%27%20rx%3D%2724%27%20fill%3D%27%23fff%27%20stroke%3D%27%23fdba74%27%20stroke-width%3D%276%27/%3E%0A%3Crect%20x%3D%2792%27%20y%3D%2754%27%20width%3D%27136%27%20height%3D%2734%27%20rx%3D%2720%27%20fill%3D%27%23fb923c%27/%3E%0A%3Crect%20x%3D%27113%27%20y%3D%27108%27%20width%3D%2794%27%20height%3D%2758%27%20rx%3D%2712%27%20fill%3D%27%23ffedd5%27/%3E%0A%3Ctext%20x%3D%27160%27%20y%3D%27143%27%20text-anchor%3D%27middle%27%20font-size%3D%2720%27%20font-family%3D%27Arial%27%20fill%3D%27%239a3412%27%3EHerbal%3C/text%3E%0A%3Cg%20transform%3D%27rotate%28-20%20120%20238%29%27%3E%0A%3Crect%20x%3D%2772%27%20y%3D%27212%27%20width%3D%2788%27%20height%3D%2734%27%20rx%3D%2717%27%20fill%3D%27%23fff%27%20stroke%3D%27%23fb923c%27%20stroke-width%3D%275%27/%3E%0A%3Cpath%20d%3D%27M116%20212v34%27%20stroke%3D%27%23fb923c%27%20stroke-width%3D%275%27/%3E%0A%3Crect%20x%3D%2772%27%20y%3D%27212%27%20width%3D%2744%27%20height%3D%2734%27%20rx%3D%2717%27%20fill%3D%27%23fed7aa%27/%3E%0A%3C/g%3E%0A%3Cg%20transform%3D%27rotate%2818%20208%20242%29%27%3E%0A%3Crect%20x%3D%27164%27%20y%3D%27220%27%20width%3D%2796%27%20height%3D%2734%27%20rx%3D%2717%27%20fill%3D%27%23fff%27%20stroke%3D%27%23f97316%27%20stroke-width%3D%275%27/%3E%0A%3Cpath%20d%3D%27M212%20220v34%27%20stroke%3D%27%23f97316%27%20stroke-width%3D%275%27/%3E%0A%3Crect%20x%3D%27164%27%20y%3D%27220%27%20width%3D%2748%27%20height%3D%2734%27%20rx%3D%2717%27%20fill%3D%27%23fdba74%27/%3E%0A%3C/g%3E%0A%3Ccircle%20cx%3D%2760%27%20cy%3D%2770%27%20r%3D%2718%27%20fill%3D%27%23fed7aa%27%20opacity%3D%27.55%27/%3E%0A%3Ccircle%20cx%3D%27266%27%20cy%3D%27258%27%20r%3D%2714%27%20fill%3D%27%23fdba74%27%20opacity%3D%27.4%27/%3E%0A%3C/svg%3E" alt="Illustration of herbal supplement capsules" class="rounded-md object-cover w-24 h-24 shadow-sm border border-slate-100 dark:border-slate-600 shrink-0 bg-white">
+                            <div class="flex flex-col justify-between w-full">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">Blood sugar support</span>
+                                    </div>
+                                    <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200" id="ui-shop-item1-title">สารสกัดมะระขี้นกพรีเมียม (คุมน้ำตาล)</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">สมุนไพรแคปซูลสกัดเข้มข้น ภาพตัวอย่างแสดงสินค้าแนวแคปซูลให้ตรงกับหมวดสินค้า</p>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <p class="text-orange-500 font-bold text-lg">฿590</p>
+                                    <a href="javascript:void(0)" class="bg-orange-500 text-white text-[11px] font-bold px-3 py-1.5 rounded hover:bg-orange-600 transition flex items-center shadow-sm opacity-90">
+                                        <i class="fas fa-shopping-cart mr-1"></i> <span class="ui-shop-btn">Shopee</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex gap-4 hover:border-blue-400 transition-colors bg-gradient-to-br from-white to-emerald-50/60 dark:from-slate-800 dark:to-slate-800">
+                            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20320%20320%27%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%27bg%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%23ecfdf5%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%23d1fae5%27/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%27320%27%20height%3D%27320%27%20rx%3D%2728%27%20fill%3D%27url%28%23bg%29%27/%3E%0A%3Cellipse%20cx%3D%27160%27%20cy%3D%27255%27%20rx%3D%2792%27%20ry%3D%2718%27%20fill%3D%27%23a7f3d0%27/%3E%0A%3Cpath%20d%3D%27M88%20128h120a0%200%200%200%201%200%200v50a44%2044%200%200%201-44%2044h-32a44%2044%200%200%201-44-44v-50a0%200%200%200%201%200%200z%27%20fill%3D%27%23ffffff%27%20stroke%3D%27%2310b981%27%20stroke-width%3D%276%27/%3E%0A%3Cpath%20d%3D%27M208%20138h18a28%2028%200%200%201%200%2056h-14%27%20fill%3D%27none%27%20stroke%3D%27%2310b981%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%0A%3Cpath%20d%3D%27M104%20150h88v26a28%2028%200%200%201-28%2028h-32a28%2028%200%200%201-28-28v-26z%27%20fill%3D%27%2386efac%27/%3E%0A%3Cpath%20d%3D%27M126%2092c-10%2012-4%2022%204%2030%27%20fill%3D%27none%27%20stroke%3D%27%2334d399%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%0A%3Cpath%20d%3D%27M158%2084c-10%2014-3%2024%204%2033%27%20fill%3D%27none%27%20stroke%3D%27%2334d399%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%0A%3Cpath%20d%3D%27M190%2092c-10%2012-4%2022%204%2030%27%20fill%3D%27none%27%20stroke%3D%27%2334d399%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%0A%3Cpath%20d%3D%27M70%20110c26-6%2040-30%2066-46-6%2032-32%2054-66%2046z%27%20fill%3D%27%2322c55e%27%20opacity%3D%27.9%27/%3E%0A%3Cpath%20d%3D%27M250%20112c-26-6-40-30-66-46%206%2032%2032%2054%2066%2046z%27%20fill%3D%27%2316a34a%27%20opacity%3D%27.9%27/%3E%0A%3C/svg%3E" alt="Illustration of organic herbal tea" class="rounded-md object-cover w-24 h-24 shadow-sm border border-slate-100 dark:border-slate-600 shrink-0 bg-white">
+                            <div class="flex flex-col justify-between w-full">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Blood pressure support</span>
+                                    </div>
+                                    <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200" id="ui-shop-item2-title">ชาเจียวกู่หลานออร์แกนิค (บำรุงความดัน)</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">เปลี่ยนเป็นภาพแนวชาสมุนไพรโดยตรง เพื่อลดปัญหาภาพไม่ตรงกับสินค้าและภาพไม่ขึ้น</p>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <p class="text-blue-600 font-bold text-lg">฿350</p>
+                                    <a href="javascript:void(0)" class="bg-blue-600 text-white text-[11px] font-bold px-3 py-1.5 rounded hover:bg-blue-700 transition flex items-center shadow-sm opacity-90">
+                                        <i class="fas fa-shopping-cart mr-1"></i> <span class="ui-shop-btn">Lazada</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-8 space-y-4 flex flex-col w-full">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-emerald-500 relative">
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1 font-medium" id="ui-t3-out1">ค่าใช้จ่ายรวมทั้งทริป (14 วัน)</p>
-                            <p class="text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight" id="out-total-cost">$0</p>
-                            <div class="flex justify-between items-center text-sm border-t border-slate-100 dark:border-slate-700 pt-2 mt-2">
-                                <span class="text-slate-500 dark:text-slate-400" id="ui-t3-bud-label">Budget: <span id="out-budget" class="font-bold text-slate-700 dark:text-slate-200">$0</span></span>
-                                <span class="font-bold px-2 py-1 rounded-md" id="out-status">-</span>
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center" id="ui-t3-tour-title">
+                            <i class="fas fa-umbrella-beach text-teal-500 mr-2"></i> แพ็กเกจพักฟื้นและท่องเที่ยว (Healing Retreats)
+                        </h3>
+                        <span class="text-[11px] px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800">
+                            ใช้ภาพ local SVG ภายในไฟล์เดียว เพื่อลดปัญหา hotlink / ภาพหาย
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group hover:shadow-md transition bg-white dark:bg-slate-800">
+                            <div class="relative">
+                                <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20640%20360%27%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%27sky%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%237dd3fc%27/%3E%3Cstop%20offset%3D%2770%25%27%20stop-color%3D%27%23bae6fd%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%23e0f2fe%27/%3E%0A%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%27sea%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2338bdf8%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%230ea5e9%27/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%27640%27%20height%3D%27360%27%20fill%3D%27url%28%23sky%29%27/%3E%0A%3Ccircle%20cx%3D%27526%27%20cy%3D%2770%27%20r%3D%2728%27%20fill%3D%27%23fde68a%27/%3E%0A%3Crect%20y%3D%27178%27%20width%3D%27640%27%20height%3D%27108%27%20fill%3D%27url%28%23sea%29%27/%3E%0A%3Crect%20y%3D%27286%27%20width%3D%27640%27%20height%3D%2774%27%20fill%3D%27%23fde68a%27/%3E%0A%3Cpath%20d%3D%27M0%20272c86-22%20168-12%20247-4%2095%2010%20173%202%20247-10%2064-10%20109-7%20146%202v22H0z%27%20fill%3D%27%23fef3c7%27/%3E%0A%3Cpath%20d%3D%27M18%20194c80%208%20132%2010%20202%200%2069-10%20127-14%20196%200s144%2016%20224%200v18H18z%27%20fill%3D%27%237dd3fc%27%20opacity%3D%27.55%27/%3E%0A%3Crect%20x%3D%2768%27%20y%3D%27125%27%20width%3D%2724%27%20height%3D%2753%27%20fill%3D%27%23475569%27/%3E%0A%3Crect%20x%3D%27100%27%20y%3D%27110%27%20width%3D%2734%27%20height%3D%2768%27%20fill%3D%27%23334155%27/%3E%0A%3Crect%20x%3D%27144%27%20y%3D%27132%27%20width%3D%2728%27%20height%3D%2746%27%20fill%3D%27%2364748b%27/%3E%0A%3Crect%20x%3D%27182%27%20y%3D%27100%27%20width%3D%2740%27%20height%3D%2778%27%20fill%3D%27%230f172a%27/%3E%0A%3Crect%20x%3D%27230%27%20y%3D%27120%27%20width%3D%2726%27%20height%3D%2758%27%20fill%3D%27%23475569%27/%3E%0A%3Crect%20x%3D%27266%27%20y%3D%27102%27%20width%3D%2748%27%20height%3D%2776%27%20fill%3D%27%231e293b%27/%3E%0A%3Crect%20x%3D%27324%27%20y%3D%27128%27%20width%3D%2724%27%20height%3D%2750%27%20fill%3D%27%23475569%27/%3E%0A%3Crect%20x%3D%27356%27%20y%3D%27112%27%20width%3D%2740%27%20height%3D%2766%27%20fill%3D%27%23334155%27/%3E%0A%3Crect%20x%3D%27406%27%20y%3D%27126%27%20width%3D%2730%27%20height%3D%2752%27%20fill%3D%27%2364748b%27/%3E%0A%3Cpath%20d%3D%27M74%20268c10-36%2042-56%2054-92%2024%2032%204%2070-18%2092z%27%20fill%3D%27%2316a34a%27/%3E%0A%3Crect%20x%3D%2794%27%20y%3D%27238%27%20width%3D%276%27%20height%3D%2740%27%20fill%3D%27%2392400e%27/%3E%0A%3Cpath%20d%3D%27M132%20286c30-14%2060-16%2092-16%2022%200%2040%204%2058%2010-26-3-46%200-67%2012-18%2010-38%2014-83-6z%27%20fill%3D%27%23f59e0b%27%20opacity%3D%27.9%27/%3E%0A%3Ctext%20x%3D%2726%27%20y%3D%2742%27%20font-size%3D%2724%27%20font-weight%3D%27700%27%20font-family%3D%27Arial%27%20fill%3D%27%230f172a%27%3EPattaya%20%E2%80%A2%20Seaside%20Recovery%3C/text%3E%0A%3C/svg%3E" alt="Pattaya seaside recovery illustration" class="h-36 w-full object-cover group-hover:scale-105 transition duration-500">
+                                <span class="hero-badge absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/80 text-sky-800 border border-white/60">Pattaya • Seaside</span>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100" id="ui-tour1-title">Pattaya Wellness Retreat</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="ui-tour1-desc">สปาและพักฟื้นริมทะเล 3 วัน 2 คืน พร้อมอาหารเพื่อสุขภาพ</p>
+                                <p class="text-sm font-bold text-teal-600 dark:text-teal-400 mt-3" id="ui-tour1-price">เริ่มต้น ฿12,000</p>
+                            </div>
+                        </div>
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group hover:shadow-md transition bg-white dark:bg-slate-800">
+                            <div class="relative">
+                                <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20640%20360%27%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%27sky%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2393c5fd%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%23e0f2fe%27/%3E%0A%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%27mountain%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2365a30d%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%23166534%27/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%27640%27%20height%3D%27360%27%20fill%3D%27url%28%23sky%29%27/%3E%0A%3Ccircle%20cx%3D%27528%27%20cy%3D%2766%27%20r%3D%2730%27%20fill%3D%27%23fde68a%27/%3E%0A%3Cpath%20d%3D%27M0%20228%2092%20150%20180%20216%20286%20126%20380%20212%20470%20148%20640%20240V360H0z%27%20fill%3D%27url%28%23mountain%29%27/%3E%0A%3Cpath%20d%3D%27M0%20250%2096%20190%20182%20246%20286%20162%20370%20236%20472%20184%20640%20260V360H0z%27%20fill%3D%27%2315803d%27%20opacity%3D%27.8%27/%3E%0A%3Crect%20y%3D%27300%27%20width%3D%27640%27%20height%3D%2760%27%20fill%3D%27%2384cc16%27/%3E%0A%3Cpath%20d%3D%27M178%20290h200%27%20stroke%3D%27%23fef3c7%27%20stroke-width%3D%277%27%20stroke-linecap%3D%27round%27/%3E%0A%3Crect%20x%3D%27404%27%20y%3D%27202%27%20width%3D%27100%27%20height%3D%2778%27%20fill%3D%27%23fbbf24%27%20opacity%3D%27.22%27/%3E%0A%3Crect%20x%3D%27428%27%20y%3D%27196%27%20width%3D%2752%27%20height%3D%2784%27%20fill%3D%27%23d97706%27/%3E%0A%3Cpolygon%20points%3D%27454%2C112%20474%2C196%20434%2C196%27%20fill%3D%27%23facc15%27/%3E%0A%3Crect%20x%3D%27446%27%20y%3D%27104%27%20width%3D%2716%27%20height%3D%2718%27%20fill%3D%27%2392400e%27/%3E%0A%3Cpolygon%20points%3D%27442%2C92%20466%2C92%20454%2C70%27%20fill%3D%27%23fef08a%27/%3E%0A%3Crect%20x%3D%27386%27%20y%3D%27226%27%20width%3D%2730%27%20height%3D%2754%27%20fill%3D%27%237c2d12%27/%3E%0A%3Cpolygon%20points%3D%27370%2C226%20432%2C226%20401%2C190%27%20fill%3D%27%23dc2626%27/%3E%0A%3Cpath%20d%3D%27M144%20300c22-30%2056-36%2072-88%2022%2034%2010%2070-18%2088z%27%20fill%3D%27%2322c55e%27/%3E%0A%3Crect%20x%3D%27166%27%20y%3D%27266%27%20width%3D%276%27%20height%3D%2736%27%20fill%3D%27%23854d0e%27/%3E%0A%3Ctext%20x%3D%2726%27%20y%3D%2742%27%20font-size%3D%2724%27%20font-weight%3D%27700%27%20font-family%3D%27Arial%27%20fill%3D%27%230f172a%27%3EChiang%20Mai%20%E2%80%A2%20Mountain%20Zen%3C/text%3E%0A%3C/svg%3E" alt="Chiang Mai mountain and temple wellness illustration" class="h-36 w-full object-cover group-hover:scale-105 transition duration-500">
+                                <span class="hero-badge absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/80 text-emerald-800 border border-white/60">Chiang Mai • Mountain Zen</span>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100" id="ui-tour2-title">Chiang Mai Zen Healing</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="ui-tour2-desc">ฟื้นฟูจิตใจด้วยสมาธิบำบัดและธรรมชาติบนดอย 4 วัน 3 คืน</p>
+                                <p class="text-sm font-bold text-teal-600 dark:text-teal-400 mt-3" id="ui-tour2-price">เริ่มต้น ฿15,500</p>
+                            </div>
+                        </div>
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group hover:shadow-md transition bg-white dark:bg-slate-800">
+                            <div class="relative">
+                                <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20640%20360%27%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%27sea%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%0A%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2367e8f9%27/%3E%3Cstop%20offset%3D%2745%25%27%20stop-color%3D%27%2322d3ee%27/%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%230284c7%27/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%27640%27%20height%3D%27360%27%20fill%3D%27url%28%23sea%29%27/%3E%0A%3Cpath%20d%3D%27M496%200h144v360H358c76-30%20128-84%20138-138%206-34%206-83%200-132z%27%20fill%3D%27%23f8fafc%27%20opacity%3D%27.92%27/%3E%0A%3Cpath%20d%3D%27M166%20236c18-44%2038-116%2076-126%2054-14%2076%2088%2054%20132-16%2032-112%2030-130-6z%27%20fill%3D%27%23166534%27/%3E%0A%3Cpath%20d%3D%27M178%20238c16-34%2032-98%2062-104%2040-8%2054%2070%2036%20102-12%2020-84%2022-98%202z%27%20fill%3D%27%2315803d%27/%3E%0A%3Cpath%20d%3D%27M454%20276c12-34%2028-86%2056-94%2038-10%2054%2062%2038%2092-10%2018-78%2018-94%202z%27%20fill%3D%27%23166534%27/%3E%0A%3Cpath%20d%3D%27M466%20276c10-26%2022-68%2044-74%2028-8%2040%2048%2028%2072-8%2014-58%2016-72%202z%27%20fill%3D%27%2315803d%27/%3E%0A%3Cpath%20d%3D%27M240%20196c34-80%2062-126%2098-130%2020-2%2038%2010%2046%2028-40-10-62%2020-90%20104-12%2036-28%2054-54%2060%200-18-6-34%200-62z%27%20fill%3D%27%230f172a%27%20opacity%3D%27.7%27/%3E%0A%3Cpath%20d%3D%27M548%20232c22-58%2044-96%2076-102%2016-4%2032%206%2038%2018-28-4-46%2022-60%2074-8%2028-22%2044-54%2052%202-14-2-24%200-42z%27%20fill%3D%27%230f172a%27%20opacity%3D%27.72%27/%3E%0A%3Cpath%20d%3D%27M350%2054c80%2048%20134%20110%20178%20184%27%20fill%3D%27none%27%20stroke%3D%27%23ecfeff%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%0A%3Cpath%20d%3D%27M342%2058l22%202-14%2016%27%20fill%3D%27none%27%20stroke%3D%27%23ecfeff%27%20stroke-width%3D%275%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%0A%3Ctext%20x%3D%2726%27%20y%3D%2742%27%20font-size%3D%2724%27%20font-weight%3D%27700%27%20font-family%3D%27Arial%27%20fill%3D%27%230f172a%27%3EKrabi%20%E2%80%A2%20Island%20Recovery%3C/text%3E%0A%3C/svg%3E" alt="Krabi private island recovery illustration" class="h-36 w-full object-cover group-hover:scale-105 transition duration-500">
+                                <span class="hero-badge absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/80 text-cyan-800 border border-white/60">Krabi • Island Care</span>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100" id="ui-tour3-title">Krabi Private Island</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="ui-tour3-desc">แพ็กเกจวีไอพี พักเกาะส่วนตัวพร้อมพยาบาลดูแล 24 ชม.</p>
+                                <p class="text-sm font-bold text-teal-600 dark:text-teal-400 mt-3" id="ui-tour3-price">เริ่มต้น ฿45,000</p>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="bg-[#fcfaff] dark:bg-indigo-950/20 rounded-xl shadow-sm p-6 border border-purple-100 dark:border-purple-900/50 relative overflow-hidden flex-1">
-                        <div class="flex items-center gap-2 mb-4 relative z-10">
-                            <i class="fas fa-sparkles text-purple-600 dark:text-purple-400"></i>
-                            <h3 class="font-bold text-lg text-purple-900 dark:text-purple-200" id="ui-t3-concierge-title">AI Medical Concierge</h3>
-                        </div>
-                        <div class="text-sm text-slate-700 dark:text-slate-300 space-y-4 relative z-10 leading-relaxed" id="ai-concierge-content"></div>
-                    </div>
 
-                    <div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-tight" id="ui-t3-ref">อ้างอิงข้อมูล: ค่ารักษาพยาบาลเฉลี่ยจาก MOPH และอัตราแลกเปลี่ยนสากล</p>
-                    </div>
+                <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-tight" id="ui-t3-ref">อ้างอิงข้อมูล: ค่ารักษาพยาบาลเฉลี่ยจาก MOPH และอัตราแลกเปลี่ยนสากล</p>
                 </div>
             </div>
         </div>
@@ -317,18 +420,21 @@
             
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col max-w-3xl mx-auto h-[600px]">
                 <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 flex justify-between items-center">
-                    <h3 class="font-bold"><i class="fas fa-robot mr-2 text-blue-200"></i>AI Care Navigator</h3>
+                    <h3 class="font-bold"><i class="fas fa-robot mr-2 text-blue-200"></i>Hydra AI Navigator</h3>
                     <button onclick="simulateVoiceInput()" id="btn-mic" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center transition-colors">
                         <i class="fas fa-microphone"></i>
                     </button>
                 </div>
                 
                 <div class="p-6 bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-300 flex-1 overflow-y-auto space-y-4" id="page-chat-messages">
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] inline-block" id="chat-greeting-box">
-                        <strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong> <span id="chat-greeting-text">สวัสดีครับ! ผมคือผู้ช่วย AI...</span>
+                    <div class="flex mb-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] inline-block" id="chat-greeting-box">
+                            <strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong> <span id="chat-greeting-text">สวัสดีครับ! ผมคือผู้ช่วย AI...</span>
+                        </div>
                     </div>
                 </div>
 
+                
                 <div class="p-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
                     <div class="flex flex-col sm:flex-row gap-2 mb-3">
                         <button onclick="simulateChat('diabetes')" class="flex-1 text-left text-[11px] sm:text-xs bg-slate-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-slate-200 p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 transition font-medium">
@@ -341,10 +447,30 @@
                             <i class="fas fa-heart text-rose-500 mr-1"></i> <span id="btn-chat-ca">มะเร็ง</span>
                         </button>
                     </div>
+
+                    <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-2.5">
+                        <div class="flex gap-2">
+                            <input id="chat-input" type="text" autocomplete="off" class="flex-1 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="พิมพ์คำถาม เช่น ค่ารักษาประมาณเท่าไร หรือ อยากพักฟื้นที่ทะเล">
+                            <button onclick="sendChatInput()" id="btn-send-chat" class="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-sm transition">
+                                <i class="fas fa-paper-plane mr-1"></i><span id="btn-send-chat-label">ส่ง</span>
+                            </button>
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <button onclick="sendQuickPrompt('ค่ารักษาประมาณเท่าไร')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition">ค่ารักษา</button>
+                            <button onclick="sendQuickPrompt('โรงพยาบาลไหนดี')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition">โรงพยาบาล</button>
+                            <button onclick="sendQuickPrompt('อยากพักฟื้นที่ทะเล')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition">พักฟื้นริมทะเล</button>
+                            <button onclick="sendQuickPrompt('มีสมุนไพรอะไรแนะนำ')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition">สมุนไพร</button>
+                        </div>
+                    </div>
+
                     <div id="voice-indicator" class="hidden text-center py-2 text-sm text-red-500 font-bold animate-pulse">
                         <i class="fas fa-microphone mr-2"></i> <span id="txt-listening">Listening... (Speak now)</span>
                     </div>
+                    <p class="mt-3 text-[11px] text-slate-400 dark:text-slate-500">
+                        Demo assistant • ให้คำแนะนำเบื้องต้น ไม่แทนการวินิจฉัยโดยแพทย์
+                    </p>
                 </div>
+
             </div>
         </div>
 
@@ -441,7 +567,7 @@
             const scanTitle = document.getElementById('scan-title');
             const t = TRANSLATIONS[currentLang];
             
-            scanTitle.innerText = t.scanText || "AI is scanning your data...";
+            scanTitle.innerText = t.scanText || "Hydra AI is scanning...";
             
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
@@ -473,6 +599,7 @@
 
         // --- 5. Voice Assistant Simulation ---
         function simulateVoiceInput() {
+            if(isChatTyping) return; // Prevent if already typing
             const indicator = document.getElementById('voice-indicator');
             const micBtn = document.getElementById('btn-mic');
             
@@ -484,12 +611,13 @@
                 indicator.classList.add('hidden');
                 micBtn.classList.remove('text-red-500', 'bg-red-100');
                 micBtn.classList.add('text-white');
-                const topics = ['diabetes', 'htn', 'cancer'];
-                simulateChat(topics[Math.floor(Math.random() * topics.length)], true); 
-            }, 2500);
+                const prompts = ['เบาหวาน', 'ความดันสูง', 'มะเร็ง'];
+                const selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+                queueAIResponse(selectedPrompt, resolveFreeTextResponse(selectedPrompt), true, true); 
+            }, 2000);
         }
 
-        // --- Demo Data (MEDICAL GRADE EXTENDED) ---
+        // --- Demo Data ---
         function loadDemoCase(level) {
             const isTH = currentLang === 'th';
             const ALL_CASES = {
@@ -540,20 +668,15 @@
             const data = ALL_CASES[level];
             document.getElementById('active-case-badge').classList.remove('hidden');
             
-            // 1. Update Risk Overview & Reasons
             document.getElementById('dash-cvd').innerText = data.cvd;
             document.getElementById('dash-cvd-reason').innerText = data.cvdReason;
-            
             document.getElementById('dash-predm').innerText = data.predm;
             document.getElementById('dash-predm-reason').innerText = data.predmReason;
-            
             document.getElementById('dash-metabolic').innerText = data.met;
             document.getElementById('dash-metabolic-reason').innerText = data.metReason;
-            
             document.getElementById('dash-kidney').innerText = data.kid;
             document.getElementById('dash-kidney-reason').innerText = data.kidReason;
 
-            // 2. Update Lab Biomarkers Profile
             const updateLab = (id, val, status) => {
                 document.getElementById(`lab-${id}`).innerText = val;
                 const badge = document.getElementById(`badge-${id}`);
@@ -568,7 +691,6 @@
             updateLab('egfr', data.labs.egfr, data.labStatus.egfr);
             updateLab('bmi', data.labs.bmi, data.labStatus.bmi);
 
-            // 3. Update Cross-Disease Reasoning Flow
             const updateNode = (id, status) => {
                 const badge = document.getElementById(`badge-${id}`);
                 const node = document.getElementById(`node-${id}`);
@@ -599,13 +721,11 @@
             updateNode('htn', data.nodes.htn);
             updateNode('glucose', data.nodes.glucose);
 
-            // 4. Update AI Clinical Plan
             const planBox = document.getElementById('clinical-plan-box');
             planBox.className = `mb-6 p-4 rounded-xl shadow-sm border transition-colors ${data.planClass}`;
             document.getElementById('plan-icon').className = `fas text-lg mr-2 ${data.planIcon}`;
             document.getElementById('clinical-plan-text').innerHTML = data.planText;
 
-            // 5. Draw Sparklines & Radar
             sparkInstances.forEach(inst => inst.destroy());
             sparkInstances = [];
             const color = level === 'low' ? '#10b981' : (level === 'moderate' ? '#f59e0b' : '#ef4444');
@@ -616,7 +736,6 @@
 
             renderRadarChart(data.risks);
 
-            // Switch to tab 2 smoothly
             switchTab(2);
         }
 
@@ -684,6 +803,12 @@
             const hName = document.getElementById('tour-hospital').options[document.getElementById('tour-hospital').selectedIndex].text;
                 
             document.getElementById('ai-concierge-content').innerHTML = t.conciergeMsg.replace('COUNTRY', cName).replace('DISEASE', dName).replace('HOSPITAL', hName);
+            
+            if (document.getElementById('ui-tour1-price')) {
+                 document.getElementById('ui-tour1-price').innerText = t.tourStart + " " + formatMoney(350 * currency.rate, c);
+                 document.getElementById('ui-tour2-price').innerText = t.tourStart + " " + formatMoney(450 * currency.rate, c);
+                 document.getElementById('ui-tour3-price').innerText = t.tourStart + " " + formatMoney(1300 * currency.rate, c);
+            }
         }
 
         // --- Multi-Language Dictionary ---
@@ -692,7 +817,7 @@
                 tab1: "1. นำเข้าข้อมูล", tab2: "2. วิเคราะห์ผล", tab3: "3. แผนรักษา", tab4: "4. แชท AI",
                 t1Title: "อัปโหลดผลตรวจสุขภาพ", t1Desc: "วิเคราะห์ข้อมูลสุขภาพเบื้องต้น (NCDs) เพื่อประเมินความเสี่ยง",
                 t1Up1: "อัปโหลดไฟล์ (Upload)", t1Up2: "เปิดกล้อง (Camera)", t1Demo: "หรือเลือกเคสตัวอย่างเพื่อดูผลวิเคราะห์",
-                scanText: "AI กำลังสแกนเอกสารผลแล็บ...",
+                scanText: "Hydra AI กำลังสแกนเอกสาร...",
                 t2Title: "Clinical Risk Dashboard", t2Desc: "ประเมินความเสี่ยงพร้อมวิเคราะห์ข้อมูลสุขภาพเชิงลึก (10-Year Horizon)",
                 t2Pred: "Predictive Risk Map (5-Yr)", t2Flow: "Cross-Disease Reasoning Flow",
                 t2LabsTitle: "Patient Biomarker Profile (Key Indicators)", t2PlanTitle: "AI Clinical Next Steps",
@@ -708,17 +833,24 @@
                 greeting: "สวัสดีครับ! ผมคือผู้ช่วย AI คุณสามารถสอบถามสุขภาพ หรือให้แนะนำ Wellness ของไทยได้ครับ",
                 btnDm: "เบาหวาน", btnHtn: "ความดันสูง", btnCa: "มะเร็ง",
                 chatDmQ: "ฉันมีความเสี่ยงเบาหวาน มีสมุนไพรไทยแนะนำไหม?",
-                chatDmA: "ขอแนะนำ **'แคปซูลสารสกัดมะระขี้นก'** และ **'ชาเจียวกู่หลาน'** ช่วยคุมน้ำตาลในเลือดได้ดีครับ <br><br>📦 <i>จัดเป็น Welcome Wellness Package ได้เลยครับ</i>",
+                chatDmA: "ขอแนะนำ **'แคปซูลสารสกัดมะระขี้นก'** และ **'ชาเจียวกู่หลาน'** ช่วยคุมน้ำตาลในเลือดได้ดีครับ <br><br>📦 <i>สามารถสั่งซื้อได้ที่หน้า 'แผนรักษา' ได้เลยครับ</i>",
                 chatHtnQ: "มีความดันสูง ถ้าไปรักษาที่ไทยมีบริการอะไรแนะนำเพิ่มไหม?",
                 chatHtnA: "แนะนำ **'แพ็กเกจการแพทย์แผนไทยประยุกต์'** <br><br>🌿 ประกอบด้วย **นวดน้ำมันหอมระเหย (Thai Aromatherapy)** เพื่อลดความตึงเครียดของหลอดเลือดครับ",
                 chatCaQ: "กำลังหาที่รักษามะเร็งและต้องการที่พักฟื้นด้วย",
-                chatCaA: "หลังรับการรักษาหลักเสร็จ เรามีบริการส่งต่อ **Thai Wellness Retreat** <br><br>✨ ดูแลด้วยอาหารต้านการอักเสบและสมาธิบำบัดท่ามกลางธรรมชาติครับ"
+                chatCaA: "หลังรับการรักษาหลักเสร็จ เรามีบริการส่งต่อ **Thai Wellness Retreat** (เช่น ที่เชียงใหม่หรือกระบี่) <br><br>✨ ดูแลด้วยอาหารต้านการอักเสบและสมาธิบำบัดท่ามกลางธรรมชาติครับ",
+                shopTitle: "<i class='fas fa-shopping-bag text-orange-500 mr-2'></i> ผลิตภัณฑ์เสริมอาหารแนะนำ (Sponsored)",
+                item1Title: "สารสกัดมะระขี้นกพรีเมียม (คุมน้ำตาล)", item2Title: "ชาเจียวกู่หลานออร์แกนิค (บำรุงความดัน)",
+                tourTitle: "<i class='fas fa-umbrella-beach text-teal-500 mr-2'></i> แพ็กเกจพักฟื้นและท่องเที่ยว (Healing Retreats)",
+                tour1Title: "Pattaya Wellness Retreat", tour1Desc: "สปาและพักฟื้นริมทะเล 3 วัน 2 คืน พร้อมอาหารเพื่อสุขภาพ",
+                tour2Title: "Chiang Mai Zen Healing", tour2Desc: "ฟื้นฟูจิตใจด้วยสมาธิบำบัดและธรรมชาติบนดอย 4 วัน 3 คืน",
+                tour3Title: "Krabi Private Island", tour3Desc: "แพ็กเกจวีไอพี พักเกาะส่วนตัวพร้อมพยาบาลดูแล 24 ชม.",
+                tourStart: "เริ่มต้น", chatPlaceholder: "พิมพ์คำถาม เช่น ค่ารักษาประมาณเท่าไร หรือ อยากพักฟื้นที่ทะเล", sendBtn: "ส่ง", qBudget: "ค่ารักษาประมาณเท่าไร", qHospital: "โรงพยาบาลไหนดี", qRetreat: "พักฟื้นริมทะเล", qHerb: "สมุนไพร", chatBudgetA: "งบประมาณขึ้นอยู่กับโรค โรงพยาบาล และประเทศต้นทางครับ คุณสามารถดูค่าใช้จ่ายรวมในแท็บ Medical Tourism ได้ทันที และลองปรับโรงพยาบาลหรือประเทศเพื่อดูงบแบบเรียลไทม์", chatHospitalA: "ถ้าต้องการภาพลักษณ์ระดับพรีเมียมสามารถเลือก Bumrungrad หรือ Bangkok Hosp. Phuket ส่วนตัวเลือกที่สมดุลขึ้นด้านงบประมาณมี SiPH และ Chiang Mai Ram ซึ่งเหมาะกับการทำ demo เปรียบเทียบ", chatRetreatA: "ถ้าต้องการพักฟื้นริมทะเล แนะนำ Pattaya Wellness Retreat สำหรับ recovery แบบเดินทางสะดวก หรือ Krabi Private Island หากต้องการบรรยากาศสงบเป็นพิเศษและดูแลใกล้ชิด", chatFallbackA: "ผมตอบได้ในเรื่องความเสี่ยง NCDs ค่าใช้จ่ายโดยประมาณ โรงพยาบาลในไทย สมุนไพร/บริการฟื้นฟู และแพ็กเกจพักฟื้น ลองพิมพ์คำถามสั้น ๆ ได้เลยครับ"
             },
             en: {
                 tab1: "1. Input", tab2: "2. Analysis", tab3: "3. Plan Trip", tab4: "4. AI Chat",
                 t1Title: "Upload Health Report", t1Desc: "Analyze baseline health data (NCDs) for risk assessment.",
                 t1Up1: "Upload File", t1Up2: "Camera", t1Demo: "Or select a demo case below",
-                scanText: "AI is scanning your document...",
+                scanText: "Hydra AI is scanning...",
                 t2Title: "Clinical Risk Dashboard", t2Desc: "Assess NCD risks with deep clinical data analysis (10-Year Horizon)",
                 t2Pred: "Predictive Risk Map (5-Yr)", t2Flow: "Cross-Disease Reasoning Flow",
                 t2LabsTitle: "Patient Biomarker Profile (Key Indicators)", t2PlanTitle: "AI Clinical Next Steps",
@@ -734,17 +866,24 @@
                 greeting: "Hello! I am your AI assistant. You can ask about health risks or Thai Wellness services.",
                 btnDm: "Diabetes", btnHtn: "Hypertension", btnCa: "Cancer",
                 chatDmQ: "High diabetes risk. Any Thai herbs recommended?",
-                chatDmA: "We recommend **'Bitter Melon Extract'** and **'Jiaogulan Tea'**. <br><br>📦 <i>We can include them in your Wellness Package!</i>",
+                chatDmA: "We recommend **'Bitter Melon Extract'** and **'Jiaogulan Tea'**. <br><br>📦 <i>You can purchase them directly in the 'Plan Trip' tab!</i>",
                 chatHtnQ: "High blood pressure and stress. What recovery services in Thailand?",
                 chatHtnA: "We recommend our **'Thai Applied Medicine Retreat'**. <br><br>🌿 Includes **Thai Aromatherapy Massage** to relieve vascular tension.",
                 chatCaQ: "Looking for holistic cancer recovery centers.",
-                chatCaA: "After treatments, we provide transfer to a **Thai Wellness Retreat**. <br><br>✨ Treat yourself with an Anti-inflammatory Thai Diet and meditation."
+                chatCaA: "After treatments, we provide transfer to a **Thai Wellness Retreat**. <br><br>✨ Treat yourself with an Anti-inflammatory Thai Diet and meditation.",
+                shopTitle: "<i class='fas fa-shopping-bag text-orange-500 mr-2'></i> Recommended Supplements (Sponsored)",
+                item1Title: "Premium Bitter Melon Extract", item2Title: "Organic Jiaogulan Tea",
+                tourTitle: "<i class='fas fa-umbrella-beach text-teal-500 mr-2'></i> Healing Retreats & Tours",
+                tour1Title: "Pattaya Wellness Retreat", tour1Desc: "Spa & Seaside Recovery 3D2N with Healthy Meals",
+                tour2Title: "Chiang Mai Zen Healing", tour2Desc: "Mindfulness & Nature Retreat 4D3N",
+                tour3Title: "Krabi Private Island", tour3Desc: "VIP Package: Private Island with 24/7 Nurse",
+                tourStart: "From", chatPlaceholder: "Ask something like: estimated cost, best hospital, or seaside recovery", sendBtn: "Send", qBudget: "Estimated cost", qHospital: "Best hospital", qRetreat: "Seaside recovery", qHerb: "Herbs", chatBudgetA: "The estimate depends on condition, hospital tier, and origin country. Open the Medical Tourism tab to compare the total cost instantly and adjust the country or hospital for a live budget scenario.", chatHospitalA: "For a premium positioning, Bumrungrad and Bangkok Hosp. Phuket work well. For a more balanced value demo, SiPH and Chiang Mai Ram are good options.", chatRetreatA: "For seaside recovery, Pattaya fits short convenient recovery trips, while Krabi suits quieter premium recuperation with a more exclusive feel.", chatFallbackA: "I can help with NCD risk, estimated treatment budget, Thai hospitals, recovery packages, and wellness add-ons. Try a short question."
             },
             zh: {
                 tab1: "1. 导入数据", tab2: "2. 健康分析", tab3: "3. 医疗旅游", tab4: "4. AI 咨询",
                 t1Title: "上传体检报告", t1Desc: "分析基础健康数据以进行风险评估。",
                 t1Up1: "上传文件", t1Up2: "开启相机", t1Demo: "或选择以下演示案例",
-                scanText: "AI 正在扫描您的实验室数据...",
+                scanText: "Hydra AI 正在扫描...",
                 t2Title: "临床风险仪表盘", t2Desc: "评估 NCD 风险并进行深度临床数据分析 (10年跨度)。",
                 t2Pred: "预测风险雷达 (5年)", t2Flow: "跨疾病推理流程",
                 t2LabsTitle: "患者生物标志物资料 (关键指标)", t2PlanTitle: "AI 临床后续步骤",
@@ -760,17 +899,24 @@
                 greeting: "您好！我是您的AI助手。您可以咨询健康问题或泰式养生服务。",
                 btnDm: "糖尿病", btnHtn: "高血压", btnCa: "癌症",
                 chatDmQ: "我有很高的糖尿病风险，有什么泰国草药推荐吗？",
-                chatDmA: "我们推荐 **'苦瓜提取物胶囊'** 和 **'绞股蓝茶'**。<br><br>📦 <i>可在您抵达时作为康复礼包提供！</i>",
+                chatDmA: "我们推荐 **'苦瓜提取物胶囊'** 和 **'绞股蓝茶'**。<br><br>📦 <i>您可以在“医疗旅游”标签页中直接购买！</i>",
                 chatHtnQ: "高血压而且容易紧张，在泰国有什么好的服务？",
                 chatHtnA: "我们推荐 **'泰式传统医学康复套餐'**。<br><br>🌿 包含有助于舒缓血管压力的 **泰式芳香精油按摩**。",
                 chatCaQ: "我在寻找提供全面康复护理的癌症休养中心。",
-                chatCaA: "在顶尖医院完成治疗后，我们将您转送至 **泰式养生度假村**。<br><br>✨ 您将享受抗炎饮食和自然冥想疗法。"
+                chatCaA: "在顶尖医院完成治疗后，我们将您转送至 **泰式养生度假村**。<br><br>✨ 您将享受抗炎饮食和自然冥想疗法。",
+                shopTitle: "<i class='fas fa-shopping-bag text-orange-500 mr-2'></i> 推荐补充剂 (赞助)",
+                item1Title: "优质苦瓜提取物 (控糖)", item2Title: "有机绞股蓝茶 (血压)",
+                tourTitle: "<i class='fas fa-umbrella-beach text-teal-500 mr-2'></i> 康复修养与旅游套餐",
+                tour1Title: "芭提雅健康疗养", tour1Desc: "海滨水疗及康复 3天2晚 (含健康餐)",
+                tour2Title: "清迈禅意疗愈", tour2Desc: "大自然正念冥想 4天3晚",
+                tour3Title: "甲米私人岛屿", tour3Desc: "VIP 套餐：私人岛屿及 24 小时护士",
+                tourStart: "起价", chatPlaceholder: "输入问题，例如：大概费用多少？哪家医院更合适？", sendBtn: "发送", qBudget: "大概费用", qHospital: "推荐医院", qRetreat: "海边休养", qHerb: "草药建议", chatBudgetA: "费用会受到疾病、医院等级和出发国家影响。您可以在医疗旅游页面实时比较总费用。", chatHospitalA: "如果要高端定位，可优先展示 Bumrungrad 或 Bangkok Hosp. Phuket；若强调性价比，可展示 SiPH 或 Chiang Mai Ram。", chatRetreatA: "如果想在海边休养，芭提雅适合短期恢复，甲米更适合安静高端的康复氛围。", chatFallbackA: "我可以回答 NCD 风险、预估费用、泰国医院、康复套餐和养生服务等问题。欢迎直接提问。"
             },
             ja: {
                 tab1: "1. 入力", tab2: "2. 分析", tab3: "3. 医療観光", tab4: "4. AI チャット",
                 t1Title: "健康診断書のアップロード", t1Desc: "NCDsデータを分析し、リスク評価を作成します。",
                 t1Up1: "アップロード", t1Up2: "カメラ", t1Demo: "またはデモケースを選択",
-                scanText: "AIが検査データをスキャンしています...",
+                scanText: "Hydra AI がスキャンしています...",
                 t2Title: "臨床リスクダッシュボード", t2Desc: "NCDリスクを評価し、臨床データを深く分析します (10年の予測)。",
                 t2Pred: "予測リスクレーダー (5年)", t2Flow: "疾患間の推論フロー",
                 t2LabsTitle: "患者バイオマーカープロファイル (主要指標)", t2PlanTitle: "AI 臨床の次のステップ",
@@ -786,11 +932,18 @@
                 greeting: "こんにちは！AIアシスタントです。健康やタイのウェルネスについてご案内します。",
                 btnDm: "糖尿病", btnHtn: "高血圧", btnCa: "がん",
                 chatDmQ: "糖尿病リスクが高いです。お勧めのタイのハーブは？",
-                chatDmA: "タイの **「ゴーヤ抽出カプセル」** と **「アマチャヅル茶」** をお勧めします。<br><br>📦 <i>タイ訪問時のパッケージに含めることができます！</i>",
+                chatDmA: "タイの **「ゴーヤ抽出カプセル」** と **「アマチャヅル茶」** をお勧めします。<br><br>📦 <i>「医療観光」タブから直接購入できます！</i>",
                 chatHtnQ: "高血圧とストレスに悩んでいます。回復サービスはありますか？",
                 chatHtnA: "**「タイ伝統医療リトリート」** をお勧めします。<br><br>🌿 血管の緊張を和らげる **アロマテラピーマッサージ** が含まれます。",
                 chatCaQ: "がんの回復センターを探しています。",
-                chatCaA: "治療後、**ウェルネス・リゾート** へスムーズに移動できます。<br><br>✨ 抗炎症タイ料理と瞑想で回復をサポートします。"
+                chatCaA: "治療後、**ウェルネス・リゾート** へスムーズに移動できます。<br><br>✨ 抗炎症タイ料理と瞑想で回復をサポートします。",
+                shopTitle: "<i class='fas fa-shopping-bag text-orange-500 mr-2'></i> おすすめのサプリメント (スポンサー)",
+                item1Title: "プレミアムゴーヤ抽出物", item2Title: "オーガニックアマチャヅル茶",
+                tourTitle: "<i class='fas fa-umbrella-beach text-teal-500 mr-2'></i> 回復リトリート＆ツアー",
+                tour1Title: "パタヤ・ウェルネス", tour1Desc: "海辺のスパ＆回復 3日2泊 (健康食付き)",
+                tour2Title: "チェンマイ・ゼン", tour2Desc: "大自然でのマインドフルネス瞑想 4日3泊",
+                tour3Title: "クラビ・プライベート", tour3Desc: "VIPパッケージ：24時間看護師付きプライベート島",
+                tourStart: "開始", chatPlaceholder: "例：費用の目安は？おすすめ病院は？海辺で療養したい", sendBtn: "送信", qBudget: "費用目安", qHospital: "おすすめ病院", qRetreat: "海辺の療養", qHerb: "ハーブ", chatBudgetA: "費用は疾患、病院のグレード、出発国によって変わります。Medical Tourism タブで総額をすぐ比較できます。", chatHospitalA: "高級感を出すなら Bumrungrad や Bangkok Hosp. Phuket、バランス重視なら SiPH や Chiang Mai Ram が使いやすいです。", chatRetreatA: "海辺での療養なら短期回復向けの Pattaya、より静かなプレミアム回復なら Krabi が向いています。", chatFallbackA: "NCDリスク、概算費用、タイの病院、回復パッケージ、ウェルネス追加サービスについて案内できます。短い質問で大丈夫です。"
             }
         };
 
@@ -825,6 +978,18 @@
             document.getElementById('ui-t3-concierge-title').innerText = t.conciergeTitle;
             document.getElementById('btn-export').innerText = t.btnExport;
 
+            document.getElementById('ui-t3-shop-title').innerHTML = t.shopTitle;
+            document.getElementById('ui-shop-item1-title').innerText = t.item1Title;
+            document.getElementById('ui-shop-item2-title').innerText = t.item2Title;
+            
+            document.getElementById('ui-t3-tour-title').innerHTML = t.tourTitle;
+            document.getElementById('ui-tour1-title').innerText = t.tour1Title;
+            document.getElementById('ui-tour1-desc').innerText = t.tour1Desc;
+            document.getElementById('ui-tour2-title').innerText = t.tour2Title;
+            document.getElementById('ui-tour2-desc').innerText = t.tour2Desc;
+            document.getElementById('ui-tour3-title').innerText = t.tour3Title;
+            document.getElementById('ui-tour3-desc').innerText = t.tour3Desc;
+
             document.getElementById('ui-t4-title').innerText = t.t4Title;
             document.getElementById('ui-t4-desc').innerText = t.t4Desc;
             document.getElementById('chat-greeting-text').innerHTML = t.greeting;
@@ -832,6 +997,17 @@
             document.getElementById('btn-chat-htn').innerText = t.btnHtn;
             document.getElementById('btn-chat-ca').innerText = t.btnCa;
             document.getElementById('txt-listening').innerText = t.txtListen;
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) chatInput.placeholder = t.chatPlaceholder || chatInput.placeholder;
+            const sendLabel = document.getElementById('btn-send-chat-label');
+            if (sendLabel) sendLabel.innerText = t.sendBtn || sendLabel.innerText;
+            const quickBtns = document.querySelectorAll('#tab-4 .rounded-xl.border button.text-\[11px\]');
+            if (quickBtns.length >= 4) {
+                quickBtns[0].innerText = t.qBudget || quickBtns[0].innerText;
+                quickBtns[1].innerText = t.qHospital || quickBtns[1].innerText;
+                quickBtns[2].innerText = t.qRetreat || quickBtns[2].innerText;
+                quickBtns[3].innerText = t.qHerb || quickBtns[3].innerText;
+            }
 
             const dSel = document.getElementById('tour-disease');
             dSel.options[0].text = t.dCopd; dSel.options[1].text = t.dDm; dSel.options[2].text = t.dHtn; dSel.options[3].text = t.dCa;
@@ -843,7 +1019,6 @@
             if(radarChartInstance) updateRadarChartTheme(); 
             updateCurrencyAndCalculate();
             
-            // Reload the demo text if active case exists so the reason text translates
             if(!document.getElementById('active-case-badge').classList.contains('hidden')) {
                 const cvdText = document.getElementById('dash-cvd').innerText;
                 let level = 'moderate';
@@ -865,29 +1040,1181 @@
             if(tabIndex === 3) calculateTourism();
         }
 
-        function simulateChat(topic, isVoice = false) {
+
+        // --- Chat AI Logic Upgrade ---
+        let isChatTyping = false;
+
+        function addChatBubble(role, content, isHtml = false, isVoice = false) {
             const chatBox = document.getElementById('page-chat-messages');
-            const t = TRANSLATIONS[currentLang];
-            
-            let userMsg = t[`chat${topic.charAt(0).toUpperCase() + topic.slice(1)}Q`] || "...";
-            let aiMsg = t[`chat${topic.charAt(0).toUpperCase() + topic.slice(1)}A`] || "...";
+            const wrap = document.createElement('div');
+            wrap.className = `mb-4 flex w-full chat-bubble-enter ${role === 'user' ? 'justify-end text-right' : 'text-left'}`;
 
-            const userIcon = isVoice ? '<i class="fas fa-microphone-alt text-blue-500 mr-2"></i>' : '';
-            chatBox.innerHTML += `<div class="text-right mb-4"><div class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-100 p-3 rounded-xl shadow-sm inline-block max-w-[85%] text-left border border-blue-200 dark:border-blue-800">${userIcon}${userMsg}</div></div>`;
-            
-            const loadingId = 'typing-' + Date.now();
-            chatBox.innerHTML += `<div id="${loadingId}" class="mb-4 text-left"><div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 inline-block text-slate-400"><i class="fas fa-ellipsis-h fa-fade"></i></div></div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
+            if (role === 'user') {
+                const voiceIcon = isVoice ? '<i class="fas fa-microphone-alt text-blue-500 mr-2"></i>' : '';
+                wrap.innerHTML = `<div class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-100 p-3 rounded-xl shadow-sm inline-block max-w-[85%] text-left border border-blue-200 dark:border-blue-800">${voiceIcon}${isHtml ? content : escapeHtml(content)}</div>`;
+            } else {
+                wrap.innerHTML = `<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 inline-block max-w-[85%]"><strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong><br><span class="mt-2 block leading-relaxed">${isHtml ? content : escapeHtml(content)}</span></div>`;
+            }
 
-            setTimeout(() => {
-                const loader = document.getElementById(loadingId);
-                if(loader) loader.remove();
-                chatBox.innerHTML += `<div class="mb-4 text-left"><div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 inline-block max-w-[85%]"><strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong><br><span class="mt-2 block leading-relaxed">${aiMsg}</span></div></div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 800);
+            chatBox.appendChild(wrap);
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
         }
 
+        function addTypingBubble() {
+            const chatBox = document.getElementById('page-chat-messages');
+            const loadingId = 'typing-' + Date.now();
+            const loaderWrap = document.createElement('div');
+            loaderWrap.id = loadingId;
+            loaderWrap.className = 'mb-4 text-left flex w-full chat-bubble-enter';
+            loaderWrap.innerHTML = `<div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 inline-block text-slate-400"><i class="fas fa-ellipsis-h fa-fade"></i></div>`;
+            chatBox.appendChild(loaderWrap);
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+            return loadingId;
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function getTopicKeys(topic) {
+            const map = {
+                diabetes: ['chatDmQ', 'chatDmA'],
+                htn: ['chatHtnQ', 'chatHtnA'],
+                cancer: ['chatCaQ', 'chatCaA']
+            };
+            return map[topic] || null;
+        }
+
+        function resolveFreeTextResponse(text) {
+            const t = TRANSLATIONS[currentLang];
+            const q = (text || '').trim().toLowerCase();
+
+            if (!q) return t.chatFallbackA || 'Please type a question.';
+            if (/สวัสดี|หวัดดี|hello|hi|hey/.test(q)) return t.greeting;
+            if (/เบาหวาน|น้ำตาล|diabet/.test(q)) return t.chatDmA;
+            if (/ความดัน|htn|hypertension|blood pressure|stress/.test(q)) return t.chatHtnA;
+            if (/มะเร็ง|cancer|oncology|chemo/.test(q)) return t.chatCaA;
+            if (/งบ|ราคา|ค่าใช้จ่าย|budget|cost|price/.test(q)) return t.chatBudgetA || t.chatFallbackA;
+            if (/โรงพยาบาล|hospital|bumrungrad|siph|phuket|chiang mai ram/.test(q)) return t.chatHospitalA || t.chatFallbackA;
+            if (/พักฟื้น|ทะเล|beach|seaside|retreat|กระบี่|krabi|พัทยา|pattaya|เชียงใหม่|chiang mai/.test(q)) return t.chatRetreatA || t.chatFallbackA;
+            if (/สมุนไพร|herb|tea|wellness/.test(q)) return t.chatDmA;
+            return t.chatFallbackA || 'I can help with budget, hospitals, recovery packages, and wellness add-ons.';
+        }
+
+        function queueAIResponse(userMsg, aiMsg, isVoice = false, isHtml = true) {
+            if (isChatTyping) return;
+            isChatTyping = true;
+
+            addChatBubble('user', userMsg, false, isVoice);
+            const loadingId = addTypingBubble();
+
+            window.setTimeout(() => {
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
+                addChatBubble('ai', aiMsg, isHtml);
+                isChatTyping = false;
+            }, 850);
+        }
+
+        function simulateChat(topic, isVoice = false) {
+            const t = TRANSLATIONS[currentLang];
+            const topicKeys = getTopicKeys(topic);
+            if (!topicKeys) {
+                queueAIResponse(topic, resolveFreeTextResponse(topic), isVoice, true);
+                return;
+            }
+            const [qKey, aKey] = topicKeys;
+            queueAIResponse(t[qKey] || topic, t[aKey] || t.chatFallbackA || '...', isVoice, true);
+        }
+
+        function sendChatInput() {
+            const input = document.getElementById('chat-input');
+            if (!input || isChatTyping) return;
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            queueAIResponse(text, resolveFreeTextResponse(text), false, true);
+        }
+
+        function sendQuickPrompt(text) {
+            const input = document.getElementById('chat-input');
+            if (!input) return;
+            input.value = text;
+            sendChatInput();
+        }
+
+        const chatInputEl = document.getElementById('chat-input');
+        if (chatInputEl) {
+            chatInputEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendChatInput();
+                }
+            });
+        }
+
+
+        // --- Hydra Enhancements: OCR, References, Suitability, Chat Actions ---
+        let activeCaseLevel = 'moderate';
+        let activeCaseSource = 'demo';
+        let currentClinicalContext = { source: 'demo', level: 'moderate', labs: null, summary: '' };
+        let chatTranscript = [];
+        let hydraEnhancementsReady = false;
+        const HOSPITAL_REFERENCE_META = {
+            Bumrungrad: {
+                tier: 'Premium International',
+                tierTh: 'พรีเมียมอินเตอร์เนชันแนล',
+                color: 'blue',
+                refs: [
+                    'Official hospital package / inquiry benchmark',
+                    'International room & service tier assumption',
+                    'Demo cost multiplier: 1.6x base treatment'
+                ],
+                refsTh: [
+                    'อ้างอิงโครงสร้างราคา/แพ็กเกจจากหน้าโรงพยาบาลหรือ inquiry',
+                    'สมมติฐานระดับห้องพักและบริการสำหรับผู้ป่วยต่างชาติ',
+                    'ตัวคูณค่าใช้จ่ายในเดโม: 1.6 เท่าของฐานการรักษา'
+                ],
+                note: 'Best for premium brand positioning and concierge care.',
+                noteTh: 'เหมาะกับภาพลักษณ์ระดับพรีเมียมและบริการ concierge'
+            },
+            Siriraj: {
+                tier: 'Balanced Value',
+                tierTh: 'สมดุลด้านงบประมาณ',
+                color: 'emerald',
+                refs: [
+                    'Private-care package benchmark (SiPH)',
+                    'Value-oriented room plan assumption',
+                    'Demo cost multiplier: 0.8x base treatment'
+                ],
+                refsTh: [
+                    'อ้างอิงแพ็กเกจ private care (SiPH)',
+                    'สมมติฐานห้องพักและบริการแบบคุ้มค่า',
+                    'ตัวคูณค่าใช้จ่ายในเดโม: 0.8 เท่าของฐานการรักษา'
+                ],
+                note: 'Good for balanced budget vs. quality comparison.',
+                noteTh: 'เหมาะกับการเทียบความคุ้มค่าและคุณภาพ'
+            },
+            Phuket: {
+                tier: 'Resort Medical',
+                tierTh: 'รักษาควบคู่พักฟื้น',
+                color: 'cyan',
+                refs: [
+                    'Hospital package benchmark for Phuket branch',
+                    'Resort-recovery accommodation assumption',
+                    'Demo cost multiplier: 1.3x base treatment'
+                ],
+                refsTh: [
+                    'อ้างอิงแพ็กเกจรักษาของโรงพยาบาลในภูเก็ต',
+                    'สมมติฐานที่พักสำหรับการพักฟื้นแนวรีสอร์ต',
+                    'ตัวคูณค่าใช้จ่ายในเดโม: 1.3 เท่าของฐานการรักษา'
+                ],
+                note: 'Suitable when medical care is paired with seaside recovery.',
+                noteTh: 'เหมาะเมื่อวางแผนรักษาควบคู่การพักฟื้นริมทะเล'
+            },
+            ChiangMai: {
+                tier: 'Wellness Recovery',
+                tierTh: 'ฟื้นฟูและพักฟื้น',
+                color: 'amber',
+                refs: [
+                    'Regional private-hospital benchmark',
+                    'Wellness-oriented recovery stay assumption',
+                    'Demo cost multiplier: 1.0x base treatment'
+                ],
+                refsTh: [
+                    'อ้างอิงต้นทุนโรงพยาบาลเอกชนในภูมิภาค',
+                    'สมมติฐานการพักฟื้นแนว wellness',
+                    'ตัวคูณค่าใช้จ่ายในเดโม: 1.0 เท่าของฐานการรักษา'
+                ],
+                note: 'Useful for recovery-focused itineraries outside Bangkok.',
+                noteTh: 'เหมาะกับแผนพักฟื้นนอกกรุงเทพที่เน้นบรรยากาศฟื้นฟู'
+            }
+        };
+
+        function getHydraCopy() {
+            const dict = {
+                th: {
+                    ocrStatusIdle: 'รออัปโหลด',
+                    ocrStatusWorking: 'กำลังประมวลผล',
+                    ocrStatusDone: 'วิเคราะห์สำเร็จ',
+                    ocrStatusWarn: 'ต้องตรวจทาน',
+                    ocrPanelTitle: 'OCR / Lab Extraction',
+                    ocrPanelDesc: 'อัปโหลดไฟล์ผลตรวจ (PDF / รูป / TXT) แล้วระบบจะพยายามดึงค่าแล็บสำคัญเข้าสู่ Dashboard โดยอัตโนมัติ',
+                    ocrReviewTitle: 'Review OCR Text / วางข้อความผลตรวจ',
+                    ocrReviewHint: 'รองรับคำเช่น BP, FBS, HbA1c, LDL, eGFR, BMI เช่น “BP 138/86, FBS 118, HbA1c 6.1, LDL 145, eGFR 72, BMI 27.4”',
+                    analyzeTextBtn: 'วิเคราะห์ข้อความ',
+                    uploadMetaIdle: 'ยังไม่มีไฟล์',
+                    foundItems: 'ค่าที่ตรวจพบ',
+                    hospitalSectionTitle: 'Source / Reference Cards สำหรับค่ารักษา',
+                    hospitalSectionTag: 'อิงจากสูตรคำนวณในเดโม + สมมติฐานโรงพยาบาลแต่ละระดับ',
+                    hospitalSummaryTitle: 'Cost Model Basis',
+                    hospitalSummaryBody: 'ค่ารักษาในเดโมคำนวณจาก 4 ส่วน: ฐานโรค, ตัวคูณโรงพยาบาล, ค่าเดินทาง/ที่พักจากประเทศต้นทาง, และอัตราแลกเปลี่ยนที่เลือกไว้ในระบบ',
+                    selectedLabel: 'เลือกอยู่ตอนนี้',
+                    treatmentOnly: 'ค่ารักษาเฉพาะส่วนการแพทย์',
+                    totalTrip: 'ค่าใช้จ่ายรวมทั้งทริป',
+                    saveItinerary: 'Save Itinerary',
+                    itinerarySaved: 'บันทึก itinerary แล้ว',
+                    resetChat: 'Reset chat',
+                    exportConversation: 'Export conversation',
+                    retreatBadge: 'ภาพตัวอย่างเชิงแนวคิด • ควรแทนด้วยภาพสถานที่จริงที่มีสิทธิ์ใช้งาน',
+                    shopBadge: 'ควรตรวจสอบเลข อย. ส่วนผสม ข้อห้ามใช้ และยาที่ใช้ร่วมก่อนใช้งานจริง',
+                    shopDesc1: 'สมุนไพรในรูปแบบแคปซูลสกัดเข้มข้น ควรตรวจเลข อย. ส่วนผสม และการใช้ร่วมกับยาประจำ',
+                    shopDesc2: 'ชาสมุนไพรสำหรับกลุ่มดูแลความดัน ควรพิจารณาปริมาณบริโภคและข้อควรระวังตามฉลาก',
+                    refFoot: 'Reference model: ต้นทุนเดโมอิงจากฐานค่ารักษา, tier โรงพยาบาล, ค่าเดินทาง/ที่พัก และอัตราแลกเปลี่ยนในระบบ ควรเชื่อม live source จริงก่อนใช้งานเชิงพาณิชย์',
+                    lowRisk: 'เหมาะกับ Low Risk',
+                    moderateRisk: 'เหมาะกับ Moderate Risk',
+                    highRisk: 'เหมาะกับ High Risk',
+                    lowModerate: 'เหมาะกับ Low–Moderate',
+                    moderateHigh: 'เหมาะกับ Moderate–High',
+                    recommendedNow: 'แนะนำตามผลวิเคราะห์ปัจจุบัน',
+                    ocrToastFail: 'ยังดึงค่าไม่สำเร็จ ลองวางข้อความผลตรวจในกล่อง OCR review แล้วกดวิเคราะห์อีกครั้ง',
+                    ocrToastDone: 'ดึงค่าผลตรวจเข้าสู่ Dashboard แล้ว',
+                    ocrToastNeed: 'ต้องมีอย่างน้อย 1 ค่า เช่น BP, FBS, HbA1c, LDL, eGFR หรือ BMI',
+                    itineraryFileTitle: 'Hydra Medical Itinerary',
+                    chatDemo: 'Demo assistant • ให้คำแนะนำเบื้องต้น ไม่แทนการวินิจฉัยโดยแพทย์',
+                    currentRisk: 'ระดับความเสี่ยงปัจจุบัน',
+                    packageGuide: 'แพ็กเกจพักฟื้นที่เหมาะ',
+                    sourceGuide: 'source card ค่ารักษา',
+                    askRisk: 'ถามความเสี่ยงตอนนี้',
+                    chatRiskReply: 'จากข้อมูลปัจจุบัน ระบบจัดเป็น <b>RISK</b>. HIGHLIGHT',
+                    chatPackageReply: 'สำหรับ <b>RISK</b> แนะนำ <b>PACKAGE</b> เพราะ <b>REASON</b>.',
+                    chatSourceReply: 'ค่ารักษาที่แสดงในเดโมคำนวณจากฐานโรค + tier โรงพยาบาล + ค่าเดินทาง/ที่พัก + FX. เลื่อนลงในแท็บ Medical Tourism เพื่อดู Source / Reference Cards ของแต่ละโรงพยาบาลได้ทันที',
+                    chatItineraryReply: 'ตอนนี้ itinerary ตั้งไว้เป็น <b>DISEASE</b> ที่ <b>HOSPITAL</b> จาก <b>COUNTRY</b> โดยประมาณ <b>COST</b>.',
+                    chatOcrReply: 'สามารถอัปโหลด PDF/รูปผลตรวจ หรือวางข้อความในช่อง OCR review เพื่อดึงค่าแล็บจริงเข้าสู่ Dashboard ได้เลย',
+                    chatGeneralReply: 'ผมช่วยได้ทั้งเรื่องความเสี่ยง NCDs, OCR ดึงค่าผลตรวจ, ค่ารักษาโดยประมาณ, โรงพยาบาล, source/reference card และแพ็กเกจพักฟื้นที่เหมาะกับระดับความเสี่ยง'
+                },
+                en: {
+                    ocrStatusIdle: 'Waiting for file',
+                    ocrStatusWorking: 'Processing',
+                    ocrStatusDone: 'Analysis ready',
+                    ocrStatusWarn: 'Needs review',
+                    ocrPanelTitle: 'OCR / Lab Extraction',
+                    ocrPanelDesc: 'Upload a lab report (PDF / image / TXT) and the system will try to pull key biomarkers into the dashboard automatically.',
+                    ocrReviewTitle: 'Review OCR Text / Paste report text',
+                    ocrReviewHint: 'Supported keywords include BP, FBS, HbA1c, LDL, eGFR, BMI. Example: “BP 138/86, FBS 118, HbA1c 6.1, LDL 145, eGFR 72, BMI 27.4”',
+                    analyzeTextBtn: 'Analyze text',
+                    uploadMetaIdle: 'No file yet',
+                    foundItems: 'Indicators found',
+                    hospitalSectionTitle: 'Source / Reference Cards for Treatment Costs',
+                    hospitalSectionTag: 'Built from the demo cost model + hospital tier assumptions',
+                    hospitalSummaryTitle: 'Cost Model Basis',
+                    hospitalSummaryBody: 'The demo estimate combines 4 elements: disease base cost, hospital multiplier, travel/hotel assumption from origin country, and the selected FX rate.',
+                    selectedLabel: 'Currently selected',
+                    treatmentOnly: 'Treatment-only estimate',
+                    totalTrip: 'Total trip estimate',
+                    saveItinerary: 'Save Itinerary',
+                    itinerarySaved: 'Itinerary saved',
+                    resetChat: 'Reset chat',
+                    exportConversation: 'Export conversation',
+                    retreatBadge: 'Concept visuals only • replace with licensed real-location images for production',
+                    shopBadge: 'Check FDA registration, ingredients, contraindications, and drug interactions before real use',
+                    shopDesc1: 'Concentrated herbal capsule concept. Verify registration, ingredients, and medication interactions before use.',
+                    shopDesc2: 'Herbal tea concept for blood-pressure support. Review serving amount and label precautions before use.',
+                    refFoot: 'Reference model: demo costs are derived from disease base cost, hospital tier, travel/hotel assumptions, and FX settings. Connect live sources before production use.',
+                    lowRisk: 'Best for Low Risk',
+                    moderateRisk: 'Best for Moderate Risk',
+                    highRisk: 'Best for High Risk',
+                    lowModerate: 'Best for Low–Moderate',
+                    moderateHigh: 'Best for Moderate–High',
+                    recommendedNow: 'Recommended for the current analysis',
+                    ocrToastFail: 'Extraction could not find enough values. Paste the report text into the OCR review box and analyze again.',
+                    ocrToastDone: 'Lab values were added to the dashboard.',
+                    ocrToastNeed: 'At least one value is needed, such as BP, FBS, HbA1c, LDL, eGFR, or BMI.',
+                    itineraryFileTitle: 'Hydra Medical Itinerary',
+                    chatDemo: 'Demo assistant • For guidance only, not a medical diagnosis',
+                    currentRisk: 'Current risk level',
+                    packageGuide: 'Suitable retreat package',
+                    sourceGuide: 'treatment cost source card',
+                    askRisk: 'Ask current risk',
+                    chatRiskReply: 'Based on the current data, the system classifies this case as <b>RISK</b>. HIGHLIGHT',
+                    chatPackageReply: 'For <b>RISK</b>, the strongest fit is <b>PACKAGE</b> because <b>REASON</b>.',
+                    chatSourceReply: 'The displayed treatment cost comes from disease base cost + hospital tier + travel/hotel assumption + FX. Open the Medical Tourism tab to review the Source / Reference Cards for each hospital.',
+                    chatItineraryReply: 'The current itinerary is set to <b>DISEASE</b> at <b>HOSPITAL</b> from <b>COUNTRY</b>, with an estimated total of <b>COST</b>.',
+                    chatOcrReply: 'You can upload a PDF/image report or paste report text into the OCR review box to extract real lab values into the dashboard.',
+                    chatGeneralReply: 'I can help with NCD risk, OCR lab extraction, estimated treatment budget, hospitals, source/reference cards, and retreat package fit.'
+                }
+            };
+            return dict[currentLang] || dict.en;
+        }
+
+        function stripHtmlText(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        function showToast(message, color = 'slate') {
+            const colorMap = {
+                slate: 'bg-slate-900 text-white',
+                green: 'bg-emerald-600 text-white',
+                amber: 'bg-amber-500 text-white',
+                red: 'bg-red-600 text-white'
+            };
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-5 left-1/2 -translate-x-1/2 z-[70] px-4 py-2 rounded-xl shadow-xl text-sm font-semibold ${colorMap[color] || colorMap.slate}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2600);
+        }
+
+        function loadScriptOnce(src) {
+            return new Promise((resolve, reject) => {
+                const existing = document.querySelector(`script[data-src="${src}"]`);
+                if (existing && existing.dataset.loaded === 'true') return resolve(true);
+                if (existing) {
+                    existing.addEventListener('load', () => resolve(true), { once: true });
+                    existing.addEventListener('error', reject, { once: true });
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.dataset.src = src;
+                script.onload = () => {
+                    script.dataset.loaded = 'true';
+                    resolve(true);
+                };
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        async function ensureOCRLibs() {
+            if (!window.Tesseract) {
+                await loadScriptOnce('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+            }
+            if (!window.pdfjsLib) {
+                await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.js');
+            }
+            if (window.pdfjsLib && !window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js';
+            }
+        }
+
+        function updateOCRStatus(state, fileName = '', foundCount = 0) {
+            const c = getHydraCopy();
+            const statusEl = document.getElementById('ocr-status-pill');
+            const fileEl = document.getElementById('ocr-file-meta');
+            const countEl = document.getElementById('ocr-found-count');
+            if (!statusEl || !fileEl || !countEl) return;
+
+            const statusMap = {
+                idle: { text: c.ocrStatusIdle, cls: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' },
+                working: { text: c.ocrStatusWorking, cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+                done: { text: c.ocrStatusDone, cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' },
+                warn: { text: c.ocrStatusWarn, cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' }
+            };
+            const conf = statusMap[state] || statusMap.idle;
+            statusEl.className = `text-[11px] px-2.5 py-1 rounded-full font-bold ${conf.cls}`;
+            statusEl.textContent = conf.text;
+            fileEl.textContent = fileName || c.uploadMetaIdle;
+            countEl.textContent = String(foundCount || 0);
+        }
+
+        function injectUploadEnhancements() {
+            if (document.getElementById('health-file-input')) return;
+            const uploadGrid = document.querySelector('#tab-1 .grid.grid-cols-1.sm\\:grid-cols-2');
+            if (!uploadGrid) return;
+
+            const hiddenWrap = document.createElement('div');
+            hiddenWrap.innerHTML = `
+                <input id="health-file-input" type="file" class="hidden" accept=".pdf,.txt,.csv,.json,image/*,application/pdf,text/plain">
+                <input id="camera-file-input" type="file" class="hidden" accept="image/*" capture="environment">
+            `;
+            document.body.appendChild(hiddenWrap);
+
+            uploadGrid.insertAdjacentHTML('afterend', `
+                <div id="ocr-upload-panel" class="max-w-5xl mx-auto mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 text-left">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <h3 id="ocr-panel-title" class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-file-waveform text-blue-500"></i> OCR / Lab Extraction</h3>
+                            <span id="ocr-status-pill" class="text-[11px] px-2.5 py-1 rounded-full font-bold bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200">Waiting for file</span>
+                        </div>
+                        <p id="ocr-panel-desc" class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-4"></p>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/40">
+                                <p class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">File</p>
+                                <p id="ocr-file-meta" class="text-sm font-semibold text-slate-800 dark:text-slate-100 break-all">-</p>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/40">
+                                <p id="ocr-found-label" class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Indicators found</p>
+                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-100"><span id="ocr-found-count">0</span> / 6</p>
+                            </div>
+                        </div>
+                        <div class="rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-950/20 p-3 text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                            Supported: BP, FBS, HbA1c, LDL, eGFR, BMI • PDF / image / text input
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <h3 id="ocr-review-title" class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-magnifying-glass-chart text-indigo-500"></i> Review OCR Text</h3>
+                            <button id="btn-analyze-ocr" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition shadow-sm">Analyze text</button>
+                        </div>
+                        <textarea id="ocr-review-text" rows="7" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 px-3 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="BP 138/86, FBS 118, HbA1c 6.1, LDL 145, eGFR 72, BMI 27.4"></textarea>
+                        <p id="ocr-review-hint" class="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed"></p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function injectHospitalReferenceSection() {
+            if (document.getElementById('hospital-reference-section')) return;
+            const sponsorSection = document.getElementById('ui-t3-shop-title')?.closest('.bg-white');
+            if (!sponsorSection) return;
+            sponsorSection.insertAdjacentHTML('beforebegin', `
+                <div id="hospital-reference-section" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-700 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 id="hospital-section-title" class="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-notes-medical text-sky-500"></i> Source / Reference Cards for Treatment Costs</h3>
+                        <span id="hospital-section-tag" class="text-[11px] px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-900/20 dark:text-sky-300 dark:border-sky-800"></span>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4 mb-4">
+                        <h4 id="hospital-summary-title" class="font-bold text-slate-800 dark:text-slate-100 mb-1">Cost Model Basis</h4>
+                        <p id="hospital-summary-body" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+                    </div>
+                    <div id="hospital-reference-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            `);
+        }
+
+        function injectRetreatRiskStates() {
+            const configs = [
+                { id: 'ui-tour1-title', key: 'pattaya', label: 'Low–Moderate' },
+                { id: 'ui-tour2-title', key: 'chiangmai', label: 'Moderate' },
+                { id: 'ui-tour3-title', key: 'krabi', label: 'Moderate–High' }
+            ];
+            configs.forEach((cfg, index) => {
+                const title = document.getElementById(cfg.id);
+                if (!title) return;
+                const card = title.closest('.rounded-xl');
+                if (!card || card.dataset.hydraSuitabilityInjected === 'true') return;
+                card.dataset.hydraSuitabilityInjected = 'true';
+                const priceEl = card.querySelector(`#ui-tour${index + 1}-price`);
+                if (priceEl) {
+                    priceEl.insertAdjacentHTML('beforebegin', `
+                        <div class="mt-3 flex flex-wrap gap-2 items-center">
+                            <span id="retreat-base-${cfg.key}" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200">${cfg.label}</span>
+                            <span id="retreat-rec-${cfg.key}" class="hidden text-[11px] font-bold px-2.5 py-1 rounded-full bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">Recommended</span>
+                        </div>
+                    `);
+                }
+            });
+        }
+
+        function injectChatActions() {
+            if (document.getElementById('btn-reset-chat')) return;
+            const chatFooter = document.querySelector('#tab-4 .p-4.bg-white.dark\\:bg-slate-800.border-t');
+            if (!chatFooter) return;
+            const quickWrap = chatFooter.querySelector('.mt-2.flex.flex-wrap.gap-2');
+            if (quickWrap) {
+                quickWrap.insertAdjacentHTML('beforeend', `
+                    <button onclick="sendQuickPrompt('ตอนนี้ความเสี่ยงของฉันเป็นระดับไหน')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition" id="btn-quick-risk">ถามความเสี่ยงตอนนี้</button>
+                    <button onclick="sendQuickPrompt('package ไหนเหมาะกับความเสี่ยงของฉัน')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition" id="btn-quick-package">แพ็กเกจที่เหมาะ</button>
+                    <button onclick="sendQuickPrompt('source card ค่ารักษาอยู่ตรงไหน')" class="text-[11px] px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition" id="btn-quick-source">source card ค่ารักษา</button>
+                `);
+            }
+            chatFooter.insertAdjacentHTML('beforeend', `
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button id="btn-reset-chat" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-400 transition"><i class="fas fa-rotate-left mr-1"></i> Reset chat</button>
+                    <button id="btn-export-chat" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-400 transition"><i class="fas fa-file-arrow-down mr-1"></i> Export conversation</button>
+                    <button id="btn-save-itinerary-chat" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-400 transition"><i class="fas fa-bookmark mr-1"></i> Save Itinerary</button>
+                </div>
+            `);
+        }
+
+        function injectSaveItineraryButton() {
+            if (document.getElementById('btn-save-itinerary')) return;
+            const exportBtn = document.querySelector('button[onclick="exportToPDF()"]');
+            if (!exportBtn) return;
+            exportBtn.insertAdjacentHTML('beforebegin', `
+                <button onclick="saveItinerary()" id="btn-save-itinerary" class="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center transition border border-slate-300 dark:border-slate-600">
+                    <i class="fas fa-bookmark mr-2 text-blue-500"></i> <span id="btn-save-itinerary-label">Save Itinerary</span>
+                </button>
+            `);
+        }
+
+        function patchExistingMicrocopy() {
+            const c = getHydraCopy();
+            const shopBadge = document.querySelector('#ui-t3-shop-title + span');
+            if (shopBadge) shopBadge.textContent = c.shopBadge;
+            const tourBadge = document.querySelector('#ui-t3-tour-title + span');
+            if (tourBadge) tourBadge.textContent = c.retreatBadge;
+            const shopDescriptions = document.querySelectorAll('#ui-t3-shop-title').length ? document.querySelectorAll('#ui-t3-shop-title').item(0).closest('.bg-white').querySelectorAll('.text-xs.text-slate-500') : [];
+            if (shopDescriptions[0]) shopDescriptions[0].textContent = c.shopDesc1;
+            if (shopDescriptions[1]) shopDescriptions[1].textContent = c.shopDesc2;
+            const refFoot = document.getElementById('ui-t3-ref');
+            if (refFoot) refFoot.textContent = c.refFoot;
+            const chatDemo = document.querySelector('#tab-4 p.mt-3.text-\[11px\]');
+            if (chatDemo) chatDemo.textContent = c.chatDemo;
+        }
+
+        function refreshEnhancementText() {
+            const c = getHydraCopy();
+            const panelTitle = document.getElementById('ocr-panel-title');
+            const panelDesc = document.getElementById('ocr-panel-desc');
+            const reviewTitle = document.getElementById('ocr-review-title');
+            const reviewHint = document.getElementById('ocr-review-hint');
+            const analyzeBtn = document.getElementById('btn-analyze-ocr');
+            const foundLabel = document.getElementById('ocr-found-label');
+            const hospitalTitle = document.getElementById('hospital-section-title');
+            const hospitalTag = document.getElementById('hospital-section-tag');
+            const hospitalSummaryTitle = document.getElementById('hospital-summary-title');
+            const hospitalSummaryBody = document.getElementById('hospital-summary-body');
+            const saveBtn = document.getElementById('btn-save-itinerary-label');
+            const resetBtn = document.getElementById('btn-reset-chat');
+            const exportBtn = document.getElementById('btn-export-chat');
+            const saveChatBtn = document.getElementById('btn-save-itinerary-chat');
+            const quickRisk = document.getElementById('btn-quick-risk');
+            const quickPack = document.getElementById('btn-quick-package');
+            const quickSource = document.getElementById('btn-quick-source');
+            if (panelTitle) panelTitle.innerHTML = `<i class="fas fa-file-waveform text-blue-500"></i> ${c.ocrPanelTitle}`;
+            if (panelDesc) panelDesc.textContent = c.ocrPanelDesc;
+            if (reviewTitle) reviewTitle.innerHTML = `<i class="fas fa-magnifying-glass-chart text-indigo-500"></i> ${c.ocrReviewTitle}`;
+            if (reviewHint) reviewHint.textContent = c.ocrReviewHint;
+            if (analyzeBtn) analyzeBtn.textContent = c.analyzeTextBtn;
+            if (foundLabel) foundLabel.textContent = c.foundItems;
+            if (hospitalTitle) hospitalTitle.innerHTML = `<i class="fas fa-notes-medical text-sky-500"></i> ${c.hospitalSectionTitle}`;
+            if (hospitalTag) hospitalTag.textContent = c.hospitalSectionTag;
+            if (hospitalSummaryTitle) hospitalSummaryTitle.textContent = c.hospitalSummaryTitle;
+            if (hospitalSummaryBody) hospitalSummaryBody.textContent = c.hospitalSummaryBody;
+            if (saveBtn) saveBtn.textContent = c.saveItinerary;
+            if (resetBtn) resetBtn.innerHTML = `<i class="fas fa-rotate-left mr-1"></i> ${c.resetChat}`;
+            if (exportBtn) exportBtn.innerHTML = `<i class="fas fa-file-arrow-down mr-1"></i> ${c.exportConversation}`;
+            if (saveChatBtn) saveChatBtn.innerHTML = `<i class="fas fa-bookmark mr-1"></i> ${c.saveItinerary}`;
+            if (quickRisk) quickRisk.textContent = c.askRisk;
+            if (quickPack) quickPack.textContent = c.packageGuide;
+            if (quickSource) quickSource.textContent = c.sourceGuide;
+            patchExistingMicrocopy();
+            updateOCRStatus('idle', document.getElementById('ocr-file-meta')?.textContent, parseInt(document.getElementById('ocr-found-count')?.textContent || '0', 10));
+        }
+
+        function getSelectedTourSnapshot() {
+            const diseaseEl = document.getElementById('tour-disease');
+            const hospitalEl = document.getElementById('tour-hospital');
+            const countryEl = document.getElementById('tour-country');
+            return {
+                diseaseKey: diseaseEl?.value,
+                disease: diseaseEl?.options[diseaseEl.selectedIndex]?.text || '-',
+                hospitalKey: hospitalEl?.value,
+                hospital: hospitalEl?.options[hospitalEl.selectedIndex]?.text || '-',
+                country: countryEl?.options[countryEl.selectedIndex]?.text || '-',
+                totalCost: document.getElementById('out-total-cost')?.textContent || '-',
+                budget: document.getElementById('out-budget')?.textContent || '-',
+                status: document.getElementById('out-status')?.textContent || '-'
+            };
+        }
+
+        function renderHospitalReferenceCards() {
+            const grid = document.getElementById('hospital-reference-grid');
+            if (!grid) return;
+            const tour = getSelectedTourSnapshot();
+            const countryKey = document.getElementById('tour-country')?.value || 'USA';
+            const currency = CURRENCY_MAP[countryKey] || CURRENCY_MAP.USA;
+            const c = getHydraCopy();
+            grid.innerHTML = Object.entries(HOSPITAL_REFERENCE_META).map(([key, meta]) => {
+                const selected = key === tour.hospitalKey;
+                const treatmentUSD = (BASE_COSTS_USD[tour.diseaseKey] || 0) * (HOSP_MULTIPLIER[key] || 1);
+                const treatmentLocal = formatMoney(treatmentUSD * currency.rate, countryKey);
+                const totalLocal = formatMoney((treatmentUSD + (FLIGHT_HOTEL_USD[countryKey] || 0)) * currency.rate, countryKey);
+                const refs = currentLang === 'th' ? meta.refsTh : meta.refs;
+                const tierText = currentLang === 'th' ? meta.tierTh : meta.tier;
+                const noteText = currentLang === 'th' ? meta.noteTh : meta.note;
+                const colorMap = {
+                    blue: 'border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/20',
+                    emerald: 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20',
+                    cyan: 'border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/60 dark:bg-cyan-950/20',
+                    amber: 'border-amber-200 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20'
+                };
+                return `
+                    <div class="rounded-2xl border p-4 ${colorMap[meta.color] || colorMap.blue} ${selected ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-800 ring-blue-500' : ''}">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100">${key === 'Siriraj' ? 'SiPH' : (key === 'Phuket' ? 'Bangkok Hosp. Phuket' : (key === 'ChiangMai' ? 'Chiang Mai Ram' : 'Bumrungrad'))}</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">${tierText}</p>
+                            </div>
+                            ${selected ? `<span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-white/80 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">${c.selectedLabel}</span>` : ''}
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="rounded-xl bg-white/70 dark:bg-slate-800/70 border border-white/60 dark:border-slate-700 p-3">
+                                <p class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">${c.treatmentOnly}</p>
+                                <p class="font-bold text-slate-800 dark:text-slate-100">${treatmentLocal}</p>
+                            </div>
+                            <div class="rounded-xl bg-white/70 dark:bg-slate-800/70 border border-white/60 dark:border-slate-700 p-3">
+                                <p class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">${c.totalTrip}</p>
+                                <p class="font-bold text-slate-800 dark:text-slate-100">${totalLocal}</p>
+                            </div>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            ${refs.map(item => `<li class="flex gap-2"><i class="fas fa-link mt-0.5 text-slate-400"></i><span>${item}</span></li>`).join('')}
+                        </ul>
+                        <p class="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">${noteText}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateRetreatSuitability(level = 'moderate') {
+            activeCaseLevel = level || activeCaseLevel || 'moderate';
+            const c = getHydraCopy();
+            const map = {
+                pattaya: { base: c.lowModerate, recommended: activeCaseLevel === 'low' },
+                chiangmai: { base: c.moderateRisk, recommended: activeCaseLevel === 'moderate' },
+                krabi: { base: c.moderateHigh, recommended: activeCaseLevel === 'high' }
+            };
+            Object.entries(map).forEach(([key, cfg]) => {
+                const base = document.getElementById(`retreat-base-${key}`);
+                const rec = document.getElementById(`retreat-rec-${key}`);
+                const card = base?.closest('.rounded-xl');
+                if (base) base.textContent = cfg.base;
+                if (rec) {
+                    rec.textContent = c.recommendedNow;
+                    rec.classList.toggle('hidden', !cfg.recommended);
+                }
+                if (card) {
+                    card.classList.toggle('ring-2', !!cfg.recommended);
+                    card.classList.toggle('ring-teal-500', !!cfg.recommended);
+                    card.classList.toggle('ring-offset-2', !!cfg.recommended);
+                    card.classList.toggle('dark:ring-offset-slate-800', !!cfg.recommended);
+                }
+            });
+        }
+
+        function downloadTextFile(filename, content, mime = 'text/plain;charset=utf-8') {
+            const blob = new Blob([content], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function saveItinerary() {
+            const c = getHydraCopy();
+            const tour = getSelectedTourSnapshot();
+            const recommended = activeCaseLevel === 'high' ? 'Krabi Private Island' : (activeCaseLevel === 'moderate' ? 'Chiang Mai Zen Healing' : 'Pattaya Wellness Retreat');
+            const payload = {
+                title: c.itineraryFileTitle,
+                saved_at: new Date().toISOString(),
+                risk_level: activeCaseLevel,
+                source: activeCaseSource,
+                itinerary: tour,
+                recommended_retreat: recommended,
+                labs: currentClinicalContext.labs || {}
+            };
+            try {
+                localStorage.setItem('hydra_saved_itinerary', JSON.stringify(payload));
+            } catch (e) {}
+            downloadTextFile(`Hydra_Itinerary_${Date.now()}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+            showToast(c.itinerarySaved, 'green');
+        }
+
+        function seedChatGreetingTranscript() {
+            const greeting = stripHtmlText(TRANSLATIONS[currentLang]?.greeting || 'Hello');
+            chatTranscript = [{ role: 'ai', content: greeting, time: new Date().toLocaleString() }];
+        }
+
+        function resetChat(silent = false) {
+            const chatBox = document.getElementById('page-chat-messages');
+            if (!chatBox) return;
+            chatBox.innerHTML = `
+                <div class="flex mb-4">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] inline-block" id="chat-greeting-box">
+                        <strong><i class="fas fa-robot text-blue-500 mr-2"></i>AI:</strong> <span id="chat-greeting-text">${TRANSLATIONS[currentLang]?.greeting || 'Hello'}</span>
+                    </div>
+                </div>
+            `;
+            seedChatGreetingTranscript();
+            if (!silent) showToast(getHydraCopy().resetChat, 'slate');
+        }
+
+        function exportConversation() {
+            if (!chatTranscript.length) seedChatGreetingTranscript();
+            const content = chatTranscript.map(row => `[${row.time}] ${row.role.toUpperCase()}: ${row.content}`).join('\n\n');
+            downloadTextFile(`Hydra_Conversation_${Date.now()}.txt`, content);
+        }
+
+        function parseBP(text) {
+            const m = text.match(/(?:blood\s*pressure|bp|ความดัน(?:โลหิต)?)[^\d]{0,20}(\d{2,3})\s*[\/\\-]\s*(\d{2,3})/i);
+            if (!m) return null;
+            return { systolic: parseFloat(m[1]), diastolic: parseFloat(m[2]), display: `${m[1]}/${m[2]}` };
+        }
+
+        function parseNumericMarker(text, patterns, min = 0, max = 9999) {
+            for (const pattern of patterns) {
+                const m = text.match(pattern);
+                if (m) {
+                    const value = parseFloat(m[1]);
+                    if (!Number.isNaN(value) && value >= min && value <= max) return value;
+                }
+            }
+            return null;
+        }
+
+        function extractClinicalIndicators(rawText) {
+            const text = String(rawText || '').replace(/,/g, ' ').replace(/\s+/g, ' ');
+            const bp = parseBP(text);
+            const fbs = parseNumericMarker(text, [/(?:fbs|fasting\s*blood\s*sugar|fasting\s*glucose|glucose\s*fasting|น้ำตาล(?:ในเลือด)?(?:ขณะอดอาหาร)?)[^\d]{0,20}(\d{2,3}(?:\.\d+)?)/i], 30, 400);
+            const hba1c = parseNumericMarker(text, [/(?:hba1c|a1c|hemoglobin\s*a1c)[^\d]{0,20}(\d{1,2}(?:\.\d+)?)/i], 3, 20);
+            const ldl = parseNumericMarker(text, [/(?:ldl(?:[-\s]?chol(?:esterol)?)?)[^\d]{0,20}(\d{2,3}(?:\.\d+)?)/i], 10, 400);
+            const egfr = parseNumericMarker(text, [/(?:e\s*gfr|egfr|estimated\s*gfr)[^\d]{0,20}(\d{1,3}(?:\.\d+)?)/i], 1, 150);
+            const bmi = parseNumericMarker(text, [/(?:bmi|body\s*mass\s*index)[^\d]{0,20}(\d{1,2}(?:\.\d+)?)/i], 10, 60);
+            const result = {
+                bp,
+                fbs,
+                hba1c,
+                ldl,
+                egfr,
+                bmi
+            };
+            result.count = Object.values(result).filter(v => v !== null && v !== undefined).length;
+            return result;
+        }
+
+        function deriveClinicalModel(parsed) {
+            const bp = parsed.bp || { systolic: null, diastolic: null, display: '-' };
+            let score = 0;
+            const highlight = [];
+            const statuses = {};
+
+            function classifyNumeric(val, limits, key, label) {
+                if (val === null || Number.isNaN(val)) {
+                    statuses[key] = 'yellow';
+                    return 'NA';
+                }
+                if (val >= limits.high) { score += 2; statuses[key] = 'red'; highlight.push(label); return 'high'; }
+                if (val >= limits.mid) { score += 1; statuses[key] = 'yellow'; return 'mid'; }
+                statuses[key] = key === 'egfr' ? (val < limits.mid ? 'yellow' : 'green') : 'green';
+                return 'low';
+            }
+
+            if (bp.systolic !== null && bp.diastolic !== null) {
+                if (bp.systolic >= 140 || bp.diastolic >= 90) { score += 2; statuses.bp = 'red'; highlight.push(currentLang === 'th' ? 'ความดันสูง' : 'high BP'); }
+                else if (bp.systolic >= 130 || bp.diastolic >= 80) { score += 1; statuses.bp = 'yellow'; }
+                else statuses.bp = 'green';
+            } else statuses.bp = 'yellow';
+
+            const fbsBand = classifyNumeric(parsed.fbs, { mid: 100, high: 126 }, 'fbs', currentLang === 'th' ? 'น้ำตาลอดอาหารสูง' : 'high fasting glucose');
+            const a1cBand = classifyNumeric(parsed.hba1c, { mid: 5.7, high: 6.5 }, 'hba1c', currentLang === 'th' ? 'HbA1c สูง' : 'high HbA1c');
+            const ldlBand = classifyNumeric(parsed.ldl, { mid: 130, high: 160 }, 'ldl', currentLang === 'th' ? 'LDL สูง' : 'high LDL');
+            if (parsed.egfr === null || Number.isNaN(parsed.egfr)) statuses.egfr = 'yellow';
+            else if (parsed.egfr < 60) { score += 2; statuses.egfr = 'red'; highlight.push(currentLang === 'th' ? 'การทำงานไตลดลง' : 'reduced kidney function'); }
+            else if (parsed.egfr < 90) { score += 1; statuses.egfr = 'yellow'; }
+            else statuses.egfr = 'green';
+            const bmiBand = classifyNumeric(parsed.bmi, { mid: 25, high: 30 }, 'bmi', currentLang === 'th' ? 'BMI สูง' : 'high BMI');
+
+            const level = score >= 6 ? 'high' : (score >= 3 ? 'moderate' : 'low');
+            const levelLabel = currentLang === 'th' ? (level === 'high' ? 'High Risk' : (level === 'moderate' ? 'Moderate Risk' : 'Low Risk')) : (level === 'high' ? 'High Risk' : (level === 'moderate' ? 'Moderate Risk' : 'Low Risk'));
+            const diabetesRisk = Math.min(95, Math.max(5, (parsed.fbs || 85) * 0.35 + (parsed.hba1c || 5) * 8 + ((parsed.bmi || 22) - 20) * 1.5));
+            const htnRisk = Math.min(95, Math.max(5, (bp.systolic || 115) * 0.45 + (bp.diastolic || 75) * 0.15 + ((parsed.ldl || 95) - 80) * 0.1));
+            const copdRisk = Math.min(40, Math.max(4, 6 + ((parsed.bmi || 22) >= 30 ? 8 : 0) + (level === 'high' ? 8 : level === 'moderate' ? 4 : 0)));
+            const cancerRisk = Math.min(35, Math.max(5, 6 + ((parsed.bmi || 22) >= 30 ? 5 : 0) + ((parsed.ldl || 90) >= 160 ? 4 : 0) + (level === 'high' ? 5 : 0)));
+
+            let cvdText = '1.8%';
+            let predmText = currentLang === 'th' ? 'ต่ำ' : 'Low';
+            let metText = '1/5';
+            let kidneyText = currentLang === 'th' ? 'ปกติ' : 'Normal';
+            let cvdReason = currentLang === 'th' ? 'ความเสี่ยงหัวใจและหลอดเลือดต่ำ' : 'Low cardio-metabolic pattern';
+            let predmReason = currentLang === 'th' ? 'น้ำตาลยังอยู่ในเกณฑ์เฝ้าระวังต่ำ' : 'Glucose markers are near the normal range';
+            let metReason = currentLang === 'th' ? 'พบปัจจัยเสี่ยงเมตาบอลิกเล็กน้อย' : 'Only mild metabolic burden detected';
+            let kidneyReason = currentLang === 'th' ? 'การทำงานของไตยังอยู่ในเกณฑ์ดี' : 'Kidney function remains acceptable';
+            if (level === 'moderate') {
+                cvdText = '8.8%';
+                predmText = currentLang === 'th' ? 'เฝ้าระวัง' : 'Watch';
+                metText = '3/5';
+                kidneyText = parsed.egfr !== null && parsed.egfr < 90 ? (currentLang === 'th' ? 'เฝ้าระวัง' : 'Watch') : kidneyText;
+                cvdReason = currentLang === 'th' ? 'พบรูปแบบความดัน/ไขมัน/น้ำหนักที่ควรเฝ้าระวัง' : 'BP, lipid, or weight pattern should be monitored';
+                predmReason = currentLang === 'th' ? 'พบค่าน้ำตาลหรือ HbA1c ใกล้ช่วงก่อนเบาหวาน' : 'Glucose or HbA1c is approaching the prediabetes range';
+                metReason = currentLang === 'th' ? 'มีปัจจัยเมตาบอลิกหลายตัวเริ่มผิดปกติ' : 'Several metabolic markers are starting to drift';
+                kidneyReason = parsed.egfr !== null && parsed.egfr < 90 ? (currentLang === 'th' ? 'eGFR ลดลงเล็กน้อย ควรติดตาม' : 'Mild eGFR reduction should be monitored') : kidneyReason;
+            }
+            if (level === 'high') {
+                cvdText = '24.0%';
+                predmText = currentLang === 'th' ? 'High Risk' : 'High Risk';
+                metText = '4/5';
+                kidneyText = parsed.egfr !== null && parsed.egfr < 60 ? (currentLang === 'th' ? 'เร่งด่วน' : 'Urgent') : (currentLang === 'th' ? 'เฝ้าระวังสูง' : 'High Watch');
+                cvdReason = currentLang === 'th' ? 'หลายตัวชี้วัดเสี่ยงสูงพร้อมกัน ควรพบแพทย์' : 'Multiple high-risk markers warrant clinical review';
+                predmReason = currentLang === 'th' ? 'เข้าใกล้หรือเข้าสู่ช่วงเบาหวาน' : 'Glucose markers are in or near the diabetes range';
+                metReason = currentLang === 'th' ? 'ภาระเมตาบอลิกสูงและเสี่ยงภาวะแทรกซ้อน' : 'Metabolic burden is high with complication risk';
+                kidneyReason = parsed.egfr !== null && parsed.egfr < 60 ? (currentLang === 'th' ? 'ไตควรได้รับการประเมินโดยแพทย์อย่างใกล้ชิด' : 'Kidney function deserves closer medical review') : kidneyReason;
+            }
+
+            const planText = currentLang === 'th'
+                ? (level === 'high'
+                    ? `🔴 <b>คำแนะนำเร่งด่วน:</b> พบรูปแบบความเสี่ยงสูงจาก ${highlight.join(', ') || 'หลายตัวชี้วัด'} ควรพบแพทย์เพื่อตรวจยืนยัน วางแผนรักษา และประเมินภาวะแทรกซ้อนเพิ่มเติม`
+                    : level === 'moderate'
+                        ? `🟡 <b>คำแนะนำ:</b> พบค่าที่ควรเฝ้าระวัง เช่น ${highlight.join(', ') || 'ตัวชี้วัดบางรายการ'} แนะนำให้ปรับพฤติกรรมและตรวจติดตามซ้ำภายใน 3–6 เดือน`
+                        : `🟢 <b>คำแนะนำ:</b> ภาพรวมยังอยู่ในเกณฑ์ค่อนข้างดี ควรรักษาพฤติกรรมสุขภาพและตรวจติดตามตามรอบปกติ`)
+                : (level === 'high'
+                    ? `🔴 <b>Urgent:</b> A high-risk pattern is detected from ${highlight.join(', ') || 'multiple markers'}. A medical review is recommended to confirm the diagnosis and plan treatment.`
+                    : level === 'moderate'
+                        ? `🟡 <b>Recommendation:</b> Several markers need monitoring, including ${highlight.join(', ') || 'selected indicators'}. Lifestyle adjustment and repeat testing in 3–6 months are recommended.`
+                        : `🟢 <b>Recommendation:</b> The overall profile remains relatively stable. Maintain healthy routines and continue routine follow-up.`);
+
+            return {
+                level,
+                levelLabel,
+                statuses,
+                cvd: cvdText,
+                cvdReason,
+                predm: predmText,
+                predmReason,
+                met: metText,
+                metReason,
+                kid: kidneyText,
+                kidReason: kidneyReason,
+                risks: {
+                    diabetes: Math.round(diabetesRisk),
+                    htn: Math.round(htnRisk),
+                    copd: Math.round(copdRisk),
+                    cancer: Math.round(cancerRisk)
+                },
+                nodes: {
+                    obesity: (parsed.bmi || 0) >= 25 ? 'Detected' : 'Normal',
+                    htn: (bp.systolic || 0) >= 130 || (bp.diastolic || 0) >= 80 ? 'Detected' : 'Normal',
+                    glucose: (parsed.fbs || 0) >= 126 || (parsed.hba1c || 0) >= 6.5 ? 'Detected' : ((parsed.fbs || 0) >= 100 || (parsed.hba1c || 0) >= 5.7 ? 'Borderline' : 'Normal')
+                },
+                planClass: level === 'high'
+                    ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800'
+                    : level === 'moderate'
+                        ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+                        : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                planIcon: level === 'high' ? 'fa-ambulance text-red-500' : (level === 'moderate' ? 'fa-exclamation-triangle text-yellow-500' : 'fa-check-circle text-emerald-500'),
+                planText,
+                summaryHighlight: highlight.join(', ')
+            };
+        }
+
+        function updateNodeState(id, status) {
+            const isTH = currentLang === 'th';
+            const badge = document.getElementById(`badge-${id}`);
+            const node = document.getElementById(`node-${id}`);
+            if (!badge || !node) return;
+            let text = status;
+            if (isTH) {
+                if (status === 'Detected') text = 'พบความเสี่ยง';
+                else if (status === 'Borderline') text = 'เฝ้าระวัง';
+                else text = 'ปกติ';
+            }
+            if (status === 'Detected') {
+                badge.innerText = text;
+                badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+                node.className = 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 py-2 px-2 rounded-lg text-center w-full node-active';
+            } else if (status === 'Borderline') {
+                badge.innerText = text;
+                badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+                node.className = 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 py-2 px-2 rounded-lg text-center w-full node-active';
+            } else {
+                badge.innerText = text;
+                badge.className = 'block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full mx-auto w-max bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-300';
+                node.className = 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 py-2 px-2 rounded-lg text-center w-full node-inactive';
+            }
+        }
+
+        function applyLabBadge(id, value, status, unitText = '') {
+            const valueEl = document.getElementById(`lab-${id}`);
+            const badgeEl = document.getElementById(`badge-${id}`);
+            if (valueEl) valueEl.textContent = value;
+            if (!badgeEl) return;
+            if (status === 'red') badgeEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+            else if (status === 'yellow') badgeEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+            else badgeEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+            if (unitText) badgeEl.textContent = unitText;
+        }
+
+        function applyOCRClinicalData(parsed, fileName = 'Uploaded file', rawText = '') {
+            const model = deriveClinicalModel(parsed);
+            activeCaseLevel = model.level;
+            activeCaseSource = 'ocr';
+            currentClinicalContext = {
+                source: 'ocr',
+                level: model.level,
+                labs: parsed,
+                summary: model.summaryHighlight,
+                fileName,
+                rawText
+            };
+            const badge = document.getElementById('active-case-badge');
+            if (badge) {
+                badge.classList.remove('hidden');
+                badge.textContent = `OCR • ${model.levelLabel}`;
+            }
+            document.getElementById('dash-cvd').innerText = model.cvd;
+            document.getElementById('dash-cvd-reason').innerText = model.cvdReason;
+            document.getElementById('dash-predm').innerText = model.predm;
+            document.getElementById('dash-predm-reason').innerText = model.predmReason;
+            document.getElementById('dash-metabolic').innerText = model.met;
+            document.getElementById('dash-metabolic-reason').innerText = model.metReason;
+            document.getElementById('dash-kidney').innerText = model.kid;
+            document.getElementById('dash-kidney-reason').innerText = model.kidReason;
+            applyLabBadge('bp', parsed.bp?.display || '-', model.statuses.bp, 'mmHg');
+            applyLabBadge('fbs', parsed.fbs ?? '-', model.statuses.fbs, 'mg/dL');
+            applyLabBadge('hba1c', parsed.hba1c ?? '-', model.statuses.hba1c, '%');
+            applyLabBadge('ldl', parsed.ldl ?? '-', model.statuses.ldl, 'mg/dL');
+            applyLabBadge('egfr', parsed.egfr ?? '-', model.statuses.egfr, 'mL/min');
+            applyLabBadge('bmi', parsed.bmi ?? '-', model.statuses.bmi, 'kg/m²');
+            updateNodeState('obesity', model.nodes.obesity);
+            updateNodeState('htn', model.nodes.htn);
+            updateNodeState('glucose', model.nodes.glucose);
+            const planBox = document.getElementById('clinical-plan-box');
+            if (planBox) planBox.className = `mb-6 p-4 rounded-xl shadow-sm border transition-colors ${model.planClass}`;
+            const planIcon = document.getElementById('plan-icon');
+            if (planIcon) planIcon.className = `fas text-lg mr-2 ${model.planIcon}`;
+            const planText = document.getElementById('clinical-plan-text');
+            if (planText) planText.innerHTML = model.planText;
+            renderRadarChart(model.risks);
+            updateRetreatSuitability(model.level);
+            renderHospitalReferenceCards();
+            switchTab(2);
+        }
+
+        async function extractTextFromPDF(file) {
+            if (!window.pdfjsLib) return '';
+            const buffer = await file.arrayBuffer();
+            const pdf = await window.pdfjsLib.getDocument({ data: buffer }).promise;
+            let mergedText = '';
+            for (let p = 1; p <= Math.min(pdf.numPages, 3); p++) {
+                const page = await pdf.getPage(p);
+                const content = await page.getTextContent();
+                mergedText += content.items.map(item => item.str).join(' ') + '\n';
+            }
+            return mergedText;
+        }
+
+        async function extractTextFromImage(file) {
+            if (!window.Tesseract) return '';
+            const result = await window.Tesseract.recognize(file, 'eng', {
+                logger: msg => {
+                    if (msg?.status) {
+                        const scanDesc = document.getElementById('scan-desc');
+                        if (scanDesc) scanDesc.textContent = `${msg.status}${typeof msg.progress === 'number' ? ' ' + Math.round(msg.progress * 100) + '%' : ''}`;
+                    }
+                }
+            });
+            return result?.data?.text || '';
+        }
+
+        async function extractTextFromFile(file) {
+            if (!file) return '';
+            const type = file.type || '';
+            if (type.includes('text') || /\.(txt|csv|json)$/i.test(file.name)) {
+                return await file.text();
+            }
+            if (type.includes('pdf') || /\.pdf$/i.test(file.name)) {
+                return await extractTextFromPDF(file);
+            }
+            if (type.startsWith('image/')) {
+                return await extractTextFromImage(file);
+            }
+            return await file.text().catch(() => '');
+        }
+
+        async function handleHealthFile(file) {
+            if (!file) return;
+            const c = getHydraCopy();
+            const overlay = document.getElementById('ai-scanner-overlay');
+            const scanTitle = document.getElementById('scan-title');
+            const scanDesc = document.getElementById('scan-desc');
+            try {
+                await ensureOCRLibs();
+                updateOCRStatus('working', file.name, 0);
+                if (scanTitle) scanTitle.textContent = TRANSLATIONS[currentLang]?.scanText || 'Hydra AI is scanning...';
+                if (scanDesc) scanDesc.textContent = 'OCR / text extraction in progress';
+                overlay?.classList.remove('hidden');
+                overlay?.classList.add('flex');
+                const rawText = await extractTextFromFile(file);
+                const review = document.getElementById('ocr-review-text');
+                if (review) review.value = rawText || '';
+                const parsed = extractClinicalIndicators(rawText);
+                if ((parsed.count || 0) <= 0) {
+                    updateOCRStatus('warn', file.name, parsed.count || 0);
+                    showToast(c.ocrToastFail, 'amber');
+                    return;
+                }
+                updateOCRStatus('done', file.name, parsed.count || 0);
+                applyOCRClinicalData(parsed, file.name, rawText);
+                showToast(c.ocrToastDone, 'green');
+            } catch (error) {
+                console.error(error);
+                updateOCRStatus('warn', file.name, 0);
+                showToast(c.ocrToastFail, 'red');
+            } finally {
+                overlay?.classList.add('hidden');
+                overlay?.classList.remove('flex');
+            }
+        }
+
+        function analyzeOCRTextarea() {
+            const c = getHydraCopy();
+            const rawText = document.getElementById('ocr-review-text')?.value || '';
+            const parsed = extractClinicalIndicators(rawText);
+            if ((parsed.count || 0) <= 0) {
+                showToast(c.ocrToastNeed, 'amber');
+                updateOCRStatus('warn', document.getElementById('ocr-file-meta')?.textContent || '', 0);
+                return;
+            }
+            updateOCRStatus('done', document.getElementById('ocr-file-meta')?.textContent || 'Pasted text', parsed.count || 0);
+            applyOCRClinicalData(parsed, document.getElementById('ocr-file-meta')?.textContent || 'Pasted text', rawText);
+            showToast(c.ocrToastDone, 'green');
+        }
+
+        function getCurrentRiskLabel() {
+            return activeCaseLevel === 'high' ? 'High Risk' : (activeCaseLevel === 'moderate' ? 'Moderate Risk' : 'Low Risk');
+        }
+
+        function getRetreatAdvice() {
+            if (activeCaseLevel === 'high') return { name: 'Krabi Private Island', reason: currentLang === 'th' ? 'มีรูปแบบดูแลใกล้ชิดและเหมาะกับการพักฟื้นมากกว่า' : 'it offers the closest monitoring and a stronger recuperation profile' };
+            if (activeCaseLevel === 'moderate') return { name: 'Chiang Mai Zen Healing', reason: currentLang === 'th' ? 'เหมาะกับการฟื้นฟูต่อเนื่อง ลดความเครียด และไม่หนักเกินไป' : 'it balances sustained recovery, stress reduction, and practicality' };
+            return { name: 'Pattaya Wellness Retreat', reason: currentLang === 'th' ? 'เดินทางสะดวกและเหมาะกับเคสที่ต้องการฟื้นฟูเบื้องต้น' : 'it is accessible and fits lighter recovery needs well' };
+        }
+
+        function buildDynamicRiskReply() {
+            const c = getHydraCopy();
+            const labs = currentClinicalContext.labs || {};
+            const labBits = [];
+            if (labs.bp?.display) labBits.push(`BP ${labs.bp.display}`);
+            if (labs.fbs !== null && labs.fbs !== undefined) labBits.push(`FBS ${labs.fbs}`);
+            if (labs.hba1c !== null && labs.hba1c !== undefined) labBits.push(`HbA1c ${labs.hba1c}`);
+            if (labs.ldl !== null && labs.ldl !== undefined) labBits.push(`LDL ${labs.ldl}`);
+            const highlight = labBits.length ? (currentLang === 'th' ? `ค่าที่ระบบอ่านได้: ${labBits.join(', ')}` : `Captured markers: ${labBits.join(', ')}`) : '';
+            return c.chatRiskReply.replace('RISK', getCurrentRiskLabel()).replace('HIGHLIGHT', highlight);
+        }
+
+        function buildDynamicItineraryReply() {
+            const c = getHydraCopy();
+            const tour = getSelectedTourSnapshot();
+            return c.chatItineraryReply.replace('DISEASE', tour.disease).replace('HOSPITAL', tour.hospital).replace('COUNTRY', tour.country).replace('COST', tour.totalCost);
+        }
+
+        function resolveFreeTextResponse(text) {
+            const t = TRANSLATIONS[currentLang];
+            const c = getHydraCopy();
+            const q = (text || '').trim().toLowerCase();
+            const retreat = getRetreatAdvice();
+            if (!q) return c.chatGeneralReply;
+            if (/สวัสดี|หวัดดี|hello|hi\b|hey\b/.test(q)) return t.greeting;
+            if (/ตอนนี้|ความเสี่ยง|risk|ระดับไหน|current risk|summary/.test(q)) return buildDynamicRiskReply();
+            if (/ocr|upload|อัปโหลด|ผลตรวจ|lab report|extract/.test(q)) return c.chatOcrReply;
+            if (/source|reference|อ้างอิง|source card|reference card/.test(q)) return c.chatSourceReply;
+            if (/itinerary|แผน|trip|save/.test(q)) return buildDynamicItineraryReply();
+            if (/package|แพ็กเกจ|พักฟื้น|retreat|ทะเล|seaside|krabi|chiang mai|pattaya/.test(q)) return c.chatPackageReply.replace('RISK', getCurrentRiskLabel()).replace('PACKAGE', retreat.name).replace('REASON', retreat.reason);
+            if (/งบ|ราคา|ค่าใช้จ่าย|budget|cost|price/.test(q)) return `${t.chatBudgetA || c.chatGeneralReply}<br><br>${buildDynamicItineraryReply()}`;
+            if (/โรงพยาบาล|hospital|bumrungrad|siph|phuket|chiang mai ram/.test(q)) return `${t.chatHospitalA || c.chatGeneralReply}<br><br>${c.chatSourceReply}`;
+            if (/เบาหวาน|น้ำตาล|diabet/.test(q)) return t.chatDmA;
+            if (/ความดัน|htn|hypertension|blood pressure|stress/.test(q)) return t.chatHtnA;
+            if (/มะเร็ง|cancer|oncology|chemo/.test(q)) return t.chatCaA;
+            if (/สมุนไพร|herb|tea|wellness/.test(q)) return `${t.chatDmA}<br><br>${currentLang === 'th' ? 'หมายเหตุ: ควรตรวจเลข อย. และข้อห้ามใช้ก่อนใช้งานจริง' : 'Note: verify registration and contraindications before real use.'}`;
+            return c.chatGeneralReply;
+        }
+
+        function triggerScan(type, caseLevel = null) {
+            if (type === 'upload') {
+                document.getElementById('health-file-input')?.click();
+                return;
+            }
+            if (type === 'camera') {
+                document.getElementById('camera-file-input')?.click();
+                return;
+            }
+            const overlay = document.getElementById('ai-scanner-overlay');
+            const scanTitle = document.getElementById('scan-title');
+            const scanDesc = document.getElementById('scan-desc');
+            scanTitle.innerText = TRANSLATIONS[currentLang]?.scanText || 'Hydra AI is scanning...';
+            if (scanDesc) scanDesc.textContent = currentLang === 'th' ? 'กำลังเตรียมข้อมูลตัวอย่างเข้าสู่ Dashboard' : 'Preparing demo data for the dashboard';
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+                if (type === 'demo' && caseLevel) loadDemoCase(caseLevel);
+                else loadDemoCase('moderate');
+            }, 1600);
+        }
+
+        function installEnhancementHandlers() {
+            document.getElementById('health-file-input')?.addEventListener('change', async (e) => {
+                const file = e.target.files?.[0];
+                await handleHealthFile(file);
+                e.target.value = '';
+            });
+            document.getElementById('camera-file-input')?.addEventListener('change', async (e) => {
+                const file = e.target.files?.[0];
+                await handleHealthFile(file);
+                e.target.value = '';
+            });
+            document.getElementById('btn-analyze-ocr')?.addEventListener('click', analyzeOCRTextarea);
+            document.getElementById('btn-reset-chat')?.addEventListener('click', () => resetChat(false));
+            document.getElementById('btn-export-chat')?.addEventListener('click', exportConversation);
+            document.getElementById('btn-save-itinerary-chat')?.addEventListener('click', saveItinerary);
+        }
+
+        function wrapHydraFunctions() {
+            if (window.__hydraWrapped) return;
+            window.__hydraWrapped = true;
+
+            const originalLoadDemoCase = loadDemoCase;
+            loadDemoCase = function(level) {
+                activeCaseLevel = level || 'moderate';
+                activeCaseSource = 'demo';
+                currentClinicalContext = { source: 'demo', level: activeCaseLevel, labs: null, summary: '' };
+                originalLoadDemoCase(level);
+                const badge = document.getElementById('active-case-badge');
+                if (badge) badge.textContent = `Demo • ${getCurrentRiskLabel()}`;
+                updateRetreatSuitability(activeCaseLevel);
+                renderHospitalReferenceCards();
+            };
+
+            const originalCalculateTourism = calculateTourism;
+            calculateTourism = function() {
+                originalCalculateTourism();
+                renderHospitalReferenceCards();
+                updateRetreatSuitability(activeCaseLevel);
+            };
+
+            const originalChangeLanguage = changeLanguage;
+            changeLanguage = function() {
+                originalChangeLanguage();
+                refreshEnhancementText();
+                renderHospitalReferenceCards();
+                updateRetreatSuitability(activeCaseLevel);
+            };
+
+            const originalAddChatBubble = addChatBubble;
+            addChatBubble = function(role, content, isHtml = false, isVoice = false) {
+                originalAddChatBubble(role, content, isHtml, isVoice);
+                chatTranscript.push({
+                    role,
+                    content: isHtml ? stripHtmlText(content) : String(content),
+                    time: new Date().toLocaleString()
+                });
+            };
+        }
+
+        function initHydraEnhancements() {
+            if (hydraEnhancementsReady) return;
+            hydraEnhancementsReady = true;
+            injectUploadEnhancements();
+            injectHospitalReferenceSection();
+            injectRetreatRiskStates();
+            injectChatActions();
+            injectSaveItineraryButton();
+            wrapHydraFunctions();
+            installEnhancementHandlers();
+            refreshEnhancementText();
+            updateOCRStatus('idle');
+            renderHospitalReferenceCards();
+            updateRetreatSuitability(activeCaseLevel);
+            resetChat(true);
+        }
+
+        initHydraEnhancements();
         changeLanguage();
-    </script>
+</script>
 </body>
 </html>
