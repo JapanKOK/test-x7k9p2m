@@ -124,7 +124,6 @@
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
         }
 
-        /* NEW: Upload Grid */
         .upload-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .upload-btn { background: var(--bg); border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .upload-btn:hover { border-color: var(--accent); background: #eff6ff; color: var(--accent); transform: translateY(-2px); }
@@ -202,13 +201,9 @@
 
         /* Timeline (Itinerary) */
         .timeline { position: relative; padding-left: 30px; }
-        .timeline::before {
-            content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--border);
-        }
+        .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--border); }
         .timeline-item { position: relative; margin-bottom: 20px; }
-        .timeline-item::before {
-            content: ''; position: absolute; left: -30px; top: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent-hover);
-        }
+        .timeline-item::before { content: ''; position: absolute; left: -30px; top: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent-hover); }
         .timeline-date { font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .timeline-content { background: var(--bg); padding: 15px; border-radius: 10px; margin-top: 5px; border: 1px solid var(--border); }
 
@@ -220,9 +215,7 @@
 
         /* Deep Tech Grid */
         .ai-features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .ai-tool-btn {
-            background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 20px; text-align: left; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 10px;
-        }
+        .ai-tool-btn { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 20px; text-align: left; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 10px; }
         .ai-tool-btn:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(37,99,235,0.1); }
         .tool-icon { font-size: 28px; }
         .tool-title { font-weight: 600; font-size: 15px; color: var(--primary); }
@@ -233,7 +226,6 @@
         .modal-content { background: var(--surface); width: 900px; max-width: 95%; max-height: 90vh; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
         .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
         .modal-body { flex: 1; padding: 30px; display: flex; gap: 30px; overflow-y: auto; }
-        
         .split-pane { flex: 1; border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: var(--bg); overflow-y: auto; }
         
         .badge { background: #dbeafe; color: var(--accent-hover); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
@@ -244,7 +236,7 @@
         .custom-loader { width: 80px; height: 80px; border: 6px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 30px; }
         .loading-step { margin-top: 10px; color: var(--text-muted); font-size: 16px; transition: opacity 0.3s; }
 
-        /* NEW: Scanner Animation */
+        /* Scanner Animation */
         .scanner-viewfinder { width: 100%; height: 250px; background: #0f172a; border: 2px dashed #0ea5e9; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 20px 0; }
         .scanner-laser { position: absolute; left: 0; top: 0; width: 100%; height: 3px; background: #0ea5e9; box-shadow: 0 0 15px 2px #0ea5e9; animation: scanLaser 2s ease-in-out infinite; }
         
@@ -315,8 +307,7 @@
                         <textarea placeholder="e.g., John needs a knee replacement in Bangkok next month. Budget is $15,000...">John needs a knee replacement in Bangkok next month. Budget is $15,000. He will travel with his wife from the UK. He has a history of penicillin allergy. Needs a wheelchair-friendly hotel.</textarea>
                         
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="attached-files-container">
-                                </div>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="attached-files-container"></div>
                             <button class="btn-generate" onclick="startProcessing()">
                                 ✦ Generate AI Blueprint
                             </button>
@@ -406,7 +397,7 @@
                                     <div class="timeline-date">Day 6 - 14: Nov 15-24</div>
                                     <div class="timeline-content" style="border-left: 3px solid var(--success);">
                                         <strong>Hotel Recovery & Local Experience</strong><br>
-                                        <span style="font-size: 13px; color: var(--text-muted);">Telemedicine monitoring via Smartwatch. Cultural tours arranged for wife.</span>
+                                        <span style="font-size: 13px; color: var(--text-muted);">Telemedicine monitoring via Smartwatch. Local wellness tours arranged for wife.</span>
                                     </div>
                                 </div>
                             </div>
@@ -415,23 +406,39 @@
 
                     <div>
                         <div class="card">
-                            <div class="card-header">🏥 Selected Provider</div>
-                            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                                <div style="width: 80px; height: 80px; background: #e2e8f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🏢</div>
-                                <div>
-                                    <div style="font-size: 16px; font-weight: 600;">BDMS Hospital</div>
-                                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">Bangkok, Thailand</div>
-                                    <span class="badge green">98% Match Score</span>
-                                </div>
+                            <div class="card-header" style="margin-bottom: 5px;">📑 Medical & Visa Planning</div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 0; margin-bottom: 15px;">แนะนำและจัดการเอกสารทั้งหมดแบบครบวงจร</p>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+                                <div style="font-size: 14px; font-weight: 500;">Medical Records Translating</div>
+                                <button style="padding: 4px 10px; background: var(--surface); color: var(--primary); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;" onclick="openModal('modal-records')">View AI Read</button>
                             </div>
-                            <div style="font-size: 13px; padding: 10px; background: var(--bg); border-radius: 8px;">
-                                <strong>Why AI chose this:</strong> Fits $15k budget, JCI accredited, top orthopedics department, 10 mins from requested hotel area.
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 14px; font-weight: 500;">Thai MT Visa Application</div>
+                                <button style="padding: 4px 10px; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;" onclick="openModal('modal-visa')">Auto-Filled</button>
                             </div>
                         </div>
 
                         <div class="card">
-                            <div class="card-header">💰 Financial Overview</div>
-                            <div class="cost-row"><span>Medical Procedure (BDMS)</span> <span>$8,500</span></div>
+                            <div class="card-header" style="margin-bottom: 5px;">🧠 Smart Planning System</div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 0; margin-bottom: 15px;">เลือกโรงพยาบาล / ที่พัก / การเดินทาง แสดงค่าใช้จ่ายรวมแบบครบ</p>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                <div style="flex: 1; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border);">
+                                    <div style="font-size: 20px; margin-bottom: 5px;">🏥</div>
+                                    <div style="font-size: 11px; font-weight: 600;">BDMS Hosp.</div>
+                                </div>
+                                <div style="flex: 1; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border);">
+                                    <div style="font-size: 20px; margin-bottom: 5px;">🏨</div>
+                                    <div style="font-size: 11px; font-weight: 600;">Wellness Hotel</div>
+                                </div>
+                                <div style="flex: 1; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border);">
+                                    <div style="font-size: 20px; margin-bottom: 5px;">✈️</div>
+                                    <div style="font-size: 11px; font-weight: 600;">VIP Transfer</div>
+                                </div>
+                            </div>
+
+                            <div class="cost-row"><span>Medical Procedure</span> <span>$8,500</span></div>
                             <div class="cost-bar"><div class="cost-fill" style="width: 68%; background: var(--accent);"></div></div>
                             <br>
                             <div class="cost-row"><span>Accommodation (14 Nights)</span> <span>$2,100</span></div>
@@ -440,17 +447,40 @@
                             <div class="cost-row"><span>Logistics & Flights</span> <span>$1,400</span></div>
                             <div class="cost-bar"><div class="cost-fill" style="width: 11%; background: var(--warning);"></div></div>
                             <br>
-                            <div class="cost-row"><span>Platform Service Fee (Revenue)</span> <span>$500</span></div>
+                            <div class="cost-row"><span>Platform Service Fee</span> <span>$500</span></div>
                             <div class="cost-bar"><div class="cost-fill" style="width: 5%; background: var(--success);"></div></div>
 
                             <div class="total-box">
                                 <div>
-                                    <div style="font-size: 13px; opacity: 0.8;">Total Estimated Cost</div>
+                                    <div style="font-size: 13px; opacity: 0.8;">All-in-One Cost</div>
                                     <div style="font-size: 24px; font-weight: 700;">$12,500</div>
                                 </div>
                                 <div style="text-align: right;">
                                     <div style="font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">Budget: $15,000</div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" style="margin-bottom: 5px;">🇹🇭 Local Experience Recommendation</div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 0; margin-bottom: 15px;">แนะนำสินค้าและสถานที่ท่องเที่ยวท้องถิ่นผ่านแอป</p>
+                            
+                            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                                <div style="width: 45px; height: 45px; background: #fef08a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">🛕</div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 13px; font-weight: 600;">Ayutthaya Cultural Tour</div>
+                                    <div style="font-size: 11px; color: var(--text-muted);">Wheelchair accessible. Great for family.</div>
+                                </div>
+                                <button style="background: var(--surface); border: 1px solid var(--accent); color: var(--accent); border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent)'; this.style.color='white';" onmouseout="this.style.background='var(--surface)'; this.style.color='var(--accent)';">+ Add</button>
+                            </div>
+
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <div style="width: 45px; height: 45px; background: #d9f99d; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">🌿</div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 13px; font-weight: 600;">Premium Thai Herbal Pack</div>
+                                    <div style="font-size: 11px; color: var(--text-muted);">Local wellness products for recovery.</div>
+                                </div>
+                                <button style="background: var(--surface); border: 1px solid var(--accent); color: var(--accent); border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent)'; this.style.color='white';" onmouseout="this.style.background='var(--surface)'; this.style.color='var(--accent)';">+ Add</button>
                             </div>
                         </div>
                     </div>
@@ -641,19 +671,15 @@
     </div>
 
     <script>
-        // ระบบจัดการ Navigation เมนูซ้ายมือ
+        // เมนู Navigation
         function navTo(viewId, element) {
-            // ลบแถบสีฟ้าออกจากเมนูทั้งหมด แล้วใส่ให้เมนูที่เพิ่งคลิก
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             if(element) element.classList.add('active');
-
-            // ซ่อนหน้าจอทั้งหมด แล้วโชว์เฉพาะหน้าที่เลือก
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
         }
 
-        // ระบบจำลองการเปิด Scanner/Camera
-        let fileCount = 0;
+        // สแกนจำลอง
         function triggerScanner(type) {
             const modal = document.getElementById('modal-scanner');
             const title = document.getElementById('scanner-title');
@@ -682,7 +708,6 @@
                 status.innerText = 'Running Computer Vision Model...';
             }
 
-            // จำลองเวลาโหลด 2.5 วินาที
             setTimeout(() => {
                 status.innerText = '✅ Data Extracted Successfully!';
                 laser.style.display = 'none';
@@ -696,7 +721,7 @@
             }, 2500);
         }
 
-        // เพิ่มชื่อไฟล์ลงในช่อง Input หลังจากสแกนเสร็จ
+        // สร้าง Badge ไฟล์
         function addFileBadge(type) {
             const container = document.getElementById('attached-files-container');
             const badge = document.createElement('span');
@@ -712,9 +737,8 @@
             container.appendChild(badge);
         }
 
-        // ระบบเปลี่ยนหน้าหลักไปหน้า Processing แล้วไป Dashboard
+        // ประมวลผลและเปิด Dashboard
         function startProcessing() {
-            // ถ้าผู้ใช้กด Generate เลยโดยยังไม่ได้อัปโหลดไฟล์ ให้โชว์ไฟล์จำลองขึ้นมาเลยเพื่อความสมจริง
             const container = document.getElementById('attached-files-container');
             if(container.children.length === 0) {
                 addFileBadge('scan');
@@ -730,22 +754,14 @@
             
             setTimeout(() => {
                 document.getElementById('view-processing').classList.remove('active');
-                
-                // สั่งเปลี่ยนแถบเมนูซ้ายมือให้เป็น Dashboard
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 document.querySelector('.sidebar .nav-item:first-child').classList.add('active');
-
                 document.getElementById('view-dashboard').classList.add('active');
             }, 4500);
         }
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
 </html>
