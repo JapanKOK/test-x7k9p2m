@@ -1,214 +1,1129 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI  Health  Hub - Smart Medical Tourism Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        .tab-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: bold; }
-        .chat-bubble { max-width: 80%; border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-        .chat-bot { background-color: #e0f2fe; color: #0369a1; border-bottom-left-radius: 0; }
-        .chat-user { background-color: #2563eb; color: white; border-bottom-right-radius: 0; margin-left: auto; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FutureMind Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0B132B;
+      --panel-dark: #111827;
+      --teal: #14b8a6;
+      --teal-hover: #0d9488;
+      --soft-blue: #3b82f6;
+      --lavender: #c4b5fd;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --muted: rgba(255,255,255,0.06);
+      --shadow: 0 0 40px rgba(20, 184, 166, 0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body {
+      background: radial-gradient(circle at top, #101b3a 0%, #000 60%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .app-shell {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      height: calc(100vh - 32px);
+      max-height: 900px;
+      background: linear-gradient(180deg, #0B132B 0%, #172554 100%);
+      overflow-y: auto;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+    }
+
+    .admin-container {
+      display: none;
+      width: 100%;
+      max-width: 1080px;
+      min-height: calc(100vh - 32px);
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.22);
+      padding: 28px;
+    }
+
+    .app-container::-webkit-scrollbar,
+    .admin-container::-webkit-scrollbar { display: none; }
+    .app-container, .admin-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .screen {
+      display: none;
+      padding: 28px 24px 32px;
+      min-height: 100%;
+      animation: fadeIn 0.28s ease-out;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 23px;
+      line-height: 1.28;
+      color: var(--teal);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    h2 {
+      font-size: 15px;
+      line-height: 1.35;
+      margin-bottom: 12px;
+      color: #fff;
+      font-weight: 600;
+    }
+    h3 {
+      font-size: 13px;
+      line-height: 1.35;
+      color: #fff;
+      font-weight: 600;
+    }
+    p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .top-note {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(20, 184, 166, 0.18);
+      color: var(--teal);
+      border: 1px solid rgba(20, 184, 166, 0.28);
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .subtle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--teal);
+      margin-top: 14px;
+      transition: 0.2s ease;
+    }
+    .btn:hover:not(:disabled) { background: var(--teal-hover); }
+    .btn:disabled {
+      background: #475569;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+    .btn-outline {
+      width: 100%;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--teal);
+      background: transparent;
+      color: var(--teal);
+      margin-top: 10px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      accent-color: var(--teal);
+    }
+    .checkbox-group label {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+
+    .slider-container { margin-bottom: 16px; }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    input[type=range] { width: 100%; accent-color: var(--teal); }
+
+    .segmented-control {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .seg-btn {
+      flex: 1;
+      padding: 7px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid transparent;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.2s ease;
+      user-select: none;
+    }
+    .seg-btn.active {
+      background: rgba(20, 184, 166, 0.18);
+      border-color: var(--teal);
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .emoji-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 26px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .emoji-row span {
+      filter: grayscale(100%);
+      transition: 0.18s ease;
+      flex: 1;
+      text-align: center;
+    }
+    .emoji-row span.selected {
+      filter: grayscale(0%);
+      transform: scale(1.15);
+    }
+
+    .mini-summary {
+      font-size: 11px;
+      color: var(--lavender);
+      background: rgba(196, 181, 253, 0.08);
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 12px;
+    }
+
+    .badge-confidence {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+    }
+
+    .status-circle {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      border: 6px solid var(--warning);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 22px rgba(245,158,11,0.22);
+      transition: 0.22s ease;
+    }
+    .status-circle span {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--warning);
+    }
+    .status-circle small {
+      color: var(--text-sub);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .trend-strip {
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      height: 34px;
+      margin-top: 6px;
+    }
+    .trend-dot {
+      flex: 1;
+      border-radius: 6px 6px 4px 4px;
+      min-height: 6px;
+    }
+
+    .factor-card {
+      background: rgba(0,0,0,0.22);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-left: 3px solid rgba(255,255,255,0.12);
+    }
+
+    .chart-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+    .chart-label {
+      width: 78px;
+      font-size: 11px;
+      color: var(--text-sub);
+      flex-shrink: 0;
+    }
+    .chart-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      position: relative;
+    }
+    .chart-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transition: width 0.25s ease;
+    }
+    .chart-bar-baseline {
+      position: absolute;
+      top: -4px;
+      width: 2px;
+      height: 14px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    .future-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 110px;
+      gap: 4px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.16);
+      margin-top: 10px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bar {
+      width: 100%;
+      max-width: 16px;
+      border-radius: 5px 5px 0 0;
+      transition: 0.28s ease;
+    }
+    .day-label {
+      font-size: 9px;
+      color: var(--text-sub);
+      margin-top: 6px;
+      min-height: 14px;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .scen-card {
+      background: rgba(0,0,0,0.24);
+      border-radius: 12px;
+      padding: 10px 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: center;
+    }
+    .scen-card.active {
+      border-color: var(--teal);
+      background: rgba(20,184,166,0.12);
+    }
+    .scen-label {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .scen-risk {
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .compare-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .support-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 14px;
+    }
+    .support-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      color: var(--text-sub);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      opacity: 0.52;
+    }
+    .support-tab.active[data-level="low"] { color: var(--success); border-color: var(--success); opacity: 1; }
+    .support-tab.active[data-level="mod"] { color: var(--warning); border-color: var(--warning); opacity: 1; }
+    .support-tab.active[data-level="high"] { color: var(--danger); border-color: var(--danger); opacity: 1; }
+
+    .support-content { display: none; }
+    .support-content.active { display: block; animation: fadeIn 0.22s ease-out; }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+    }
+    .metrics-block > div { margin-bottom: 14px; }
+
+    .helper-text {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    @media (max-width: 1024px) {
+      .admin-grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      body { align-items: flex-start; padding: 12px; }
+      .admin-container {
+        padding: 18px;
+        min-height: calc(100vh - 24px);
+        max-height: calc(100vh - 24px);
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="app-shell">
+    <div class="app-container" id="student-app">
+      <div id="screen-1" class="screen active">
+        <h1>FutureMind</h1>
+        <p>AI-powered early wellbeing risk screening สำหรับนักศึกษามหาวิทยาลัย</p>
+        <div class="badge">🚀 Pilot Phase • Preventive Mental Health</div>
 
-    <nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-        <div class="text-2xl font-bold text-blue-700"><i class="fa-solid fa-notes-medical"></i> AI  Health  Hub</div>
-        <div class="flex items-center gap-4">
-            <select class="border p-1 rounded text-sm text-gray-600 outline-none">
-                <option>🇸🇦 العربية (Arabic)</option>
-                <option>🇬🇧 English</option>
-                <option>🇨🇳 中文 (Chinese)</option>
+        <div class="glass-card">
+          <h2>📌 ข้อมูลที่ระบบเก็บ</h2>
+          <p style="margin-bottom:0; font-size:12px;">• ชั่วโมงการนอน • เวลาการใช้งานหน้าจอ • ระดับกิจกรรมทางกาย • ความสม่ำเสมอของกิจวัตร • Daily Mood Check-in</p>
+        </div>
+
+        <div class="glass-card" style="border-color: rgba(239,68,68,0.30);">
+          <h2>🔒 ข้อมูลที่ระบบไม่ใช้</h2>
+          <p style="margin-bottom:0; font-size:12px; color:#fca5a5;">• ไม่อ่านข้อความส่วนตัว/แชท • ไม่เข้าถึงเนื้อหาเสียง • ไม่เปิดเผยข้อมูลระบุตัวตนให้สถานศึกษา</p>
+        </div>
+
+        <div class="top-note">
+          <p style="margin:0; font-size:11px; color:var(--lavender);">⏳ <b>หมายเหตุ:</b> ระบบใช้เวลา 7 วันแรกในการสร้าง Baseline ส่วนบุคคล และใช้เพื่อการคัดกรองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์</p>
+        </div>
+
+        <div class="checkbox-group"><input type="checkbox" id="c1" class="consent-cb"><label for="c1">ยินยอมให้ใช้ข้อมูลพฤติกรรมเพื่อคัดกรองความเสี่ยงสุขภาวะจิตเบื้องต้น</label></div>
+        <div class="checkbox-group"><input type="checkbox" id="c2" class="consent-cb"><label for="c2">เข้าใจว่าระบบนี้ไม่ใช่เครื่องมือวินิจฉัยทางการแพทย์</label></div>
+        <div class="checkbox-group"><input type="checkbox" id="c3" class="consent-cb"><label for="c3">รับทราบว่าสามารถหยุดใช้งานหรือถอนความยินยอมได้ตลอดเวลา</label></div>
+
+        <button class="btn" id="btn-start" disabled onclick="nav('screen-2')">เริ่มต้นสร้าง Baseline</button>
+      </div>
+
+      <div id="screen-2" class="screen">
+        <h1>Daily Check-in</h1>
+        <div class="badge" style="background: rgba(59,130,246,0.18); color: var(--soft-blue);">📊 Day 3/7 of Baseline Building</div>
+
+        <div class="glass-card">
+          <div class="slider-container">
+            <div class="slider-label"><span>เวลานอนเมื่อคืน</span><span id="val-sleep">5.5 ชม.</span></div>
+            <input type="range" id="in-sleep" min="2" max="12" step="0.5" value="5.5" oninput="document.getElementById('val-sleep').innerText = this.value + ' ชม.'; updateCheckinSummary();">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label"><span>เวลาอยู่หน้าจอวันนี้</span><span id="val-screen">9 ชม.</span></div>
+            <input type="range" id="in-screen" min="2" max="15" step="0.5" value="9" oninput="document.getElementById('val-screen').innerText = this.value + ' ชม.'; updateCheckinSummary();">
+          </div>
+          <div class="slider-container" style="margin-bottom: 8px;">
+            <div class="slider-label"><span>กิจกรรมทางกาย</span><span id="val-act">ต่ำ (20 นาที)</span></div>
+            <input type="range" id="in-act" min="0" max="120" step="10" value="20" oninput="updateActivityLabel(this.value); updateCheckinSummary();">
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h2 style="font-size: 13px; margin-bottom: 8px;">ความสม่ำเสมอของกิจวัตร (Routine)</h2>
+          <div class="segmented-control" id="routine-seg">
+            <div class="seg-btn" data-val="stable" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">ดี (Stable)</div>
+            <div class="seg-btn active" data-val="mod" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">ปานกลาง</div>
+            <div class="seg-btn" data-val="unstable" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">แย่ (Unstable)</div>
+          </div>
+
+          <h2 style="font-size: 13px; margin-bottom: 8px; margin-top: 16px;">อารมณ์โดยรวม (Mood)</h2>
+          <div class="emoji-row" id="emoji-group">
+            <span data-val="1" onclick="selectEmoji(this); updateCheckinSummary();">😢</span>
+            <span data-val="2" class="selected" onclick="selectEmoji(this); updateCheckinSummary();">😔</span>
+            <span data-val="3" onclick="selectEmoji(this); updateCheckinSummary();">😐</span>
+            <span data-val="4" onclick="selectEmoji(this); updateCheckinSummary();">🙂</span>
+            <span data-val="5" onclick="selectEmoji(this); updateCheckinSummary();">😄</span>
+          </div>
+        </div>
+
+        <div class="mini-summary" id="checkin-summary">วันนี้คุณนอนต่ำกว่า baseline และใช้หน้าจอสูงกว่าปกติ ระบบอาจประเมินความเสี่ยงเพิ่มขึ้นเล็กน้อย</div>
+
+        <button class="btn" onclick="saveDataAndGo()">บันทึกข้อมูลและวิเคราะห์</button>
+      </div>
+
+      <div id="screen-3" class="screen">
+        <h1 style="text-align:center;">Personal Risk Insight</h1>
+        <div class="badge-confidence">
+          <span id="data-completeness" style="color: var(--text-sub);">Completeness: 3/7 Days</span>
+          <span id="data-confidence" style="color: #fbbf24;">Confidence: Moderate ⏳</span>
+        </div>
+
+        <div class="status-circle" id="risk-circle">
+          <span id="risk-text">MOD</span>
+          <small>Risk Level</small>
+        </div>
+
+        <div class="glass-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <h2 style="margin-bottom: 6px;">📉 แนวโน้มความเสี่ยงสะสม</h2>
+            <span class="helper-text">*Illustrative baseline history</span>
+          </div>
+          <div class="trend-strip" id="trend-strip"></div>
+          <p class="helper-text" id="trend-caption" style="margin: 8px 0 0;">ระบบมองความเสี่ยงเป็นแนวโน้มต่อเนื่อง ไม่ใช่ snapshot วันเดียว</p>
+        </div>
+
+        <div class="glass-card">
+          <h2>🧠 ปัจจัยขับเคลื่อนความเสี่ยง</h2>
+          <div id="insight-factors"></div>
+        </div>
+
+        <div class="glass-card">
+          <h2>📊 Current vs Baseline (ขีดสีขาว)</h2>
+          <div id="insight-charts"></div>
+        </div>
+
+        <button class="btn" onclick="nav('screen-4')">จำลองแนวโน้มอนาคต (Scenario Lab)</button>
+      </div>
+
+      <div id="screen-4" class="screen">
+        <h1>Future Simulation</h1>
+        <p>ระบบจะจำลองแนวโน้มใน 7–14 วัน โดยอิงจาก risk ปัจจุบันและพฤติกรรมที่คุณเลือกปรับ</p>
+
+        <div class="glass-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
+            <h2 id="sim-status" style="margin:0; color: var(--warning);">แนวโน้ม: เสี่ยงสะสม</h2>
+            <div class="segmented-control" style="margin:0; width: 104px;">
+              <div class="seg-btn active" id="tab-7d" onclick="setChartDays(7)">7 วัน</div>
+              <div class="seg-btn" id="tab-14d" onclick="setChartDays(14)">14 วัน</div>
+            </div>
+          </div>
+          <div class="future-chart" id="future-chart"></div>
+          <p id="sim-explain" style="font-size:11px; color: var(--lavender); margin-top:12px; text-align:center;"></p>
+        </div>
+
+        <div class="glass-card">
+          <h2 style="font-size:13px; margin-bottom:8px;">📊 เปรียบเทียบ Scenarios</h2>
+          <div class="scenario-grid">
+            <div class="scen-card active" id="scen-a" onclick="applyPreset('a', 0, 0, 0)">
+              <div class="scen-label" style="color: var(--warning);">A: คงเดิม</div>
+              <div class="scen-risk">Projected: High ⚠️</div>
+            </div>
+            <div class="scen-card" id="scen-b" onclick="applyPreset('b', 1, 20, 1)">
+              <div class="scen-label" style="color: #fbbf24;">B: ปรับเบาๆ</div>
+              <div class="scen-risk">Projected: Moderate 🌤️</div>
+            </div>
+            <div class="scen-card" id="scen-c" onclick="applyPreset('c', 2, 40, 2)">
+              <div class="scen-label" style="color: var(--success);">C: Full Reset</div>
+              <div class="scen-risk">Projected: Low 🌿</div>
+            </div>
+          </div>
+          <div class="compare-grid" style="margin-top: 12px;">
+            <div class="compare-card"><div style="color: var(--warning); font-weight:700;">A</div><div>คงพฤติกรรมเดิม</div></div>
+            <div class="compare-card"><div style="color: #fbbf24; font-weight:700;">B</div><div>เพิ่มนอน + ลดหน้าจอ</div></div>
+            <div class="compare-card"><div style="color: var(--success); font-weight:700;">C</div><div>เพิ่มนอน + ลดหน้าจอ + เพิ่มกิจกรรม</div></div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h2 style="font-size:13px; margin-bottom:12px;">🎚️ ปรับอิสระ (Manual Adjust)</h2>
+          <div class="slider-container">
+            <div class="slider-label"><span>เพิ่มเวลานอน</span><span id="sim-sleep-val">+0 ชม.</span></div>
+            <input type="range" id="sim-sleep" min="0" max="3" step="0.5" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label"><span>ลดเวลาหน้าจอ</span><span id="sim-screen-val">-0%</span></div>
+            <input type="range" id="sim-screen" min="0" max="50" step="10" value="0">
+          </div>
+          <div class="slider-container">
+            <div class="slider-label"><span>เพิ่มกิจกรรมกาย</span><span id="sim-act-val">คงเดิม</span></div>
+            <input type="range" id="sim-act" min="0" max="2" step="1" value="0">
+          </div>
+        </div>
+
+        <button class="btn" onclick="nav('screen-5')">รับแผน Support แบบ Triage</button>
+      </div>
+
+      <div id="screen-5" class="screen">
+        <h1 style="margin-bottom: 14px;">Support Pathway</h1>
+
+        <div class="support-tabs">
+          <div class="support-tab" data-level="low" onclick="switchTab('low')">Low Risk</div>
+          <div class="support-tab" data-level="mod" onclick="switchTab('mod')">Moderate</div>
+          <div class="support-tab" data-level="high" onclick="switchTab('high')">High Risk</div>
+        </div>
+
+        <div id="sup-low" class="support-content glass-card" style="border-color: rgba(16,185,129,0.30);">
+          <div class="badge" style="background: var(--success); color: #fff;">เป้าหมาย: Self-care & Monitoring</div>
+          <p style="margin-top:8px;">ระบบมองว่าคุณยังอยู่ในเกณฑ์ที่ควรเน้นการรักษาสมดุลต่อไป</p>
+          <div id="act-low"></div>
+          <p class="helper-text" style="margin-top: 10px;">⏳ Follow-up: เช็คอินรายสัปดาห์ และติดตามแนวโน้มต่อเนื่อง</p>
+        </div>
+
+        <div id="sup-mod" class="support-content glass-card" style="border-color: rgba(245,158,11,0.50);">
+          <div class="badge" style="background: var(--warning); color: #fff;">เป้าหมาย: Guided Intervention</div>
+          <div style="background: rgba(0,0,0,0.26); padding: 10px; border-radius: 12px; margin: 10px 0;">
+            <span style="font-size:11px; color: var(--warning); font-weight:700;">🤔 ทำไมระบบถึงแนะนำแผนนี้?</span>
+            <p id="sup-reason" style="font-size:11px; margin:4px 0 0; color:#fff;">...</p>
+          </div>
+          <div id="act-mod"></div>
+          <p class="helper-text" style="margin-top: 10px; color: var(--lavender);">⏳ Follow-up: Daily Re-check ต่อเนื่อง 3 วัน ถ้าไม่ดีขึ้นจะเสนอส่งต่อ Counselor</p>
+        </div>
+
+        <div id="sup-high" class="support-content glass-card" style="border-color: rgba(239,68,68,0.50); background: rgba(239,68,68,0.10);">
+          <div class="badge" style="background: var(--danger); color: #fff;">เป้าหมาย: Immediate Referral</div>
+          <p style="color:#fff; margin-top: 8px;">ระบบประเมินว่าควรได้รับการช่วยเหลือจากบุคลากรผู้เชี่ยวชาญโดยเร็ว</p>
+          <button class="btn" style="background: var(--danger); margin-top: 12px;">📞 โทรสายด่วน 1323 ทันที</button>
+          <button class="btn-outline" style="border-color:#fca5a5; color:#fca5a5;">🗓️ นัดหมายนักจิตวิทยาคณะ</button>
+        </div>
+
+        <div class="top-note" style="margin-top: 18px;">
+          <p style="margin:0; font-size:11px; color:#fca5a5;">🚨 หากรู้สึกไม่ปลอดภัยหรือมีภาวะวิกฤต โปรดติดต่อผู้เชี่ยวชาญหรือบริการฉุกเฉินทันที</p>
+        </div>
+
+        <button class="btn-outline" style="border-color: var(--soft-blue); color: var(--soft-blue); background: rgba(59,130,246,0.10); margin-top: 18px;" onclick="switchView('admin')">🏛️ เปิด Institutional Dashboard</button>
+        <button class="btn-outline" style="border-color:#475569; color:#94a3b8;" onclick="nav('screen-1')">วนกลับไปหน้าเริ่มต้น</button>
+      </div>
+    </div>
+
+    <div class="admin-container" id="admin-app">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px; flex-wrap: wrap;">
+        <div>
+          <h1 style="color:#fff; font-size: 24px;">🏛️ FutureMind Institutional Dashboard</h1>
+          <p style="margin:0;">Illustrative mock for pilot governance • Aggregated, privacy-preserving view</p>
+        </div>
+        <button class="btn" style="width:auto; padding: 10px 18px; margin:0;" onclick="switchView('student')">📱 กลับไปหน้า Student App</button>
+      </div>
+
+      <div class="glass-card" style="margin-bottom: 18px; border-left: 4px solid var(--success);">
+        <h2 style="margin-bottom: 6px;">🔒 Privacy Governance</h2>
+        <p style="margin:0; color:#fff;">• แสดงเฉพาะข้อมูลภาพรวมแบบ Aggregated • ไม่ใช้เพื่อระบุตัวบุคคล • ซ่อนข้อมูลอัตโนมัติเมื่อจำนวนผู้ใช้ในกลุ่มต่ำกว่า 50 คน</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div id="stat-active" style="font-size:30px; font-weight:700; color: var(--teal);">1,420</div><div class="helper-text">Active Students</div></div>
+        <div class="stat-card"><div id="stat-risk" style="font-size:30px; font-weight:700; color: var(--warning);">28%</div><div class="helper-text">Mod–High Risk</div></div>
+        <div class="stat-card"><div id="stat-sleep" style="font-size:30px; font-weight:700; color: var(--danger);">-1.2h</div><div class="helper-text">Avg Sleep Deficit</div></div>
+        <div class="stat-card"><div id="stat-routine" style="font-size:30px; font-weight:700; color: var(--soft-blue);">62%</div><div class="helper-text">Stable Routine</div></div>
+      </div>
+
+      <div class="admin-grid">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom: 16px; flex-wrap: wrap;">
+            <h2 style="margin:0;">🚨 AI Policy Insight</h2>
+            <select id="dash-select" onchange="updateDashboard(this.value)" style="background:#1e293b; color:#fff; border:1px solid #334155; border-radius:8px; padding:8px 10px;">
+              <option value="reg">สัปดาห์ปกติ (Regular Week)</option>
+              <option value="exam">สัปดาห์ก่อนสอบ (Pre-Exam)</option>
+              <option value="proj">ช่วงส่งโปรเจกต์ (Project Deadline)</option>
             </select>
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold">K</div>
-                <span class="font-semibold text-gray-700">Mr. Khalid (UAE)</span>
+          </div>
+
+          <div class="glass-card">
+            <div style="background: rgba(0,0,0,0.28); padding: 14px; border-radius: 12px; margin-bottom: 12px;">
+              <h3 style="margin-bottom: 6px; color: var(--warning);">📈 What Changed</h3>
+              <p id="dash-what" style="margin:0; color:#fff;">ระดับความเสี่ยงโดยรวมอยู่ในเกณฑ์ทรงตัว (Low 70%, Mod 20%, High 10%)</p>
             </div>
-        </div>
-    </nav>
-
-    <main class="max-w-6xl mx-auto mt-8 px-4">
-        
-        <div class="bg-gradient-to-r from-blue-700 to-blue-500 rounded-xl p-6 text-white mb-6 shadow-lg">
-            <h1 class="text-2xl font-bold mb-2">Welcome, Mr. Khalid. How can we help you today?</h1>
-            <p class="text-sm opacity-90"><i class="fa-solid fa-shield-halved"></i> Global Top Tier Care: Thailand ranks #5 Globally in the Medical Tourism Industry (MTA Index) <sup>[1]</sup></p>
-        </div>
-
-        <div class="flex border-b border-gray-300 mb-6">
-            <button onclick="switchTab('booking')" id="tab-booking" class="tab-active px-6 py-3 text-lg focus:outline-none"><i class="fa-regular fa-calendar-check mr-2"></i>AI Smart Booking</button>
-            <button onclick="switchTab('planner')" id="tab-planner" class="px-6 py-3 text-lg text-gray-500 hover:text-blue-500 focus:outline-none"><i class="fa-solid fa-calculator mr-2"></i>AI Treatment Planner</button>
-            <button onclick="switchTab('chat')" id="tab-chat" class="px-6 py-3 text-lg text-gray-500 hover:text-blue-500 focus:outline-none"><i class="fa-solid fa-robot mr-2"></i>AI Concierge</button>
-        </div>
-
-        <div id="content-booking" class="bg-white p-6 rounded-xl shadow-sm">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">1. AI Smart Booking (ตัวกลางนัดหมายแพทย์อัจฉริยะ)</h2>
-            <p class="text-gray-600 mb-6 text-sm">AI analyzes real-time doctor availability and cross-references your flight schedule to suggest the best slots.</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="col-span-1 border-r pr-6">
-                    <label class="block text-sm font-semibold mb-2">Procedure / Department</label>
-                    <select class="w-full border p-2 rounded mb-4 bg-gray-50">
-                        <option>Cardiology (Heart Bypass)</option>
-                        <option>Orthopedics (Knee Replacement)</option>
-                        <option>Check-up</option>
-                    </select>
-
-                    <label class="block text-sm font-semibold mb-2">Preferred Language</label>
-                    <select class="w-full border p-2 rounded mb-4 bg-gray-50">
-                        <option>Arabic Speaking Doctor / Translator</option>
-                        <option>English</option>
-                    </select>
-                    
-                    <button class="w-full bg-blue-600 text-white py-2 rounded shadow hover:bg-blue-700 transition">Analyze Availability</button>
-                </div>
-
-                <div class="col-span-2">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold">Available Slots: Dr. Somchai (Cardiologist)</h3>
-                        <div class="flex gap-4 text-sm">
-                            <span class="flex items-center"><div class="w-3 h-3 bg-gray-300 rounded-full mr-1"></div> Full</span>
-                            <span class="flex items-center"><div class="w-3 h-3 bg-green-500 rounded-full mr-1"></div> Available</span>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 text-center text-sm mb-4">
-                        <div class="font-bold">Sun</div><div class="font-bold">Mon</div><div class="font-bold">Tue</div><div class="font-bold">Wed</div><div class="font-bold">Thu</div><div class="font-bold">Fri</div><div class="font-bold">Sat</div>
-                        <div class="p-2 bg-gray-100 text-gray-400 rounded">1</div>
-                        <div class="p-2 bg-gray-300 text-gray-500 rounded">2 (Full)</div>
-                        <div class="p-2 bg-green-100 border border-green-500 rounded cursor-pointer hover:bg-green-200">3 (10:00 AM)</div>
-                        <div class="p-2 bg-green-100 border border-green-500 rounded cursor-pointer hover:bg-green-200">4 (02:00 PM)</div>
-                        <div class="p-2 bg-gray-300 text-gray-500 rounded">5 (Full)</div>
-                        <div class="p-2 bg-green-100 border border-green-500 rounded cursor-pointer hover:bg-green-200">6 (11:00 AM)</div>
-                        <div class="p-2 bg-gray-100 text-gray-400 rounded">7</div>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded border border-blue-200 text-sm">
-                        <i class="fa-solid fa-circle-check text-blue-600 mr-2"></i> <b>AI Recommendation:</b> Oct 4th is ideal based on your requested recovery time and UAE flight schedules. Post-op digital records will be synced to your profile via our secure portal.
-                    </div>
-                </div>
+            <div style="background: rgba(0,0,0,0.28); padding: 14px; border-radius: 12px; margin-bottom: 12px;">
+              <h3 style="margin-bottom: 6px; color: #fff;">🔍 Why It Matters</h3>
+              <p id="dash-why" style="margin:0; color: var(--text-main);">กิจวัตรส่วนใหญ่ยังคงเสถียร ทำให้ภาระความเครียดสะสมยังไม่เพิ่มขึ้นผิดปกติ</p>
             </div>
-        </div>
-
-        <div id="content-planner" class="bg-white p-6 rounded-xl shadow-sm hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">2. AI Treatment Planner (วางแผนค่าใช้จ่ายและการเดินทาง)</h2>
-            <p class="text-gray-600 mb-6 text-sm">Transparent pricing for Heart Bypass Surgery. No hidden costs. Select a package that suits your needs.</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="border rounded-lg p-4 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg border-b pb-2 mb-2">Standard Medical</h3>
-                    <p class="text-2xl font-bold text-blue-600 mb-4">~$25,000 USD <span class="text-xs text-gray-400 font-normal">*Ref 2</span></p>
-                    <ul class="text-sm text-gray-600 space-y-2 mb-4">
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> Surgery & Hospital Stay (7 days)</li>
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> Basic Translation (EN)</li>
-                        <li><i class="fa-solid fa-xmark text-red-400 mr-1"></i> Flights & Hotel</li>
-                    </ul>
-                </div>
-                <div class="border-2 border-blue-500 rounded-lg p-4 shadow-md relative">
-                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs">AI Recommended</div>
-                    <h3 class="font-bold text-lg border-b pb-2 mb-2 mt-2">Premium Care (UAE Tailored)</h3>
-                    <p class="text-2xl font-bold text-blue-600 mb-4">~$32,000 USD</p>
-                    <ul class="text-sm text-gray-600 space-y-2 mb-4">
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> All Medical Costs</li>
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> Full Arabic Translation & Escort</li>
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> 5-Star Halal Certified Hotel (10 days)</li>
-                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> VIP Airport Transfer</li>
-                    </ul>
-                </div>
+            <div style="background: rgba(20,184,166,0.10); border: 1px solid var(--teal); padding: 14px; border-radius: 12px;">
+              <h3 style="margin-bottom: 6px; color: var(--teal);">💡 Recommended Institutional Action</h3>
+              <p id="dash-rec" style="margin:0; color:#fff;">• สื่อสารเรื่อง Sleep Hygiene และการรักษาสมดุล routine ในภาพรวมของมหาวิทยาลัย</p>
             </div>
+          </div>
+        </div>
 
-            <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-6 shadow-inner">
-                <h4 class="font-bold mb-4 text-gray-800"><i class="fa-solid fa-plane-arrival text-blue-600 mr-2"></i> AI Pre-Arrival Guide: Documents & Travel</h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
-                    <div class="bg-white p-4 rounded shadow-sm border-l-4 border-blue-500">
-                        <p class="font-bold text-gray-800 mb-2"><i class="fa-solid fa-file-signature text-blue-500 mr-1"></i> Document Preparation (รายการเอกสารที่จำเป็น)</p>
-                        <p class="text-xs text-gray-500 mb-3">ระบบจะช่วยแนะนำเอกสารสำหรับยื่นคำขอวีซ่าเพื่อการรักษาพยาบาล:</p>
-                        <ul class="list-none text-gray-600 space-y-2">
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Passport:</strong> หนังสือเดินทางอายุไม่น้อยกว่า 6 เดือน และมีหน้าว่างเพียงพอ</li>
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Visa Form & Photos:</strong> แบบฟอร์มขอวีซ่าที่กรอกครบถ้วน และรูปถ่ายขนาดพาสปอร์ต 2 รูป (ไม่เกิน 6 เดือน)</li>
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Hospital Letter:</strong> จดหมายจากโรงพยาบาลในไทย ระบุรายละเอียดการรักษา วันนัดหมาย และระยะเวลาพำนัก</li>
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Medical Docs:</strong> เอกสารการแพทย์เพิ่มเติม เช่น ประวัติการรักษาจากประเทศต้นทาง</li>
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Health Insurance:</strong> สำเนากรมธรรม์ประกันสุขภาพที่ครอบคลุมค่ารักษาในไทย</li>
-                            <li><i class="fa-solid fa-angle-right text-blue-400 mr-1"></i> <strong>Financial Proof:</strong> หลักฐานการเงิน เช่น ใบแจ้งยอดบัญชีธนาคาร แสดงเงินเพียงพอสำหรับค่ารักษาและค่าใช้จ่ายอื่นๆ</li>
-                            <li class="mt-2 pt-2 border-t border-gray-200"><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> <span class="text-xs text-gray-500">หมายเหตุ: ผู้ป่วยสัญชาติ UAE จะได้รับสิทธิยกเว้นวีซ่าเข้ารับการรักษาพยาบาลในไทย (กรณีพำนักไม่เกินกำหนด) <sup>[3]</sup></span></li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-white p-4 rounded shadow-sm border-l-4 border-green-500">
-                        <p class="font-bold text-gray-800 mb-2"><i class="fa-solid fa-map-location-dot text-green-500 mr-1"></i> Flight & Local Transit</p>
-                        <p class="text-xs text-gray-500 mb-3">คำแนะนำตั๋วเครื่องบิน การเดินทาง และที่พัก</p>
-                        <ul class="list-none text-gray-600 space-y-2">
-                            <li><i class="fa-solid fa-angle-right text-green-400 mr-1"></i> <strong>Flights:</strong> แนะนำเที่ยวบินตรงจาก Emirates / Etihad Airways (ดูไบ/อาบูดาบี - กรุงเทพฯ) ตามข้อมูลยอดนิยม</li>
-                            <li><i class="fa-solid fa-angle-right text-green-400 mr-1"></i> <strong>Airport Transfer:</strong> บริการ VIP Fast-Track ที่สนามบิน พร้อมรถลิมูซีนรับส่งตรงถึงโรงพยาบาล/ที่พัก</li>
-                            <li><i class="fa-solid fa-angle-right text-green-400 mr-1"></i> <strong>Local Stay:</strong> AI คัดกรองโรงแรมมาตรฐาน Halal 3 แห่งใกล้โรงพยาบาล พร้อมบริการ Shuttle Bus <a href="#" class="text-blue-500 underline font-semibold">View Map</a></li>
-                        </ul>
-                    </div>
-                </div>
+        <div>
+          <div class="glass-card metrics-block">
+            <h2 style="margin-bottom: 16px;">📊 Mock Pilot Metrics</h2>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>7-Day Active Retention</span><span style="color:var(--teal)">82%</span></div>
+              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:82%; height:100%; background: var(--teal); border-radius:999px;"></div></div>
             </div>
-        </div>
-
-        <div id="content-chat" class="bg-white p-6 rounded-xl shadow-sm hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">3. AI Medical Concierge (ผู้ช่วยส่วนตัวและแชทบอท)</h2>
-            <p class="text-gray-600 mb-6 text-sm">Overcoming language barriers and providing continuous post-op support.</p>
-            
-            <div class="border rounded-lg bg-gray-50 flex flex-col h-96">
-                <div class="flex-1 p-4 overflow-y-auto">
-                    <div class="text-center text-xs text-gray-400 mb-4">Chat translated automatically to Arabic / English</div>
-                    
-                    <div class="chat-bubble chat-user">
-                        هل ستكون سجلاتي الطبية والتكاليف واضحة؟ (Will my medical records and costs be transparent?)
-                    </div>
-                    
-                    <div class="chat-bubble chat-bot">
-                        Hello Mr. Khalid. Yes, absolutely. All your medical records will be digitally translated to English/Arabic and uploaded to this portal for your local doctors in Dubai to review post-surgery. Also, the $32,000 package has no hidden fees. We guarantee price transparency.
-                    </div>
-
-                    <div class="chat-bubble chat-user">
-                        What can I buy for family back home during recovery?
-                    </div>
-
-                    <div class="chat-bubble chat-bot">
-                        Since you have downtime during recovery, I recommend exploring premium Thai Herbal Wellness products (e.g., Thai Balm, Herbal Inhalers) or Thai Silk. We can arrange a personal shopper to bring a selection to your Halal-certified hotel room!
-                    </div>
-                </div>
-                <div class="bg-white border-t p-3 flex">
-                    <input type="text" placeholder="Type your question in Arabic or English..." class="flex-1 outline-none px-2">
-                    <button class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700"><i class="fa-solid fa-paper-plane"></i></button>
-                </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Intervention Adherence</span><span style="color:var(--success)">75%</span></div>
+              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:75%; height:100%; background: var(--success); border-radius:999px;"></div></div>
             </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Reported Clarity of Insight</span><span style="color:var(--soft-blue)">90%</span></div>
+              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:90%; height:100%; background: var(--soft-blue); border-radius:999px;"></div></div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="mt-8 pt-6 border-t border-gray-300">
-            <h4 class="font-bold text-gray-700 text-sm mb-2"><i class="fa-solid fa-book-open text-gray-500 mr-1"></i> Data References & Trust Markers (อ้างอิงข้อมูลล่าสุด):</h4>
-            <ul class="text-xs text-gray-500 space-y-2">
-                <li><strong>[1] Medical Quality:</strong> Thailand is ranked 5th globally in the Medical Tourism Industry and 17th out of 46 destinations overall (Source: Medical Tourism Index / MTA 2020-2021).</li>
-                <li><strong>[2] Cost Efficiency:</strong> Procedures like Heart Bypass in Thailand offer significant savings compared to the USA, with highly transparent and competitive pricing structures (Source: MedicalTourism.com / Globlex Research).</li>
-                <li><strong>[3] Visa Convenience:</strong> Effective since January 5, 2013, UAE citizens traveling to Thailand for medical treatment are granted visa exemptions, streamlining the travel process (Source: Thailand Ministry of Public Health/Globlex).</li>
-            </ul>
+  <script>
+    const BASE = { sleep: 7.2, screen: 5.0, activity: 40, routine: 2, mood: 3 };
+    const state = {
+      sleep: 5.5,
+      screen: 9,
+      activity: 20,
+      routine: 'mod',
+      mood: 2,
+      completenessDays: 3,
+      riskLevel: 'mod',
+      riskScore: 0,
+      reasons: [],
+      actions: []
+    };
+
+    const chartPresets = {
+      7: [58, 64, 70, 76, 82, 88, 94],
+      14: [58, 61, 64, 68, 72, 76, 80, 83, 86, 89, 92, 94, 96, 98]
+    };
+    let chartDays = 7;
+
+    function nav(targetId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      if (targetId === 'screen-3') {
+        calculateRisk();
+        renderInsights();
+      }
+      if (targetId === 'screen-4') {
+        applyPreset('a', 0, 0, 0);
+      }
+      if (targetId === 'screen-5') {
+        calculateRisk();
+        renderSupport();
+      }
+    }
+
+    function switchView(view) {
+      const student = document.getElementById('student-app');
+      const admin = document.getElementById('admin-app');
+      if (view === 'admin') {
+        student.style.display = 'none';
+        admin.style.display = 'block';
+        updateDashboard(document.getElementById('dash-select').value || 'reg');
+      } else {
+        admin.style.display = 'none';
+        student.style.display = 'block';
+      }
+    }
+
+    const cbs = document.querySelectorAll('.consent-cb');
+    cbs.forEach(cb => cb.addEventListener('change', () => {
+      document.getElementById('btn-start').disabled = !Array.from(cbs).every(c => c.checked);
+    }));
+
+    function updateActivityLabel(val) {
+      const label = document.getElementById('val-act');
+      const numeric = Number(val);
+      const level = numeric <= 30 ? 'ต่ำ' : (numeric <= 60 ? 'ปานกลาง' : 'สูง');
+      label.innerText = `${level} (${numeric} นาที)`;
+    }
+
+    function selectSeg(el, parent) {
+      document.querySelectorAll(`#${parent} .seg-btn`).forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      state.routine = el.getAttribute('data-val');
+    }
+
+    function selectEmoji(el) {
+      document.querySelectorAll('.emoji-row span').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      state.mood = Number(el.getAttribute('data-val'));
+    }
+
+    function updateCheckinSummary() {
+      const tempSleep = Number(document.getElementById('in-sleep').value);
+      const tempScreen = Number(document.getElementById('in-screen').value);
+      const tempActivity = Number(document.getElementById('in-act').value);
+      const routineBtn = document.querySelector('#routine-seg .seg-btn.active');
+      const routineVal = routineBtn ? routineBtn.getAttribute('data-val') : state.routine;
+      const selectedMood = document.querySelector('#emoji-group span.selected');
+      const moodVal = selectedMood ? Number(selectedMood.getAttribute('data-val')) : state.mood;
+
+      const notes = [];
+      if (tempSleep < BASE.sleep - 1) notes.push('เวลานอนต่ำกว่า baseline');
+      if (tempScreen > BASE.screen + 2) notes.push('เวลาหน้าจอสูงกว่าปกติ');
+      if (tempActivity < 30) notes.push('กิจกรรมกายยังต่ำ');
+      if (routineVal === 'unstable') notes.push('กิจวัตรเริ่มแกว่ง');
+      if (moodVal <= 2) notes.push('อารมณ์วันนี้ค่อนข้างต่ำ');
+
+      const summary = document.getElementById('checkin-summary');
+      summary.innerText = notes.length
+        ? `วันนี้ระบบมองเห็นว่า ${notes.join(' • ')} ซึ่งอาจเพิ่มระดับความเสี่ยงเบื้องต้นได้`
+        : 'ข้อมูลวันนี้อยู่ในเกณฑ์ค่อนข้างสมดุล ระบบคาดว่าระดับความเสี่ยงยังไม่น่ากังวล';
+    }
+
+    function saveDataAndGo() {
+      state.sleep = Number(document.getElementById('in-sleep').value);
+      state.screen = Number(document.getElementById('in-screen').value);
+      state.activity = Number(document.getElementById('in-act').value);
+      const routineBtn = document.querySelector('#routine-seg .seg-btn.active');
+      if (routineBtn) state.routine = routineBtn.getAttribute('data-val');
+      const selectedMood = document.querySelector('#emoji-group span.selected');
+      if (selectedMood) state.mood = Number(selectedMood.getAttribute('data-val'));
+      nav('screen-3');
+    }
+
+    function calculateRisk() {
+      state.reasons = [];
+      state.actions = [];
+      let score = 0;
+
+      const sleepGap = Math.max(0, BASE.sleep - state.sleep);
+      const screenGap = Math.max(0, state.screen - BASE.screen);
+      const actGap = Math.max(0, BASE.activity - state.activity);
+
+      if (sleepGap > 1) {
+        score += sleepGap > 2 ? 2.2 : 1.8;
+        state.reasons.push({ key: 'sleep', label: 'Sleep Deficit', detail: `เวลานอนต่ำกว่า Baseline ${sleepGap.toFixed(1)} ชม.`, severity: 'warning' });
+        state.actions.push('Sleep Reset: เข้านอนเร็วขึ้น 1 ชั่วโมงในคืนนี้');
+      }
+      if (screenGap > 2) {
+        score += screenGap > 4 ? 2.2 : 1.8;
+        state.reasons.push({ key: 'screen', label: 'Screen Overload', detail: `เวลาหน้าจอสูงกว่า Baseline ${screenGap.toFixed(1)} ชม.`, severity: 'danger' });
+        state.actions.push('Screen Detox: งดมือถือ 45 นาทีก่อนนอน');
+      }
+      if (actGap > 10 || state.routine === 'unstable') {
+        score += 1.5;
+        state.reasons.push({ key: 'routine', label: 'Routine / Activity Deviation', detail: 'กิจกรรมกายลดลงหรือกิจวัตรไม่สม่ำเสมอ', severity: 'warning' });
+        state.actions.push('Routine Anchor: เดินรับแดดหรือขยับตัวช่วงเช้า 15 นาที');
+      }
+      if (state.mood <= 2) {
+        score += 1.4;
+        state.reasons.push({ key: 'mood', label: 'Mood Check-in ต่ำ', detail: 'อารมณ์วันนี้อยู่ในระดับต่ำ ควรจับตาต่อเนื่อง', severity: 'danger' });
+        state.actions.push('Mental Break: หยุดพักและทำกิจกรรมผ่อนคลาย 20–30 นาที');
+      }
+
+      state.riskScore = score;
+      state.riskLevel = score >= 4.2 ? 'high' : (score >= 2 ? 'mod' : 'low');
+
+      if (!state.actions.length) {
+        state.actions.push('Keep it up: รักษาสมดุลพฤติกรรมแบบนี้ต่อไป');
+      }
+    }
+
+    function renderInsights() {
+      const completeness = `${state.completenessDays}/7 Days`;
+      document.getElementById('data-completeness').innerText = `Completeness: ${completeness}`;
+      const confidenceText = state.completenessDays >= 5 ? 'Confidence: High ✅' : 'Confidence: Moderate ⏳';
+      document.getElementById('data-confidence').innerText = confidenceText;
+      document.getElementById('data-confidence').style.color = state.completenessDays >= 5 ? 'var(--success)' : '#fbbf24';
+
+      const circle = document.getElementById('risk-circle');
+      const riskText = document.getElementById('risk-text');
+      const riskMap = {
+        low: { text: 'LOW', color: 'var(--success)' },
+        mod: { text: 'MOD', color: 'var(--warning)' },
+        high: { text: 'HIGH', color: 'var(--danger)' }
+      };
+      circle.style.borderColor = riskMap[state.riskLevel].color;
+      circle.style.boxShadow = `0 0 22px ${riskMap[state.riskLevel].color.replace('var(','').includes('danger') ? 'rgba(239,68,68,0.22)' : state.riskLevel === 'mod' ? 'rgba(245,158,11,0.22)' : 'rgba(16,185,129,0.22)'}`;
+      riskText.style.color = riskMap[state.riskLevel].color;
+      riskText.innerText = riskMap[state.riskLevel].text;
+
+      const factors = document.getElementById('insight-factors');
+      if (!state.reasons.length) {
+        factors.innerHTML = '<p style="color: var(--success); font-size: 12px;">✅ พฤติกรรมโดยรวมสมดุลดี ระบบยังไม่พบปัจจัยเสี่ยงเด่น</p>';
+      } else {
+        factors.innerHTML = state.reasons.map((r) => {
+          const color = r.severity === 'danger' ? 'var(--danger)' : 'var(--warning)';
+          const border = r.severity === 'danger' ? 'rgba(239,68,68,0.36)' : 'rgba(245,158,11,0.32)';
+          return `<div class="factor-card" style="border-left-color:${color}; border:1px solid ${border};">
+            <div style="font-size: 12px; font-weight: 700; color:${color};">⚠️ ${r.label}</div>
+            <div style="font-size: 11px; color:#fff; margin-top: 4px;">${r.detail}</div>
+          </div>`;
+        }).join('');
+      }
+
+      const charts = document.getElementById('insight-charts');
+      charts.innerHTML = [
+        makeChart('การนอน', state.sleep, BASE.sleep, 12, state.sleep < BASE.sleep ? 'var(--warning)' : 'var(--success)', `${state.sleep.toFixed(1)}h / ${BASE.sleep.toFixed(1)}h`),
+        makeChart('หน้าจอ', state.screen, BASE.screen, 15, state.screen > BASE.screen ? 'var(--danger)' : 'var(--success)', `${state.screen.toFixed(1)}h / ${BASE.screen.toFixed(1)}h`),
+        makeChart('กิจกรรม', state.activity, BASE.activity, 120, state.activity < BASE.activity ? 'var(--warning)' : 'var(--success)', `${state.activity}m / ${BASE.activity}m`),
+        makeChart('กิจวัตร', routineScore(state.routine), BASE.routine, 3, state.routine === 'unstable' ? 'var(--warning)' : 'var(--success)', `${routineLabel(state.routine)} / Stable`),
+        makeChart('Mood', state.mood, BASE.mood, 5, state.mood <= 2 ? 'var(--danger)' : 'var(--success)', `${moodLabel(state.mood)} / Neutral`)
+      ].join('');
+
+      const trendHeights = [35, 42, 40, 52, 60, 70];
+      const today = state.riskLevel === 'high' ? 88 : (state.riskLevel === 'mod' ? 66 : 28);
+      trendHeights.push(today);
+      document.getElementById('trend-strip').innerHTML = trendHeights.map(h => {
+        const color = h > 75 ? 'var(--danger)' : (h > 50 ? 'var(--warning)' : 'var(--success)');
+        return `<div class="trend-dot" style="height:${h}%; background:${color};"></div>`;
+      }).join('');
+      document.getElementById('trend-caption').innerText = state.riskLevel === 'high'
+        ? 'ระบบพบแนวโน้มสะสมความเสี่ยงสูงขึ้น ควรรีบปรับพฤติกรรมและติดตามใกล้ชิด'
+        : state.riskLevel === 'mod'
+          ? 'ระบบพบความเบี่ยงเบนจาก Baseline หลายจุด ควรเริ่มปรับพฤติกรรมตั้งแต่ตอนนี้'
+          : 'แนวโน้มโดยรวมยังอยู่ในเกณฑ์คงที่ ระบบแนะนำให้รักษารูทีนต่อเนื่อง';
+    }
+
+    function makeChart(label, value, baseline, max, color, valueText) {
+      const fill = Math.min((value / max) * 100, 100);
+      const basePos = Math.min((baseline / max) * 100, 100);
+      return `<div class="chart-row">
+        <span class="chart-label">${label}</span>
+        <div class="chart-bar-bg">
+          <div class="chart-bar-fill" style="width:${fill}%; background:${color};"></div>
+          <div class="chart-bar-baseline" style="left:${basePos}%;"></div>
         </div>
+        <span class="chart-label" style="text-align:right; width:86px;">${valueText}</span>
+      </div>`;
+    }
 
-    </main>
+    function routineScore(routine) {
+      if (routine === 'stable') return 3;
+      if (routine === 'mod') return 2;
+      return 1;
+    }
+    function routineLabel(routine) {
+      return routine === 'stable' ? 'Stable' : (routine === 'mod' ? 'Moderate' : 'Unstable');
+    }
+    function moodLabel(mood) {
+      return mood <= 1 ? 'Very Low' : mood === 2 ? 'Low' : mood === 3 ? 'Neutral' : mood === 4 ? 'Good' : 'Very Good';
+    }
 
-    <script>
-        // Simple JS to switch tabs
-        function switchTab(tabId) {
-            // Hide all contents
-            document.getElementById('content-booking').classList.add('hidden');
-            document.getElementById('content-planner').classList.add('hidden');
-            document.getElementById('content-chat').classList.add('hidden');
-            
-            // Reset all tab styles
-            const tabs = ['tab-booking', 'tab-planner', 'tab-chat'];
-            tabs.forEach(id => {
-                document.getElementById(id).className = 'px-6 py-3 text-lg text-gray-500 hover:text-blue-500 focus:outline-none';
-            });
+    function setChartDays(days) {
+      chartDays = days;
+      document.getElementById('tab-7d').classList.toggle('active', days === 7);
+      document.getElementById('tab-14d').classList.toggle('active', days === 14);
+      runSim(false);
+    }
 
-            // Show selected content and highlight tab
-            document.getElementById('content-' + tabId).classList.remove('hidden');
-            document.getElementById('tab-' + tabId).className = 'tab-active px-6 py-3 text-lg focus:outline-none';
-        }
-    </script>
+    const simSleep = document.getElementById('sim-sleep');
+    const simScreen = document.getElementById('sim-screen');
+    const simAct = document.getElementById('sim-act');
+
+    function applyPreset(id, sleepAdj, screenAdj, actAdj) {
+      document.querySelectorAll('.scen-card').forEach(c => c.classList.remove('active'));
+      document.getElementById(`scen-${id}`).classList.add('active');
+      simSleep.value = sleepAdj;
+      simScreen.value = screenAdj;
+      simAct.value = actAdj;
+      runSim(false);
+    }
+
+    function runSim(manual = false) {
+      if (manual) {
+        document.querySelectorAll('.scen-card').forEach(c => c.classList.remove('active'));
+      }
+      const sleepAdj = Number(simSleep.value);
+      const screenAdj = Number(simScreen.value);
+      const actAdj = Number(simAct.value);
+      document.getElementById('sim-sleep-val').innerText = `+${sleepAdj} ชม.`;
+      document.getElementById('sim-screen-val').innerText = `-${screenAdj}%`;
+      document.getElementById('sim-act-val').innerText = ['คงเดิม', 'เพิ่มขึ้น', 'เพิ่มขึ้นมาก'][actAdj];
+
+      const startRisk = state.riskLevel === 'high' ? 84 : (state.riskLevel === 'mod' ? 64 : 40);
+      const improvement = (sleepAdj * 15) + (screenAdj * 0.8) + (actAdj * 10);
+      const arr = chartPresets[chartDays];
+      const color = improvement > 34 ? 'var(--success)' : (improvement > 0 ? '#fbbf24' : 'var(--warning)');
+
+      const bars = arr.map((v, i) => {
+        const drift = improvement === 0 ? i * (chartDays === 14 ? 2.3 : 4) : -(improvement * (chartDays === 14 ? i * 0.12 : i * 0.28));
+        const height = Math.max(18, Math.min(100, startRisk + drift));
+        return { height };
+      });
+
+      document.getElementById('future-chart').innerHTML = bars.map((b, i) => {
+        const label = chartDays === 14 ? (i % 2 === 0 ? `D${i+1}` : '') : `D${i+1}`;
+        return `<div class="bar-col"><div class="bar" style="height:${b.height}%; background:${color};"></div><div class="day-label">${label}</div></div>`;
+      }).join('');
+
+      const status = document.getElementById('sim-status');
+      const explain = document.getElementById('sim-explain');
+      if (improvement === 0) {
+        status.innerText = 'แนวโน้ม: เสี่ยงสะสม ⚠️';
+        status.style.color = 'var(--warning)';
+        explain.innerText = 'หากยังคงพฤติกรรมเดิม ระบบคาดว่า stress accumulation จะเพิ่มขึ้นต่อเนื่องจาก baseline ปัจจุบัน';
+      } else if (improvement > 34) {
+        status.innerText = 'แนวโน้ม: ฟื้นตัวชัดเจน 🌿';
+        status.style.color = 'var(--success)';
+        explain.innerText = 'การเพิ่มเวลานอน ลดหน้าจอ และเพิ่มกิจกรรมกายพร้อมกัน ช่วยให้ projected risk ลดลงอย่างชัดเจนภายใน 4–6 วัน';
+      } else {
+        status.innerText = 'แนวโน้ม: เริ่มทรงตัว 🌤️';
+        status.style.color = '#fbbf24';
+        explain.innerText = 'การปรับพฤติกรรมบางส่วนช่วยชะลอการสะสมของความเครียดได้ แต่ยังควรติดตามต่อเนื่อง';
+      }
+    }
+
+    simSleep.addEventListener('input', () => runSim(true));
+    simScreen.addEventListener('input', () => runSim(true));
+    simAct.addEventListener('input', () => runSim(true));
+
+    function renderSupport() {
+      calculateRisk();
+      switchTab(state.riskLevel);
+
+      document.getElementById('sup-reason').innerText = state.reasons.length
+        ? `ระบบเลือก intervention นี้เพราะ ${state.reasons.map(r => r.label).join(' + ')}`
+        : 'ระบบไม่พบปัจจัยเสี่ยงเด่นในขณะนี้';
+
+      document.getElementById('act-low').innerHTML = `
+        <p style="font-size:12px; color:#fff; margin-bottom:6px;">• รักษารูทีนการนอนและเวลาพักผ่อนต่อไป</p>
+        <p style="font-size:12px; color:#fff; margin-bottom:6px;">• เช็กอินอารมณ์สัปดาห์ละ 1 ครั้งเพื่อดูแนวโน้ม</p>`;
+
+      document.getElementById('act-mod').innerHTML = state.actions.map(a => `<p style="font-size:12px; color:#fff; margin-bottom:6px;">• ${a}</p>`).join('');
+    }
+
+    function switchTab(level) {
+      document.querySelectorAll('.support-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.support-content').forEach(c => c.classList.remove('active'));
+      const tab = document.querySelector(`.support-tab[data-level="${level}"]`);
+      const panel = document.getElementById(`sup-${level}`);
+      if (tab) tab.classList.add('active');
+      if (panel) panel.classList.add('active');
+    }
+
+    function updateDashboard(mode) {
+      const statActive = document.getElementById('stat-active');
+      const statRisk = document.getElementById('stat-risk');
+      const statSleep = document.getElementById('stat-sleep');
+      const statRoutine = document.getElementById('stat-routine');
+      const what = document.getElementById('dash-what');
+      const why = document.getElementById('dash-why');
+      const rec = document.getElementById('dash-rec');
+
+      if (mode === 'exam') {
+        statActive.innerText = '1,420';
+        statRisk.innerText = '28%';
+        statSleep.innerText = '-1.2h';
+        statRoutine.innerText = '54%';
+        what.innerText = 'สัดส่วนนักศึกษาที่มีความเสี่ยงระดับปานกลาง–สูงเพิ่มขึ้น 25% ในช่วงก่อนสอบ โดยเฉพาะกลุ่มที่นอนน้อยและใช้หน้าจอช่วงดึก';
+        why.innerText = 'Average Sleep Trend ลดลง ขณะที่ Screen Overload และ Routine Deviation สูงขึ้น ทำให้ภาระความเครียดสะสมเพิ่มแบบเป็นช่วงเวลา';
+        rec.innerHTML = '• ขยายเวลา Drop-in Counseling Hour<br>• จัดกิจกรรม Digital Detox Space และ Sleep Hygiene Campaign ในสัปดาห์ก่อนสอบ';
+      } else if (mode === 'proj') {
+        statActive.innerText = '1,180';
+        statRisk.innerText = '24%';
+        statSleep.innerText = '-0.9h';
+        statRoutine.innerText = '49%';
+        what.innerText = 'ช่วงส่งโปรเจกต์พบว่า Routine Stability ลดลงมากที่สุด และนักศึกษาหลายคนมีแนวโน้มพักผ่อนไม่ต่อเนื่อง';
+        why.innerText = 'Project deadlines ทำให้เวลาตื่น–นอนแกว่งและ activity ลดลง ส่งผลต่อ recovery ในระยะสั้น';
+        rec.innerHTML = '• เพิ่มการสื่อสารเรื่อง structured break ระหว่างทำโปรเจกต์<br>• สนับสนุน quiet recovery corners และ nudges เรื่อง movement breaks';
+      } else {
+        statActive.innerText = '1,350';
+        statRisk.innerText = '20%';
+        statSleep.innerText = '-0.4h';
+        statRoutine.innerText = '62%';
+        what.innerText = 'ระดับความเสี่ยงโดยรวมอยู่ในเกณฑ์ทรงตัว (Low 70%, Mod 20%, High 10%) และยังไม่พบ deviation เป็นวงกว้าง';
+        why.innerText = 'กิจวัตรส่วนใหญ่ยังคงเสถียร ทำให้ burden ของความเครียดสะสมไม่เพิ่มขึ้นผิดปกติ';
+        rec.innerHTML = '• สื่อสารเรื่อง Sleep Hygiene และการรักษา routine พื้นฐานอย่างต่อเนื่องในระดับมหาวิทยาลัย';
+      }
+    }
+
+    updateCheckinSummary();
+  </script>
 </body>
 </html>
