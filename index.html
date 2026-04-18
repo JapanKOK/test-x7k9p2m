@@ -3,1127 +3,1216 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FutureMind Prototype</title>
+  <title>FutureMind Full System Prototype</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-color: #0B132B;
-      --panel-dark: #111827;
-      --teal: #14b8a6;
-      --teal-hover: #0d9488;
-      --soft-blue: #3b82f6;
-      --lavender: #c4b5fd;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --success: #10b981;
-      --card-bg: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.15);
-      --text-main: #f8fafc;
-      --text-sub: #94a3b8;
-      --muted: rgba(255,255,255,0.06);
-      --shadow: 0 0 40px rgba(20, 184, 166, 0.18);
+    :root{
+      --bg:#050b1f;
+      --bg-2:#0b1431;
+      --bg-3:#121f45;
+      --card:rgba(13,23,58,.84);
+      --card-2:rgba(10,18,44,.92);
+      --line:rgba(255,255,255,.09);
+      --text:#f7fbff;
+      --muted:#8da0c7;
+      --teal:#15d2c3;
+      --blue:#4e86ff;
+      --violet:#8a5cff;
+      --pink:#ff5b8c;
+      --warning:#ffb14a;
+      --danger:#ff5d66;
+      --success:#48d58a;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --radius:22px;
     }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Prompt',sans-serif}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(900px 500px at 20% 0%, rgba(123,78,255,.18), transparent 55%),
+        radial-gradient(700px 450px at 100% 15%, rgba(37,173,255,.16), transparent 45%),
+        linear-gradient(180deg, #030817 0%, #081127 100%);
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:24px;
+      gap:24px;
+      overflow-x:hidden;
+    }
+    ::-webkit-scrollbar{width:0;height:0}
+    button,input,select{font:inherit}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-    body {
-      background: radial-gradient(circle at top, #101b3a 0%, #000 60%);
-      color: var(--text-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
+    .phone{
+      width:100%; max-width:430px; height:min(900px,94vh);
+      background:linear-gradient(180deg, #07102a 0%, #0c1634 48%, #091127 100%);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:34px;
+      box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,255,255,.04);
+      position:relative; overflow:hidden;
     }
+    .phone::before{
+      content:""; position:absolute; inset:0;
+      background:
+        radial-gradient(300px 220px at 85% 10%, rgba(118, 78, 255, .18), transparent 60%),
+        radial-gradient(320px 200px at 10% 16%, rgba(36, 211, 207, .10), transparent 58%);
+      pointer-events:none;
+    }
+    .phone-scroll{height:100%;overflow:auto;position:relative}
 
-    .app-shell {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      align-items: flex-start;
-    }
+    .screen{display:none; padding:24px 20px 96px; min-height:100%; animation:fade .28s ease}
+    .screen.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    .app-container {
-      width: 100%;
-      max-width: 430px;
-      height: calc(100vh - 32px);
-      max-height: 900px;
-      background: linear-gradient(180deg, #0B132B 0%, #172554 100%);
-      overflow-y: auto;
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.08);
-      position: relative;
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .icon-btn{
+      width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);color:var(--text);display:flex;align-items:center;justify-content:center;
+      cursor:pointer
     }
+    .brand{font-size:14px;font-weight:600;color:#e6eeff}
+    .brand span{color:#8a5cff}
 
-    .admin-container {
-      display: none;
-      width: 100%;
-      max-width: 1080px;
-      min-height: calc(100vh - 32px);
-      max-height: calc(100vh - 32px);
-      overflow-y: auto;
-      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 0 40px rgba(59, 130, 246, 0.22);
-      padding: 28px;
-    }
+    h1{font-size:27px;line-height:1.18;font-weight:700;margin-bottom:6px}
+    h2{font-size:16px;font-weight:600;margin-bottom:10px}
+    h3{font-size:14px;font-weight:600}
+    p{font-size:13px;line-height:1.55;color:var(--muted)}
 
-    .app-container::-webkit-scrollbar,
-    .admin-container::-webkit-scrollbar { display: none; }
-    .app-container, .admin-container { -ms-overflow-style: none; scrollbar-width: none; }
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;font-size:11px;font-weight:600}
+    .pill.primary{background:rgba(138,92,255,.18); color:#cbb8ff; border:1px solid rgba(138,92,255,.32)}
+    .pill.soft{background:rgba(255,255,255,.06);color:#c8d6f6;border:1px solid rgba(255,255,255,.08)}
+    .pill.success{background:rgba(72,213,138,.18);color:#9ff1c0;border:1px solid rgba(72,213,138,.28)}
+    .pill.warn{background:rgba(255,177,74,.14);color:#ffd18d;border:1px solid rgba(255,177,74,.24)}
+    .pill.danger{background:rgba(255,93,102,.18);color:#ffb5bb;border:1px solid rgba(255,93,102,.24)}
 
-    .screen {
-      display: none;
-      padding: 28px 24px 32px;
-      min-height: 100%;
-      animation: fadeIn 0.28s ease-out;
+    .card{
+      background:linear-gradient(180deg, rgba(15,25,61,.96) 0%, rgba(8,16,42,.96) 100%);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      margin-bottom:14px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+      position:relative;
+      overflow:hidden;
     }
-    .screen.active { display: block; }
+    .card.glow::after{
+      content:"";position:absolute;inset:auto -20% -45% auto;width:180px;height:180px;border-radius:50%;
+      background:radial-gradient(circle, rgba(138,92,255,.24) 0%, rgba(138,92,255,0) 70%); pointer-events:none;
+    }
+    .card-row{display:flex;gap:12px}
+    .stack{display:flex;flex-direction:column;gap:12px}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .three-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .muted-link{font-size:12px;color:#cdd8ff;text-decoration:none;cursor:pointer}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .hero-title{font-size:29px;margin-top:10px}
+    .subtitle{font-size:13px;color:var(--muted);margin-bottom:14px}
 
-    h1 {
-      font-size: 23px;
-      line-height: 1.28;
-      color: var(--teal);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-    h2 {
-      font-size: 15px;
-      line-height: 1.35;
-      margin-bottom: 12px;
-      color: #fff;
-      font-weight: 600;
-    }
-    h3 {
-      font-size: 13px;
-      line-height: 1.35;
-      color: #fff;
-      font-weight: 600;
-    }
-    p {
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--text-sub);
-      margin-bottom: 12px;
-    }
+    .consent-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+    .checkline{display:flex;gap:12px;align-items:flex-start}
+    .checkline input{accent-color:var(--teal);margin-top:4px;width:18px;height:18px}
+    .checkline label{font-size:13px;line-height:1.45;color:#e9f1ff}
+    .onboarding-consent-panel{margin-top:18px;padding:16px;border-radius:24px;background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+    .onboarding-consent-panel .consent-list{gap:14px;margin-top:0}
+    .onboarding-consent-panel .checkline{padding:2px 0;gap:14px}
+    .onboarding-consent-panel .checkline input{width:20px;height:20px;margin-top:1px}
+    .onboarding-consent-panel .checkline label{font-size:12.5px;line-height:1.55;color:#eef4ff}
+    .onboarding-consent-panel .btn{margin-top:14px;min-height:56px;border-radius:20px}
 
-    .glass-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(12px);
-    }
+    .baseline-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .baseline-card{padding:14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+    .baseline-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+    .baseline-card-title{font-size:14px;font-weight:700;color:#eef4ff}
+    .baseline-card-values{font-size:14px;font-weight:700;color:#ffffff;text-align:right;white-space:nowrap}
+    .baseline-card-values span{color:#9fb2d9;font-weight:600}
+    .baseline-track{position:relative;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:visible}
+    .baseline-fill{height:100%;border-radius:999px;transition:.4s ease;width:0}
+    .baseline-marker{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+    .baseline-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .baseline-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;color:#dfe9ff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
+    .baseline-dot{width:8px;height:8px;border-radius:50%}
 
-    .top-note {
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 16px;
+    .btn{
+      display:flex;justify-content:center;align-items:center;gap:8px;width:100%;padding:15px 16px;border:0;
+      border-radius:18px;background:linear-gradient(90deg, #7b4eff 0%, #3454ff 100%);color:white;font-weight:700;cursor:pointer;
+      box-shadow:0 10px 30px rgba(83,81,255,.28)
     }
+    .btn:disabled{background:#42506b;box-shadow:none;color:#96a3bf;cursor:not-allowed}
+    .btn.secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);box-shadow:none;color:#dce7ff}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12);box-shadow:none;color:#c8d6f6}
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(20, 184, 166, 0.18);
-      color: var(--teal);
-      border: 1px solid rgba(20, 184, 166, 0.28);
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      margin-bottom: 12px;
-      font-weight: 600;
-    }
+    .slider-wrap{margin-bottom:16px}
+    .slider-header{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:8px;color:#d9e6ff}
+    input[type=range]{width:100%;accent-color:var(--teal)}
 
-    .subtle-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 10px;
+    .segmented{display:flex;gap:8px;background:rgba(255,255,255,.03);padding:4px;border-radius:16px;border:1px solid rgba(255,255,255,.06)}
+    .segmented button{
+      flex:1;border:0;background:transparent;color:#c6d3ef;padding:8px;border-radius:12px;font-size:12px;cursor:pointer
     }
+    .segmented button.active{background:linear-gradient(90deg, rgba(123,78,255,.45), rgba(53,84,255,.35));color:#fff}
 
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      color: #fff;
-      background: var(--teal);
-      margin-top: 14px;
-      transition: 0.2s ease;
+    .emoji-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+    .emoji{
+      flex:1;display:flex;justify-content:center;align-items:center;padding:10px 0;border-radius:16px;
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);cursor:pointer;font-size:26px;filter:grayscale(1)
     }
-    .btn:hover:not(:disabled) { background: var(--teal-hover); }
-    .btn:disabled {
-      background: #475569;
-      color: #94a3b8;
-      cursor: not-allowed;
-    }
-    .btn-outline {
-      width: 100%;
-      border-radius: 14px;
-      padding: 13px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid var(--teal);
-      background: transparent;
-      color: var(--teal);
-      margin-top: 10px;
-    }
+    .emoji.selected{filter:none;transform:translateY(-1px);border-color:rgba(138,92,255,.35);background:rgba(138,92,255,.1)}
 
-    .checkbox-group {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-    .checkbox-group input {
-      width: 18px;
-      height: 18px;
-      margin-top: 3px;
-      accent-color: var(--teal);
-    }
-    .checkbox-group label {
-      font-size: 13px;
-      line-height: 1.45;
-      color: var(--text-main);
-    }
+    .app-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+    .hello strong{display:block;font-size:17px;color:#fff;margin-bottom:4px}
+    .chip-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:16px;font-size:12px;color:#dce7ff}
 
-    .slider-container { margin-bottom: 16px; }
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 13px;
-      margin-bottom: 8px;
+    .risk-layout{display:grid;grid-template-columns:160px 1fr;gap:14px}
+    .gauge{
+      width:140px;height:140px;border-radius:50%;margin:0 auto;position:relative;
+      background:conic-gradient(var(--danger) 0deg, var(--warning) 110deg, var(--success) 220deg, rgba(255,255,255,.09) 220deg 360deg);
+      display:flex;align-items:center;justify-content:center;
     }
-    input[type=range] { width: 100%; accent-color: var(--teal); }
+    .gauge::before{
+      content:"";position:absolute;inset:14px;border-radius:50%;background:linear-gradient(180deg, #091128 0%, #0b1738 100%);border:1px solid rgba(255,255,255,.05)
+    }
+    .gauge-center{position:relative;text-align:center;z-index:2}
+    .score-num{font-size:42px;font-weight:700;line-height:1}
+    .score-den{font-size:15px;color:#c6d3ef}
+    .risk-copy .risk-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .risk-copy .risk-title span{font-size:12px;padding:6px 10px;border-radius:999px;font-weight:700}
+    .risk-high{background:rgba(255,93,102,.16);color:#ffb4ba;border:1px solid rgba(255,93,102,.26)}
+    .risk-mod{background:rgba(255,177,74,.15);color:#ffd38f;border:1px solid rgba(255,177,74,.23)}
+    .risk-low{background:rgba(72,213,138,.15);color:#a0f0c0;border:1px solid rgba(72,213,138,.23)}
 
-    .segmented-control {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .seg-btn {
-      flex: 1;
-      padding: 7px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid transparent;
-      text-align: center;
-      font-size: 11px;
-      cursor: pointer;
-      color: #fff;
-      transition: 0.2s ease;
-      user-select: none;
-    }
-    .seg-btn.active {
-      background: rgba(20, 184, 166, 0.18);
-      border-color: var(--teal);
-      color: var(--teal);
-      font-weight: 700;
-    }
+    .line-chart{position:relative;height:160px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,.01));overflow:hidden}
+    .line-chart svg{width:100%;height:100%}
+    .chart-foot{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)}
+    .insight-list{display:flex;flex-direction:column;gap:10px}
+    .insight-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center}
+    .icon-badge{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);font-size:15px}
+    .insight-bar{height:6px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin-top:6px}
+    .insight-fill{height:100%;border-radius:999px}
 
-    .emoji-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 26px;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-    .emoji-row span {
-      filter: grayscale(100%);
-      transition: 0.18s ease;
-      flex: 1;
-      text-align: center;
-    }
-    .emoji-row span.selected {
-      filter: grayscale(0%);
-      transform: scale(1.15);
-    }
+    .prediction-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .prediction-card{padding:12px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    .prediction-card strong{display:block;font-size:33px;line-height:1;margin:6px 0}
 
-    .mini-summary {
-      font-size: 11px;
-      color: var(--lavender);
-      background: rgba(196, 181, 253, 0.08);
-      border-radius: 10px;
-      padding: 10px;
-      margin-top: 12px;
-    }
+    .action-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .action-chip{padding:12px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .action-chip small{display:block;color:#8bd9ac;font-size:11px;margin-top:6px}
 
-    .badge-confidence {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 11px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 16px;
+    .bottom-nav{
+      position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+      margin:14px -4px -12px;background:rgba(6,11,27,.82);backdrop-filter:blur(18px);padding:12px 8px 6px;border-top:1px solid rgba(255,255,255,.06)
     }
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:6px;color:#94a8d4;font-size:11px;cursor:pointer;padding:8px 0;border-radius:14px}
+    .nav-item.active{color:#cbb8ff;background:rgba(123,78,255,.14)}
 
-    .status-circle {
-      width: 112px;
-      height: 112px;
-      border-radius: 50%;
-      border: 6px solid var(--warning);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin: 0 auto 16px;
-      box-shadow: 0 0 22px rgba(245,158,11,0.22);
-      transition: 0.22s ease;
-    }
-    .status-circle span {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--warning);
-    }
-    .status-circle small {
-      color: var(--text-sub);
-      font-size: 11px;
-      margin-top: 2px;
-    }
+    .mini-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .mini-stat{padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .mini-stat strong{display:block;font-size:16px;margin-top:4px}
 
-    .trend-strip {
-      display: flex;
-      gap: 4px;
-      align-items: flex-end;
-      height: 34px;
-      margin-top: 6px;
-    }
-    .trend-dot {
-      flex: 1;
-      border-radius: 6px 6px 4px 4px;
-      min-height: 6px;
-    }
+    .sleep-card{display:grid;grid-template-columns:1fr 104px;gap:12px;align-items:center}
+    .sleep-score{font-size:42px;font-weight:700;line-height:1}
+    .moon-illus{width:100%;aspect-ratio:1;border-radius:22px;background:radial-gradient(circle at 30% 30%, rgba(122,143,255,.3), transparent 55%), linear-gradient(180deg, rgba(81,102,255,.18), rgba(81,102,255,.04));display:flex;align-items:center;justify-content:center;font-size:56px}
+    .sleep-bars{display:flex;align-items:flex-end;justify-content:space-between;height:120px;margin-top:10px}
+    .sleep-bar{width:12%;max-width:20px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#5da7ff,#2f7aff)}
+    .sleep-days{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:8px}
+    .dashed-line{height:1px;border-top:1px dashed rgba(255,255,255,.22);position:absolute;left:12px;right:12px;top:52%}
 
-    .factor-card {
-      background: rgba(0,0,0,0.22);
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-left: 3px solid rgba(255,255,255,0.12);
-    }
+    .insight-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .summary-card{padding:12px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .summary-card strong{display:block;font-size:15px;margin-top:4px}
 
-    .chart-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 11px;
+    .future-hero{display:grid;grid-template-columns:1.3fr .7fr;gap:12px;align-items:center}
+    .avatar-block{
+      border-radius:24px;min-height:220px;background:
+        radial-gradient(circle at 50% 30%, rgba(255,91,140,.22), transparent 52%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;
     }
-    .chart-label {
-      width: 78px;
-      font-size: 11px;
-      color: var(--text-sub);
-      flex-shrink: 0;
-    }
-    .chart-bar-bg {
-      flex: 1;
-      height: 6px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 999px;
-      position: relative;
-    }
-    .chart-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      position: absolute;
-      left: 0;
-      top: 0;
-      transition: width 0.25s ease;
-    }
-    .chart-bar-baseline {
-      position: absolute;
-      top: -4px;
-      width: 2px;
-      height: 14px;
-      background: #fff;
-      border-radius: 2px;
-    }
+    .avatar-face{font-size:110px;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
+    .bubble{position:absolute;padding:10px 12px;border-radius:18px;background:rgba(255,93,102,.14);border:1px solid rgba(255,93,102,.3);font-size:11px;color:#ffd6da}
+    .bubble.sleep{top:18px;left:16px}
+    .bubble.energy{top:18px;right:16px}
+    .bubble.social{bottom:22px;right:18px}
+    .bubble.irrit{bottom:22px;left:18px}
 
-    .future-chart {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      height: 110px;
-      gap: 4px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.16);
-      margin-top: 10px;
-    }
-    .bar-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .bar {
-      width: 100%;
-      max-width: 16px;
-      border-radius: 5px 5px 0 0;
-      transition: 0.28s ease;
-    }
-    .day-label {
-      font-size: 9px;
-      color: var(--text-sub);
-      margin-top: 6px;
-      min-height: 14px;
-    }
+    .change-list{display:flex;flex-direction:column;gap:12px}
+    .change-item{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center}
+    .impact{color:#7ff2a8;font-weight:700;font-size:13px}
 
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .scen-card {
-      background: rgba(0,0,0,0.24);
-      border-radius: 12px;
-      padding: 10px 8px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-align: center;
-    }
-    .scen-card.active {
-      border-color: var(--teal);
-      background: rgba(20,184,166,0.12);
-    }
-    .scen-label {
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .scen-risk {
-      font-size: 10px;
-      color: var(--text-sub);
-    }
+    .support-tabs{display:flex;gap:8px;margin-bottom:14px}
+    .support-tab{flex:1;text-align:center;padding:10px 8px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid transparent;color:#9fb2db;cursor:pointer;font-size:12px}
+    .support-tab.active.low{border-color:rgba(72,213,138,.3);color:#a6efc3;background:rgba(72,213,138,.1)}
+    .support-tab.active.mod{border-color:rgba(255,177,74,.3);color:#ffd28b;background:rgba(255,177,74,.1)}
+    .support-tab.active.high{border-color:rgba(255,93,102,.3);color:#ffb4ba;background:rgba(255,93,102,.1)}
+    .support-panel{display:none}
+    .support-panel.active{display:block}
+    .reason-box{padding:12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:12px}
+    .action-list{display:flex;flex-direction:column;gap:10px}
+    .action-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:flex-start}
 
-    .compare-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
+    .dashboard{
+      display:none; width:min(1180px, calc(100vw - 48px)); height:min(92vh, 860px);
+      background:linear-gradient(180deg, #0b122a 0%, #091123 100%); border-radius:28px; border:1px solid rgba(255,255,255,.08);
+      box-shadow:var(--shadow); overflow:auto; padding:28px;
     }
-    .compare-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 10px;
-      text-align: center;
-      font-size: 10px;
-    }
+    .dashboard.active{display:block}
+    .dash-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}
+    .dash-sub{font-size:13px;color:var(--muted)}
+    .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+    .stat-box{padding:18px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .stat-box strong{display:block;font-size:32px;line-height:1.1;margin-top:4px}
+    .govern-box{padding:14px;border-radius:18px;background:rgba(72,213,138,.08);border:1px solid rgba(72,213,138,.18);margin-bottom:14px}
+    .policy-cards{display:flex;flex-direction:column;gap:12px}
+    .policy-card{padding:16px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .meter{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:6px}
+    .meter > div{height:100%}
+    .desktop-chart{height:180px;border-radius:18px;background:rgba(255,255,255,.03);padding:14px;border:1px solid rgba(255,255,255,.05)}
 
-    .support-tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-      margin-bottom: 14px;
-    }
-    .support-tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px;
-      font-size: 12px;
-      color: var(--text-sub);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      opacity: 0.52;
-    }
-    .support-tab.active[data-level="low"] { color: var(--success); border-color: var(--success); opacity: 1; }
-    .support-tab.active[data-level="mod"] { color: var(--warning); border-color: var(--warning); opacity: 1; }
-    .support-tab.active[data-level="high"] { color: var(--danger); border-color: var(--danger); opacity: 1; }
+    .hidden{display:none!important}
 
-    .support-content { display: none; }
-    .support-content.active { display: block; animation: fadeIn 0.22s ease-out; }
-
-    .admin-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-    }
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 18px;
-      text-align: center;
-    }
-    .metrics-block > div { margin-bottom: 14px; }
-
-    .helper-text {
-      font-size: 11px;
-      color: var(--text-sub);
-    }
-
-    @media (max-width: 1024px) {
-      .admin-grid { grid-template-columns: 1fr; }
-      .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 768px) {
-      body { align-items: flex-start; padding: 12px; }
-      .admin-container {
-        padding: 18px;
-        min-height: calc(100vh - 24px);
-        max-height: calc(100vh - 24px);
-      }
+    @media (max-width: 980px){
+      body{flex-direction:column;align-items:center}
+      .dashboard{width:min(100%, calc(100vw - 24px));height:auto;max-height:none}
+      .dash-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <div class="app-container" id="student-app">
-      <div id="screen-1" class="screen active">
-        <h1>FutureMind</h1>
-        <p>AI-powered early wellbeing risk screening สำหรับนักศึกษามหาวิทยาลัย</p>
-        <div class="badge">🚀 Pilot Phase • Preventive Mental Health</div>
+  <div class="phone" id="student-app">
+    <div class="phone-scroll">
+      <section id="screen-onboarding" class="screen active">
+        <div class="topbar">
+          <button class="icon-btn" aria-label="menu">☰</button>
+          <div class="brand">Future<span>Mind</span></div>
+          <button class="icon-btn" aria-label="bell">🔔</button>
+        </div>
+        <div class="pill primary">🚀 Pilot Phase สำหรับนักศึกษามหาวิทยาลัย</div>
+        <h1 class="hero-title">AI-powered early wellbeing risk screening</h1>
+        <p class="subtitle">ช่วยให้คุณเข้าใจพฤติกรรมประจำวัน เห็นแนวโน้มสุขภาวะจิตล่วงหน้า และปรับตัวได้ก่อนปัญหาจะรุนแรง</p>
 
-        <div class="glass-card">
+        <div class="card glow">
           <h2>📌 ข้อมูลที่ระบบเก็บ</h2>
-          <p style="margin-bottom:0; font-size:12px;">• ชั่วโมงการนอน • เวลาการใช้งานหน้าจอ • ระดับกิจกรรมทางกาย • ความสม่ำเสมอของกิจวัตร • Daily Mood Check-in</p>
+          <p>ชั่วโมงการนอน, เวลาหน้าจอ, ระดับกิจกรรมทางกาย, ความสม่ำเสมอของกิจวัตร และ mood check-in รายวัน เพื่อสร้าง baseline ส่วนบุคคลและคัดกรองความเสี่ยงเบื้องต้น</p>
         </div>
 
-        <div class="glass-card" style="border-color: rgba(239,68,68,0.30);">
+        <div class="card">
           <h2>🔒 ข้อมูลที่ระบบไม่ใช้</h2>
-          <p style="margin-bottom:0; font-size:12px; color:#fca5a5;">• ไม่อ่านข้อความส่วนตัว/แชท • ไม่เข้าถึงเนื้อหาเสียง • ไม่เปิดเผยข้อมูลระบุตัวตนให้สถานศึกษา</p>
+          <p>ไม่อ่านข้อความส่วนตัว ไม่เข้าถึงเนื้อหาการสนทนาทางเสียง และไม่เปิดเผยข้อมูลระบุตัวตนใน dashboard ระดับสถานศึกษา</p>
+          <div class="pill soft">⏳ Baseline ส่วนบุคคลใช้เวลา 7 วันแรก</div>
         </div>
 
-        <div class="top-note">
-          <p style="margin:0; font-size:11px; color:var(--lavender);">⏳ <b>หมายเหตุ:</b> ระบบใช้เวลา 7 วันแรกในการสร้าง Baseline ส่วนบุคคล และใช้เพื่อการคัดกรองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์</p>
+        <div class="onboarding-consent-panel">
+          <div class="consent-list">
+            <div class="checkline"><input type="checkbox" id="cb1" class="consent"><label for="cb1">ยินยอมให้ใช้ข้อมูลพฤติกรรมเพื่อการคัดกรองสุขภาวะจิตเบื้องต้น</label></div>
+            <div class="checkline"><input type="checkbox" id="cb2" class="consent"><label for="cb2">เข้าใจว่าระบบนี้ไม่ใช่เครื่องมือวินิจฉัยทางการแพทย์ แต่เป็นเครื่องมือคัดกรองเชิงป้องกัน</label></div>
+            <div class="checkline"><input type="checkbox" id="cb3" class="consent"><label for="cb3">รับทราบว่าสามารถหยุดใช้งานหรือถอนความยินยอมได้ตลอดเวลา</label></div>
+          </div>
+
+          <button class="btn" id="start-btn" disabled onclick="goToCheckin()">เริ่มต้นสร้าง Baseline</button>
+        </div>
+      </section>
+
+      <section id="screen-checkin" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-onboarding')">←</button>
+          <div class="brand">Future<span>Mind</span></div>
+          <div class="pill soft">📊 Day <span id="baseline-day">3</span>/7</div>
         </div>
 
-        <div class="checkbox-group"><input type="checkbox" id="c1" class="consent-cb"><label for="c1">ยินยอมให้ใช้ข้อมูลพฤติกรรมเพื่อคัดกรองความเสี่ยงสุขภาวะจิตเบื้องต้น</label></div>
-        <div class="checkbox-group"><input type="checkbox" id="c2" class="consent-cb"><label for="c2">เข้าใจว่าระบบนี้ไม่ใช่เครื่องมือวินิจฉัยทางการแพทย์</label></div>
-        <div class="checkbox-group"><input type="checkbox" id="c3" class="consent-cb"><label for="c3">รับทราบว่าสามารถหยุดใช้งานหรือถอนความยินยอมได้ตลอดเวลา</label></div>
-
-        <button class="btn" id="btn-start" disabled onclick="nav('screen-2')">เริ่มต้นสร้าง Baseline</button>
-      </div>
-
-      <div id="screen-2" class="screen">
         <h1>Daily Check-in</h1>
-        <div class="badge" style="background: rgba(59,130,246,0.18); color: var(--soft-blue);">📊 Day 3/7 of Baseline Building</div>
+        <p class="subtitle">บันทึกพฤติกรรมวันนี้เพื่อให้ AI เข้าใจ baseline ของคุณได้แม่นขึ้น</p>
 
-        <div class="glass-card">
-          <div class="slider-container">
-            <div class="slider-label"><span>เวลานอนเมื่อคืน</span><span id="val-sleep">5.5 ชม.</span></div>
-            <input type="range" id="in-sleep" min="2" max="12" step="0.5" value="5.5" oninput="document.getElementById('val-sleep').innerText = this.value + ' ชม.'; updateCheckinSummary();">
+        <div class="card">
+          <div class="slider-wrap">
+            <div class="slider-header"><span>เวลานอนเมื่อคืน</span><strong id="sleep-label">5.5 ชม.</strong></div>
+            <input id="sleep-input" type="range" min="2" max="12" step="0.5" value="5.5">
           </div>
-          <div class="slider-container">
-            <div class="slider-label"><span>เวลาอยู่หน้าจอวันนี้</span><span id="val-screen">9 ชม.</span></div>
-            <input type="range" id="in-screen" min="2" max="15" step="0.5" value="9" oninput="document.getElementById('val-screen').innerText = this.value + ' ชม.'; updateCheckinSummary();">
+          <div class="slider-wrap">
+            <div class="slider-header"><span>เวลาอยู่หน้าจอวันนี้</span><strong id="screen-label">9 ชม.</strong></div>
+            <input id="screen-input" type="range" min="2" max="15" step="0.5" value="9">
           </div>
-          <div class="slider-container" style="margin-bottom: 8px;">
-            <div class="slider-label"><span>กิจกรรมทางกาย</span><span id="val-act">ต่ำ (20 นาที)</span></div>
-            <input type="range" id="in-act" min="0" max="120" step="10" value="20" oninput="updateActivityLabel(this.value); updateCheckinSummary();">
-          </div>
-        </div>
-
-        <div class="glass-card">
-          <h2 style="font-size: 13px; margin-bottom: 8px;">ความสม่ำเสมอของกิจวัตร (Routine)</h2>
-          <div class="segmented-control" id="routine-seg">
-            <div class="seg-btn" data-val="stable" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">ดี (Stable)</div>
-            <div class="seg-btn active" data-val="mod" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">ปานกลาง</div>
-            <div class="seg-btn" data-val="unstable" onclick="selectSeg(this, 'routine-seg'); updateCheckinSummary();">แย่ (Unstable)</div>
-          </div>
-
-          <h2 style="font-size: 13px; margin-bottom: 8px; margin-top: 16px;">อารมณ์โดยรวม (Mood)</h2>
-          <div class="emoji-row" id="emoji-group">
-            <span data-val="1" onclick="selectEmoji(this); updateCheckinSummary();">😢</span>
-            <span data-val="2" class="selected" onclick="selectEmoji(this); updateCheckinSummary();">😔</span>
-            <span data-val="3" onclick="selectEmoji(this); updateCheckinSummary();">😐</span>
-            <span data-val="4" onclick="selectEmoji(this); updateCheckinSummary();">🙂</span>
-            <span data-val="5" onclick="selectEmoji(this); updateCheckinSummary();">😄</span>
+          <div class="slider-wrap" style="margin-bottom:0">
+            <div class="slider-header"><span>กิจกรรมทางกาย</span><strong id="activity-label">ต่ำ (20 นาที)</strong></div>
+            <input id="activity-input" type="range" min="0" max="120" step="10" value="20">
           </div>
         </div>
 
-        <div class="mini-summary" id="checkin-summary">วันนี้คุณนอนต่ำกว่า baseline และใช้หน้าจอสูงกว่าปกติ ระบบอาจประเมินความเสี่ยงเพิ่มขึ้นเล็กน้อย</div>
-
-        <button class="btn" onclick="saveDataAndGo()">บันทึกข้อมูลและวิเคราะห์</button>
-      </div>
-
-      <div id="screen-3" class="screen">
-        <h1 style="text-align:center;">Personal Risk Insight</h1>
-        <div class="badge-confidence">
-          <span id="data-completeness" style="color: var(--text-sub);">Completeness: 3/7 Days</span>
-          <span id="data-confidence" style="color: #fbbf24;">Confidence: Moderate ⏳</span>
-        </div>
-
-        <div class="status-circle" id="risk-circle">
-          <span id="risk-text">MOD</span>
-          <small>Risk Level</small>
-        </div>
-
-        <div class="glass-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-            <h2 style="margin-bottom: 6px;">📉 แนวโน้มความเสี่ยงสะสม</h2>
-            <span class="helper-text">*Illustrative baseline history</span>
+        <div class="card">
+          <h2>ความสม่ำเสมอของกิจวัตร (Routine)</h2>
+          <div class="segmented" id="routine-group">
+            <button data-val="stable" onclick="setRoutine(this)">ดี</button>
+            <button data-val="mod" class="active" onclick="setRoutine(this)">ปานกลาง</button>
+            <button data-val="unstable" onclick="setRoutine(this)">แย่</button>
           </div>
-          <div class="trend-strip" id="trend-strip"></div>
-          <p class="helper-text" id="trend-caption" style="margin: 8px 0 0;">ระบบมองความเสี่ยงเป็นแนวโน้มต่อเนื่อง ไม่ใช่ snapshot วันเดียว</p>
+          <h2 style="margin-top:12px">อารมณ์โดยรวมวันนี้ (Mood Check-in)</h2>
+          <div class="emoji-row" id="mood-group">
+            <div class="emoji" data-val="1" onclick="setMood(this)">😢</div>
+            <div class="emoji selected" data-val="2" onclick="setMood(this)">😔</div>
+            <div class="emoji" data-val="3" onclick="setMood(this)">😐</div>
+            <div class="emoji" data-val="4" onclick="setMood(this)">🙂</div>
+            <div class="emoji" data-val="5" onclick="setMood(this)">😄</div>
+          </div>
         </div>
 
-        <div class="glass-card">
-          <h2>🧠 ปัจจัยขับเคลื่อนความเสี่ยง</h2>
-          <div id="insight-factors"></div>
+        <button class="btn" onclick="saveCheckin()">บันทึกข้อมูลและวิเคราะห์</button>
+      </section>
+
+      <section id="screen-home" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-checkin')">☰</button>
+          <div class="brand">Future<span>Mind</span></div>
+          <button class="icon-btn" onclick="showStudentScreen('screen-insights')">🔔</button>
         </div>
 
-        <div class="glass-card">
-          <h2>📊 Current vs Baseline (ขีดสีขาว)</h2>
-          <div id="insight-charts"></div>
+        <div class="app-header">
+          <div class="hello">
+            <strong id="greeting">Good morning, Ploy! 👋</strong>
+            <p style="margin:0">Here's your mental health overview.</p>
+          </div>
+          <button class="chip-btn">📅 Today</button>
         </div>
 
-        <button class="btn" onclick="nav('screen-4')">จำลองแนวโน้มอนาคต (Scenario Lab)</button>
-      </div>
-
-      <div id="screen-4" class="screen">
-        <h1>Future Simulation</h1>
-        <p>ระบบจะจำลองแนวโน้มใน 7–14 วัน โดยอิงจาก risk ปัจจุบันและพฤติกรรมที่คุณเลือกปรับ</p>
-
-        <div class="glass-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
-            <h2 id="sim-status" style="margin:0; color: var(--warning);">แนวโน้ม: เสี่ยงสะสม</h2>
-            <div class="segmented-control" style="margin:0; width: 104px;">
-              <div class="seg-btn active" id="tab-7d" onclick="setChartDays(7)">7 วัน</div>
-              <div class="seg-btn" id="tab-14d" onclick="setChartDays(14)">14 วัน</div>
+        <div class="card glow">
+          <div class="section-title">
+            <h2>MENTAL WELLBEING SCORE</h2>
+            <div id="home-badge" class="pill warn">MODERATE RISK</div>
+          </div>
+          <div class="risk-layout">
+            <div class="gauge" id="gauge">
+              <div class="gauge-center">
+                <div class="score-num" id="score-num">70</div>
+                <div class="score-den">/100</div>
+              </div>
+            </div>
+            <div class="risk-copy">
+              <div class="risk-title"><span id="risk-badge-inline" class="risk-mod">MODERATE</span></div>
+              <p id="risk-summary">ความเสี่ยงของคุณเพิ่มขึ้นจากการนอนต่ำกว่า baseline และการใช้หน้าจอช่วงดึก</p>
+              <div class="pill soft">🧠 Explainable Risk Scoring</div>
             </div>
           </div>
-          <div class="future-chart" id="future-chart"></div>
-          <p id="sim-explain" style="font-size:11px; color: var(--lavender); margin-top:12px; text-align:center;"></p>
         </div>
 
-        <div class="glass-card">
-          <h2 style="font-size:13px; margin-bottom:8px;">📊 เปรียบเทียบ Scenarios</h2>
-          <div class="scenario-grid">
-            <div class="scen-card active" id="scen-a" onclick="applyPreset('a', 0, 0, 0)">
-              <div class="scen-label" style="color: var(--warning);">A: คงเดิม</div>
-              <div class="scen-risk">Projected: High ⚠️</div>
-            </div>
-            <div class="scen-card" id="scen-b" onclick="applyPreset('b', 1, 20, 1)">
-              <div class="scen-label" style="color: #fbbf24;">B: ปรับเบาๆ</div>
-              <div class="scen-risk">Projected: Moderate 🌤️</div>
-            </div>
-            <div class="scen-card" id="scen-c" onclick="applyPreset('c', 2, 40, 2)">
-              <div class="scen-label" style="color: var(--success);">C: Full Reset</div>
-              <div class="scen-risk">Projected: Low 🌿</div>
-            </div>
+        <div class="card">
+          <div class="section-title">
+            <h2>7-DAY RISK TREND</h2>
+            <a class="muted-link" onclick="showStudentScreen('screen-insights')">View insights</a>
           </div>
-          <div class="compare-grid" style="margin-top: 12px;">
-            <div class="compare-card"><div style="color: var(--warning); font-weight:700;">A</div><div>คงพฤติกรรมเดิม</div></div>
-            <div class="compare-card"><div style="color: #fbbf24; font-weight:700;">B</div><div>เพิ่มนอน + ลดหน้าจอ</div></div>
-            <div class="compare-card"><div style="color: var(--success); font-weight:700;">C</div><div>เพิ่มนอน + ลดหน้าจอ + เพิ่มกิจกรรม</div></div>
+          <div class="line-chart">
+            <svg viewBox="0 0 320 160" id="trend-svg" preserveAspectRatio="none"></svg>
           </div>
+          <div class="chart-foot"><span>Today</span><span id="trend-delta">Risk increased by 18% in the past 7 days.</span></div>
         </div>
 
-        <div class="glass-card">
-          <h2 style="font-size:13px; margin-bottom:12px;">🎚️ ปรับอิสระ (Manual Adjust)</h2>
-          <div class="slider-container">
-            <div class="slider-label"><span>เพิ่มเวลานอน</span><span id="sim-sleep-val">+0 ชม.</span></div>
-            <input type="range" id="sim-sleep" min="0" max="3" step="0.5" value="0">
+        <div class="card-row">
+          <div class="card" style="flex:1;margin-bottom:0">
+            <div class="section-title"><h2>WHAT'S AFFECTING YOU?</h2><a class="muted-link" onclick="showStudentScreen('screen-insights')">View all</a></div>
+            <div class="insight-list" id="factor-ranking"></div>
           </div>
-          <div class="slider-container">
-            <div class="slider-label"><span>ลดเวลาหน้าจอ</span><span id="sim-screen-val">-0%</span></div>
-            <input type="range" id="sim-screen" min="0" max="50" step="10" value="0">
-          </div>
-          <div class="slider-container">
-            <div class="slider-label"><span>เพิ่มกิจกรรมกาย</span><span id="sim-act-val">คงเดิม</span></div>
-            <input type="range" id="sim-act" min="0" max="2" step="1" value="0">
+          <div class="stack" style="flex:1">
+            <div class="card" style="margin-bottom:0">
+              <h2>FUTURE PREDICTION</h2>
+              <div class="prediction-grid">
+                <div class="prediction-card">
+                  <small>In 3 days</small>
+                  <strong id="pred-3">79</strong>
+                  <small id="pred-3-label">High Risk</small>
+                </div>
+                <div class="prediction-card">
+                  <small>In 7 days</small>
+                  <strong id="pred-7">91</strong>
+                  <small id="pred-7-label">Critical Trend</small>
+                </div>
+              </div>
+              <p style="margin-top:12px">If current behavior continues, your risk may rise further.</p>
+            </div>
           </div>
         </div>
 
-        <button class="btn" onclick="nav('screen-5')">รับแผน Support แบบ Triage</button>
-      </div>
+        <div class="card">
+          <div class="section-title"><h2>RECOMMENDED FOR YOU</h2><a class="muted-link" onclick="showStudentScreen('screen-support')">View support</a></div>
+          <div class="action-row" id="home-actions"></div>
+        </div>
 
-      <div id="screen-5" class="screen">
-        <h1 style="margin-bottom: 14px;">Support Pathway</h1>
+        <div class="bottom-nav">
+          <div class="nav-item active" onclick="showStudentScreen('screen-home')">🏠<span>Home</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-sleep')">🛌<span>Sleep</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-insights')">💡<span>Insights</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-simulation')">🔮<span>Future</span></div>
+        </div>
+      </section>
+
+      <section id="screen-sleep" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-home')">←</button>
+          <div class="brand">Sleep Pattern</div>
+          <button class="icon-btn">📅</button>
+        </div>
+        <div class="segmented" style="margin-bottom:16px">
+          <button>Day</button>
+          <button class="active">Week</button>
+          <button>Month</button>
+        </div>
+
+        <div class="card sleep-card">
+          <div>
+            <h2>SLEEP SCORE</h2>
+            <div class="sleep-score" id="sleep-score">72</div>
+            <div class="pill danger" id="sleep-badge">Poor</div>
+            <p id="sleep-tip-copy">คุณเข้านอนช้ากว่าเวลาปกติของตัวเอง</p>
+          </div>
+          <div class="moon-illus">🌙</div>
+        </div>
+
+        <div class="card" style="position:relative">
+          <div class="section-title"><h2>SLEEP TIMELINE</h2><span class="muted-link" id="sleep-legend">Baseline sleep pattern</span></div>
+          <div class="dashed-line"></div>
+          <div class="sleep-bars" id="sleep-bars"></div>
+          <div class="sleep-days" id="sleep-days"></div>
+        </div>
+
+        <div class="card">
+          <h2>TIP</h2>
+          <p id="sleep-tip">ลองเข้านอนก่อน 23:00 น. เพื่อช่วยให้การฟื้นตัวดีขึ้นและลด sleep deficit ใน 3 วันถัดไป</p>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showStudentScreen('screen-home')">🏠<span>Home</span></div>
+          <div class="nav-item active" onclick="showStudentScreen('screen-sleep')">🛌<span>Sleep</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-insights')">💡<span>Insights</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-simulation')">🔮<span>Future</span></div>
+        </div>
+      </section>
+
+      <section id="screen-insights" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-home')">←</button>
+          <div class="brand">Insights</div>
+          <button class="icon-btn">⋯</button>
+        </div>
+
+        <div class="segmented" style="margin-bottom:16px">
+          <button class="active">Overview</button>
+          <button>Trends</button>
+          <button>Compare</button>
+        </div>
+
+        <div class="badge-confidence" id="insight-confidence">
+          <span>Completeness: 3/7 Days</span>
+          <span>Confidence: Moderate ⏳</span>
+        </div>
+
+        <div class="card">
+          <h2>Your Mental Health Summary</h2>
+          <div class="insight-summary" id="insight-summary"></div>
+        </div>
+
+        <div class="card">
+          <h2>What's driving this?</h2>
+          <div id="factor-cards"></div>
+        </div>
+
+        <div class="card">
+          <h2>Current vs Baseline</h2>
+          <div id="baseline-compare" class="baseline-grid"></div>
+        </div>
+
+        <div class="card">
+          <p id="insight-narrative">คุณมีความเสี่ยงเพิ่มขึ้นจากการนอนช้า ใช้หน้าจอมาก และกิจวัตรแกว่งกว่าปกติ การปรับพฤติกรรมเล็กน้อยวันนี้จะช่วยให้วันพรุ่งนี้ดีขึ้น</p>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showStudentScreen('screen-home')">🏠<span>Home</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-sleep')">🛌<span>Sleep</span></div>
+          <div class="nav-item active" onclick="showStudentScreen('screen-insights')">💡<span>Insights</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-simulation')">🔮<span>Future</span></div>
+        </div>
+      </section>
+
+      <section id="screen-simulation" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-home')">←</button>
+          <div class="brand">Your Future</div>
+          <button class="icon-btn">✦</button>
+        </div>
+        <div class="segmented" style="margin-bottom:16px; max-width:270px">
+          <button onclick="setSimDays(3)">Day 3</button>
+          <button class="active" id="sim-tab-7" onclick="setSimDays(7)">Day 7</button>
+          <button id="sim-tab-14" onclick="setSimDays(14)">Day 14</button>
+        </div>
+
+        <div class="card future-hero">
+          <div class="avatar-block">
+            <div class="bubble sleep">🛌 Poor Sleep</div>
+            <div class="bubble energy">🔋 Low Energy</div>
+            <div class="bubble irrit">😠 Irritable</div>
+            <div class="bubble social">👥 Social Isolation</div>
+            <div class="avatar-face" id="future-avatar">😔</div>
+          </div>
+          <div>
+            <div class="pill danger" id="future-mode-pill">If nothing changes</div>
+            <h2 style="margin-top:10px">Burnout-like Risk</h2>
+            <div style="font-size:40px;font-weight:700;line-height:1"><span id="future-risk">82</span><span style="font-size:18px;color:#b4c2e4">/100</span></div>
+            <p id="future-copy" style="margin-top:8px">If current behavior continues, your wellbeing risk may continue rising.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h2>Change Your Future</h2><span class="muted-link">Small changes, big difference</span></div>
+          <div class="segmented" style="margin-bottom:12px">
+            <button class="active" id="preset-a" onclick="applyPreset('a')">A: คงเดิม</button>
+            <button id="preset-b" onclick="applyPreset('b')">B: ปรับเบาๆ</button>
+            <button id="preset-c" onclick="applyPreset('c')">C: Full Reset</button>
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-header"><span>Sleep before usual time</span><strong id="sim-sleep-label">+0 ชม.</strong></div>
+            <input id="sim-sleep" type="range" min="0" max="3" step="0.5" value="0">
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-header"><span>Reduce screen time</span><strong id="sim-screen-label">-0%</strong></div>
+            <input id="sim-screen" type="range" min="0" max="50" step="10" value="0">
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-header"><span>Activity boost</span><strong id="sim-act-label">คงเดิม</strong></div>
+            <input id="sim-activity" type="range" min="0" max="2" step="1" value="0">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h2>Your New Future</h2><div class="pill success">Better Outcome</div></div>
+          <div class="change-list" id="sim-actions"></div>
+          <div class="line-chart" style="height:140px;margin-top:14px"><svg id="future-svg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+          <div class="chart-foot"><span>Today</span><span id="sim-foot">See the difference with these changes</span></div>
+        </div>
+
+        <button class="btn" onclick="showStudentScreen('screen-support')">Start now</button>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showStudentScreen('screen-home')">🏠<span>Home</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-sleep')">🛌<span>Sleep</span></div>
+          <div class="nav-item" onclick="showStudentScreen('screen-insights')">💡<span>Insights</span></div>
+          <div class="nav-item active" onclick="showStudentScreen('screen-simulation')">🔮<span>Future</span></div>
+        </div>
+      </section>
+
+      <section id="screen-support" class="screen">
+        <div class="topbar">
+          <button class="icon-btn" onclick="showStudentScreen('screen-simulation')">←</button>
+          <div class="brand">Support Pathway</div>
+          <button class="icon-btn">♡</button>
+        </div>
 
         <div class="support-tabs">
-          <div class="support-tab" data-level="low" onclick="switchTab('low')">Low Risk</div>
-          <div class="support-tab" data-level="mod" onclick="switchTab('mod')">Moderate</div>
-          <div class="support-tab" data-level="high" onclick="switchTab('high')">High Risk</div>
+          <div class="support-tab" id="tab-low" onclick="switchSupport('low')">Low Risk</div>
+          <div class="support-tab" id="tab-mod" onclick="switchSupport('mod')">Moderate</div>
+          <div class="support-tab" id="tab-high" onclick="switchSupport('high')">High</div>
         </div>
 
-        <div id="sup-low" class="support-content glass-card" style="border-color: rgba(16,185,129,0.30);">
-          <div class="badge" style="background: var(--success); color: #fff;">เป้าหมาย: Self-care & Monitoring</div>
-          <p style="margin-top:8px;">ระบบมองว่าคุณยังอยู่ในเกณฑ์ที่ควรเน้นการรักษาสมดุลต่อไป</p>
-          <div id="act-low"></div>
-          <p class="helper-text" style="margin-top: 10px;">⏳ Follow-up: เช็คอินรายสัปดาห์ และติดตามแนวโน้มต่อเนื่อง</p>
-        </div>
-
-        <div id="sup-mod" class="support-content glass-card" style="border-color: rgba(245,158,11,0.50);">
-          <div class="badge" style="background: var(--warning); color: #fff;">เป้าหมาย: Guided Intervention</div>
-          <div style="background: rgba(0,0,0,0.26); padding: 10px; border-radius: 12px; margin: 10px 0;">
-            <span style="font-size:11px; color: var(--warning); font-weight:700;">🤔 ทำไมระบบถึงแนะนำแผนนี้?</span>
-            <p id="sup-reason" style="font-size:11px; margin:4px 0 0; color:#fff;">...</p>
+        <div class="support-panel" id="panel-low">
+          <div class="card">
+            <div class="pill success">Self-care & Monitoring</div>
+            <div class="reason-box">
+              <h3>คุณยังอยู่ในเกณฑ์ที่จัดการได้</h3>
+              <p>ระบบแนะนำให้รักษาความสม่ำเสมอของการนอน กิจกรรมกาย และจังหวะชีวิตต่อไป</p>
+            </div>
+            <div class="action-list" id="low-actions"></div>
+            <p style="margin-top:12px">⏳ Follow-up: Weekly check-in</p>
           </div>
-          <div id="act-mod"></div>
-          <p class="helper-text" style="margin-top: 10px; color: var(--lavender);">⏳ Follow-up: Daily Re-check ต่อเนื่อง 3 วัน ถ้าไม่ดีขึ้นจะเสนอส่งต่อ Counselor</p>
         </div>
 
-        <div id="sup-high" class="support-content glass-card" style="border-color: rgba(239,68,68,0.50); background: rgba(239,68,68,0.10);">
-          <div class="badge" style="background: var(--danger); color: #fff;">เป้าหมาย: Immediate Referral</div>
-          <p style="color:#fff; margin-top: 8px;">ระบบประเมินว่าควรได้รับการช่วยเหลือจากบุคลากรผู้เชี่ยวชาญโดยเร็ว</p>
-          <button class="btn" style="background: var(--danger); margin-top: 12px;">📞 โทรสายด่วน 1323 ทันที</button>
-          <button class="btn-outline" style="border-color:#fca5a5; color:#fca5a5;">🗓️ นัดหมายนักจิตวิทยาคณะ</button>
+        <div class="support-panel" id="panel-mod">
+          <div class="card">
+            <div class="pill warn">Guided Intervention</div>
+            <div class="reason-box">
+              <h3>ทำไมถึงแนะนำแผนนี้?</h3>
+              <p id="support-reason">เพราะเวลานอนต่ำกว่า baseline และมีการใช้หน้าจอช่วงดึกสูง จึงควรเริ่มจาก sleep reset และ screen detox ก่อน</p>
+            </div>
+            <div class="action-list" id="mod-actions"></div>
+            <p style="margin-top:12px;color:#c5b5ff">⏳ Follow-up: Daily re-check ใน 3 วัน</p>
+          </div>
         </div>
 
-        <div class="top-note" style="margin-top: 18px;">
-          <p style="margin:0; font-size:11px; color:#fca5a5;">🚨 หากรู้สึกไม่ปลอดภัยหรือมีภาวะวิกฤต โปรดติดต่อผู้เชี่ยวชาญหรือบริการฉุกเฉินทันที</p>
+        <div class="support-panel" id="panel-high">
+          <div class="card" style="border-color:rgba(255,93,102,.28);background:linear-gradient(180deg, rgba(54,10,19,.62), rgba(32,10,20,.44))">
+            <div class="pill danger">Immediate Referral</div>
+            <div class="reason-box" style="background:rgba(255,255,255,.03)">
+              <h3>ความเสี่ยงระดับสูงควรได้รับการดูแลเพิ่ม</h3>
+              <p>ระบบตรวจพบความเสี่ยงสูงต่อเนื่องหรือมีปัจจัยเสี่ยงหลายด้านพร้อมกัน ควรเข้าถึงผู้เชี่ยวชาญโดยเร็ว</p>
+            </div>
+            <button class="btn" style="background:linear-gradient(90deg, #ff4d65 0%, #ff7a59 100%)">📞 โทรสายด่วนสุขภาพจิต 1323</button>
+            <button class="btn secondary">🗓️ นัดหมายนักจิตวิทยา / Counselor</button>
+          </div>
         </div>
 
-        <button class="btn-outline" style="border-color: var(--soft-blue); color: var(--soft-blue); background: rgba(59,130,246,0.10); margin-top: 18px;" onclick="switchView('admin')">🏛️ เปิด Institutional Dashboard</button>
-        <button class="btn-outline" style="border-color:#475569; color:#94a3b8;" onclick="nav('screen-1')">วนกลับไปหน้าเริ่มต้น</button>
+        <button class="btn secondary" onclick="openDashboard()">🏛️ View Institutional Dashboard Demo</button>
+      </section>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+    <div class="dash-header">
+      <div>
+        <h1 style="font-size:28px;color:#fff">🏛️ FutureMind Institutional Dashboard</h1>
+        <p class="dash-sub">Illustrative mock for pilot governance. ข้อมูลทุกส่วนเป็น aggregated view และไม่ใช้เพื่อระบุตัวบุคคล</p>
       </div>
+      <button class="btn secondary" style="width:auto;padding:12px 18px" onclick="closeDashboard()">กลับไป Student App</button>
     </div>
 
-    <div class="admin-container" id="admin-app">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px; flex-wrap: wrap;">
-        <div>
-          <h1 style="color:#fff; font-size: 24px;">🏛️ FutureMind Institutional Dashboard</h1>
-          <p style="margin:0;">Illustrative mock for pilot governance • Aggregated, privacy-preserving view</p>
+    <div class="govern-box">
+      <strong style="display:block;color:#a2efc2;margin-bottom:4px">Privacy Governance Active</strong>
+      <p style="margin:0;color:#daf7e7">แสดงเฉพาะข้อมูลภาพรวมระดับกลุ่ม/ช่วงเวลา, ซ่อนอัตโนมัติเมื่อ active users ต่ำกว่า threshold, และไม่ใช้เพื่อระบุตัวบุคคลเด็ดขาด</p>
+    </div>
+
+    <div class="dash-grid">
+      <div>
+        <div class="dash-stats">
+          <div class="stat-box">
+            <small style="color:var(--muted)">Active Students</small>
+            <strong style="color:var(--teal)" id="dash-active">1,420</strong>
+          </div>
+          <div class="stat-box">
+            <small style="color:var(--muted)">Mod-High Risk</small>
+            <strong style="color:var(--warning)" id="dash-risk">28%</strong>
+          </div>
+          <div class="stat-box">
+            <small style="color:var(--muted)">Avg Sleep Deficit</small>
+            <strong style="color:var(--danger)" id="dash-sleep">-1.2h</strong>
+          </div>
         </div>
-        <button class="btn" style="width:auto; padding: 10px 18px; margin:0;" onclick="switchView('student')">📱 กลับไปหน้า Student App</button>
-      </div>
 
-      <div class="glass-card" style="margin-bottom: 18px; border-left: 4px solid var(--success);">
-        <h2 style="margin-bottom: 6px;">🔒 Privacy Governance</h2>
-        <p style="margin:0; color:#fff;">• แสดงเฉพาะข้อมูลภาพรวมแบบ Aggregated • ไม่ใช้เพื่อระบุตัวบุคคล • ซ่อนข้อมูลอัตโนมัติเมื่อจำนวนผู้ใช้ในกลุ่มต่ำกว่า 50 คน</p>
-      </div>
-
-      <div class="stat-grid">
-        <div class="stat-card"><div id="stat-active" style="font-size:30px; font-weight:700; color: var(--teal);">1,420</div><div class="helper-text">Active Students</div></div>
-        <div class="stat-card"><div id="stat-risk" style="font-size:30px; font-weight:700; color: var(--warning);">28%</div><div class="helper-text">Mod–High Risk</div></div>
-        <div class="stat-card"><div id="stat-sleep" style="font-size:30px; font-weight:700; color: var(--danger);">-1.2h</div><div class="helper-text">Avg Sleep Deficit</div></div>
-        <div class="stat-card"><div id="stat-routine" style="font-size:30px; font-weight:700; color: var(--soft-blue);">62%</div><div class="helper-text">Stable Routine</div></div>
-      </div>
-
-      <div class="admin-grid">
-        <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom: 16px; flex-wrap: wrap;">
-            <h2 style="margin:0;">🚨 AI Policy Insight</h2>
-            <select id="dash-select" onchange="updateDashboard(this.value)" style="background:#1e293b; color:#fff; border:1px solid #334155; border-radius:8px; padding:8px 10px;">
-              <option value="reg">สัปดาห์ปกติ (Regular Week)</option>
-              <option value="exam">สัปดาห์ก่อนสอบ (Pre-Exam)</option>
-              <option value="proj">ช่วงส่งโปรเจกต์ (Project Deadline)</option>
+        <div class="card" style="background:rgba(255,255,255,.04)">
+          <div class="section-title">
+            <h2>AI Policy Insight & Alert</h2>
+            <select id="dash-select" onchange="updateDashboard(this.value)" style="background:#101935;color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 10px">
+              <option value="reg">Regular Week</option>
+              <option value="exam">Pre-Exam</option>
+              <option value="project">Project Deadline</option>
             </select>
           </div>
-
-          <div class="glass-card">
-            <div style="background: rgba(0,0,0,0.28); padding: 14px; border-radius: 12px; margin-bottom: 12px;">
-              <h3 style="margin-bottom: 6px; color: var(--warning);">📈 What Changed</h3>
-              <p id="dash-what" style="margin:0; color:#fff;">ระดับความเสี่ยงโดยรวมอยู่ในเกณฑ์ทรงตัว (Low 70%, Mod 20%, High 10%)</p>
+          <div class="policy-cards">
+            <div class="policy-card">
+              <h3>📈 What Changed</h3>
+              <p id="dash-what">Risk distribution is stable (Low 70%, Moderate 20%, High 10%).</p>
             </div>
-            <div style="background: rgba(0,0,0,0.28); padding: 14px; border-radius: 12px; margin-bottom: 12px;">
-              <h3 style="margin-bottom: 6px; color: #fff;">🔍 Why It Matters</h3>
-              <p id="dash-why" style="margin:0; color: var(--text-main);">กิจวัตรส่วนใหญ่ยังคงเสถียร ทำให้ภาระความเครียดสะสมยังไม่เพิ่มขึ้นผิดปกติ</p>
+            <div class="policy-card">
+              <h3>🔎 Why it matters</h3>
+              <p id="dash-why">Routine consistency remains stable in most active users, and average sleep stays near baseline.</p>
             </div>
-            <div style="background: rgba(20,184,166,0.10); border: 1px solid var(--teal); padding: 14px; border-radius: 12px;">
-              <h3 style="margin-bottom: 6px; color: var(--teal);">💡 Recommended Institutional Action</h3>
-              <p id="dash-rec" style="margin:0; color:#fff;">• สื่อสารเรื่อง Sleep Hygiene และการรักษาสมดุล routine ในภาพรวมของมหาวิทยาลัย</p>
+            <div class="policy-card" style="border-color:rgba(21,210,195,.2);background:rgba(21,210,195,.08)">
+              <h3 style="color:#98fff2">💡 Recommended Institutional Actions</h3>
+              <p id="dash-rec">• สื่อสารเรื่อง sleep hygiene พื้นฐาน<br>• สนับสนุนการสร้าง baseline ต่อเนื่องในกลุ่มผู้ใช้ใหม่</p>
             </div>
           </div>
         </div>
 
-        <div>
-          <div class="glass-card metrics-block">
-            <h2 style="margin-bottom: 16px;">📊 Mock Pilot Metrics</h2>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>7-Day Active Retention</span><span style="color:var(--teal)">82%</span></div>
-              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:82%; height:100%; background: var(--teal); border-radius:999px;"></div></div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Intervention Adherence</span><span style="color:var(--success)">75%</span></div>
-              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:75%; height:100%; background: var(--success); border-radius:999px;"></div></div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Reported Clarity of Insight</span><span style="color:var(--soft-blue)">90%</span></div>
-              <div style="width:100%; height:6px; background: rgba(255,255,255,0.1); border-radius:999px;"><div style="width:90%; height:100%; background: var(--soft-blue); border-radius:999px;"></div></div>
-            </div>
+        <div class="card" style="background:rgba(255,255,255,.04)">
+          <div class="section-title"><h2>Trend Snapshot</h2><span class="muted-link">Aggregated wellbeing signals</span></div>
+          <div class="desktop-chart"><svg id="dash-svg" viewBox="0 0 620 180" preserveAspectRatio="none"></svg></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="background:rgba(255,255,255,.04)">
+          <h2>Mock Pilot Metrics</h2>
+          <div style="margin-bottom:14px">
+            <div class="section-title" style="margin-bottom:4px"><span>7-Day Active Retention</span><span style="color:var(--teal)">82%</span></div>
+            <div class="meter"><div style="width:82%;background:var(--teal)"></div></div>
           </div>
+          <div style="margin-bottom:14px">
+            <div class="section-title" style="margin-bottom:4px"><span>Intervention Adherence</span><span style="color:var(--success)">75%</span></div>
+            <div class="meter"><div style="width:75%;background:var(--success)"></div></div>
+          </div>
+          <div>
+            <div class="section-title" style="margin-bottom:4px"><span>Reported Clarity</span><span style="color:var(--blue)">90%</span></div>
+            <div class="meter"><div style="width:90%;background:var(--blue)"></div></div>
+          </div>
+        </div>
+
+        <div class="card" style="background:rgba(255,255,255,.04)">
+          <h2>Operational Notes</h2>
+          <p>• Dashboard นี้เป็นตัวอย่างเชิงแนวคิดสำหรับการวางแผนมาตรการในสถานศึกษา</p>
+          <p>• ไม่ใช่เครื่องมือวินิจฉัย และไม่ใช้เพื่อระบุตัวบุคคล</p>
+          <p>• เหมาะสำหรับการตัดสินใจเชิงระบบ เช่น counseling hour, digital detox space, และ campaign ตามช่วงเวลา</p>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const BASE = { sleep: 7.2, screen: 5.0, activity: 40, routine: 2, mood: 3 };
-    const state = {
-      sleep: 5.5,
-      screen: 9,
-      activity: 20,
-      routine: 'mod',
-      mood: 2,
-      completenessDays: 3,
-      riskLevel: 'mod',
-      riskScore: 0,
-      reasons: [],
-      actions: []
+    const STORAGE_KEY = 'futuremind_fullsystem_v3';
+    const BASE = { sleep:7.2, screen:5.6, activity:45, mood:3.6, routinePct:80 };
+    const dashboardScenarios = {
+      reg:{ active:'1,420', risk:'28%', sleep:'-0.4h', what:'ระดับความเสี่ยงโดยรวมอยู่ในเกณฑ์ทรงตัว (Low 70%, Moderate 20%, High 10%)', why:'Routine consistency ของผู้ใช้ส่วนใหญ่ยัง stable และ average sleep อยู่ใกล้ baseline', rec:'• สื่อสารเรื่อง sleep hygiene พื้นฐาน<br>• สนับสนุนการสร้าง baseline ต่อเนื่องในกลุ่มผู้ใช้ใหม่', trend:[42,44,43,45,46,45,44] },
+      exam:{ active:'1,620', risk:'39%', sleep:'-1.3h', what:'ช่วงก่อนสอบพบสัดส่วนผู้ใช้ระดับ Moderate-High เพิ่มขึ้น 25% จากสัปดาห์ก่อน', why:'Average sleep ลดลง, screen time ช่วงดึกเพิ่มขึ้น และ routine เริ่มไม่สม่ำเสมอในหลายกลุ่ม', rec:'• ขยาย Drop-in Counseling Hour<br>• จัด Digital Detox / Sleep Hygiene Campaign ก่อนสอบ', trend:[46,50,56,62,68,74,79] },
+      project:{ active:'1,510', risk:'35%', sleep:'-1.0h', what:'ช่วงส่งโปรเจกต์พบ stress accumulation เพิ่มเร็วในกลุ่ม workload สูง', why:'Sleep deficit และ routine deviation เพิ่มขึ้นพร้อมกัน แม้ screen time จะไม่สูงเท่าช่วงสอบ', rec:'• จัด quiet recovery zone ในห้องสมุด<br>• ส่ง nudges เรื่อง break schedule และ activity micro-goals', trend:[45,47,51,57,63,69,72] }
     };
 
-    const chartPresets = {
-      7: [58, 64, 70, 76, 82, 88, 94],
-      14: [58, 61, 64, 68, 72, 76, 80, 83, 86, 89, 92, 94, 96, 98]
-    };
-    let chartDays = 7;
+    function defaultState(){
+      return {
+        consented:false,
+        baselineDay:3,
+        sleep:5.5,
+        screen:9,
+        activity:20,
+        routine:'mod',
+        mood:2,
+        riskScore:70,
+        riskLevel:'mod',
+        riskLabel:'MODERATE',
+        futureDays:7,
+        simSleep:0,
+        simScreen:0,
+        simActivity:0,
+        reasons:[],
+        ranking:[],
+        recommendations:[],
+        history:[]
+      };
+    }
 
-    function nav(targetId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(targetId).classList.add('active');
-      if (targetId === 'screen-3') {
-        calculateRisk();
-        renderInsights();
-      }
-      if (targetId === 'screen-4') {
-        applyPreset('a', 0, 0, 0);
-      }
-      if (targetId === 'screen-5') {
-        calculateRisk();
-        renderSupport();
+    let state = loadState();
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const base = defaultState();
+        const parsed = raw ? JSON.parse(raw) : base;
+        const merged = { ...base, ...parsed };
+        if(!Array.isArray(merged.history) || !merged.history.length){
+          merged.history = seedHistory(merged);
+        }
+        return merged;
+      }catch(e){
+        const fresh = defaultState();
+        fresh.history = seedHistory(fresh);
+        return fresh;
       }
     }
 
-    function switchView(view) {
-      const student = document.getElementById('student-app');
-      const admin = document.getElementById('admin-app');
-      if (view === 'admin') {
-        student.style.display = 'none';
-        admin.style.display = 'block';
-        updateDashboard(document.getElementById('dash-select').value || 'reg');
-      } else {
-        admin.style.display = 'none';
-        student.style.display = 'block';
-      }
+    function saveState(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
     }
 
-    const cbs = document.querySelectorAll('.consent-cb');
-    cbs.forEach(cb => cb.addEventListener('change', () => {
-      document.getElementById('btn-start').disabled = !Array.from(cbs).every(c => c.checked);
+    function seedHistory(s){
+      const template = [
+        {sleep:7.3, screen:5.1, activity:48, routine:'stable', mood:4},
+        {sleep:7.1, screen:5.4, activity:44, routine:'stable', mood:4},
+        {sleep:6.8, screen:5.8, activity:40, routine:'mod', mood:3},
+        {sleep:6.4, screen:6.7, activity:34, routine:'mod', mood:3},
+        {sleep:6.0, screen:7.6, activity:28, routine:'unstable', mood:2},
+        {sleep:5.8, screen:8.4, activity:22, routine:'unstable', mood:2},
+        {sleep:s.sleep, screen:s.screen, activity:s.activity, routine:s.routine, mood:s.mood}
+      ];
+      return template.map((item, idx) => ({
+        ...item,
+        risk: computeMetrics(item).riskScore,
+        label: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][idx] || `D${idx+1}`
+      }));
+    }
+
+    function routinePct(val){ return val === 'stable' ? 80 : val === 'mod' ? 55 : 28; }
+    function routineLabel(val){ return val === 'stable' ? 'Stable' : val === 'mod' ? 'Moderate' : 'Unstable'; }
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    function scaleHigh(val, min, max, ceiling=100){ if(val <= min) return 12; return clamp(((val - min) / (max - min)) * ceiling, 12, ceiling); }
+
+    function computeMetrics(data){
+      const sleepScore = scaleHigh(BASE.sleep - data.sleep, 0, 3, 100);
+      const screenScore = scaleHigh(data.screen - BASE.screen, 0, 5.5, 100);
+      const activityScore = scaleHigh(BASE.activity - data.activity, 0, 45, 100);
+      const routineScore = routinePct(data.routine);
+      const moodScore = scaleHigh(BASE.mood - data.mood, 0, 3, 100);
+      const ranking = [
+        { key:'sleep', label:'Sleep Pattern', emoji:'🌙', score: clamp(Math.round(sleepScore), 10, 98), color:'#ff8b5c' },
+        { key:'screen', label:'Screen Time', emoji:'📱', score: clamp(Math.round(screenScore), 10, 98), color:'#ff5c79' },
+        { key:'activity', label:'Activity Level', emoji:'🚶', score: clamp(Math.round(activityScore), 10, 98), color:'#ffb14a' },
+        { key:'routine', label:'Routine Stability', emoji:'🕒', score: clamp(Math.round(routineScore), 10, 98), color:'#ffd24c' },
+        { key:'mood', label:'Mood Stability', emoji:'💙', score: clamp(Math.round(moodScore), 10, 98), color:'#58b8ff' }
+      ].sort((a,b)=>b.score-a.score);
+      const weighted = sleepScore*0.28 + screenScore*0.24 + activityScore*0.18 + routineScore*0.16 + moodScore*0.14;
+      const riskScore = clamp(Math.round(weighted), 18, 96);
+      let riskLevel='low', riskLabel='LOW';
+      if(riskScore >= 78){ riskLevel='high'; riskLabel='HIGH'; }
+      else if(riskScore >= 52){ riskLevel='mod'; riskLabel='MODERATE'; }
+
+      const reasons = [];
+      if(data.sleep < BASE.sleep - 1) reasons.push('การนอนต่ำกว่า baseline อย่างชัดเจน');
+      if(data.screen > BASE.screen + 2) reasons.push('เวลาหน้าจอสูงกว่าปกติ โดยเฉพาะช่วงดึก');
+      if(data.activity < 30) reasons.push('กิจกรรมทางกายต่ำกว่าระดับที่ช่วยฟื้นตัว');
+      if(data.routine === 'unstable') reasons.push('กิจวัตรประจำวันไม่สม่ำเสมอ');
+      if(data.mood <= 2) reasons.push('mood check-in วันนี้อยู่ในระดับต่ำ');
+      if(!reasons.length) reasons.push('สัญญาณพฤติกรรมโดยรวมยังอยู่ในเกณฑ์สมดุล');
+      return { ranking, riskScore, riskLevel, riskLabel, reasons };
+    }
+
+    function buildRecommendations(){
+      const recs = [];
+      const sleepImpact = Math.max(8, Math.round((BASE.sleep - state.sleep) * 9));
+      const screenImpact = Math.max(8, Math.round((state.screen - BASE.screen) * 6));
+      const activityImpact = Math.max(6, Math.round((BASE.activity - state.activity) / 5));
+      const moodImpact = state.mood <= 2 ? 7 : 4;
+      recs.push({ icon:'🌙', title:'Sleep before 11:00 PM', desc:'Improve sleep quality and recovery', impact: clamp(sleepImpact, 8, 22) });
+      recs.push({ icon:'📱', title:'Reduce screen time by 2h', desc:'ลดการกระตุ้นช่วงดึกก่อนนอน', impact: clamp(screenImpact, 8, 20) });
+      recs.push({ icon:'🚶', title:'Take a 30-min walk', desc:'Boost mood and energy', impact: clamp(activityImpact, 6, 16) });
+      if(state.mood <= 2) recs.push({ icon:'💙', title:'Schedule a mental break', desc:'พักสมอง 30 นาทีโดยไม่คิดเรื่องเรียน', impact: moodImpact });
+      return recs;
+    }
+
+    function calculateRisk(){
+      const m = computeMetrics(state);
+      state.ranking = m.ranking;
+      state.riskScore = m.riskScore;
+      state.riskLevel = m.riskLevel;
+      state.riskLabel = m.riskLabel;
+      state.reasons = m.reasons;
+      state.recommendations = buildRecommendations();
+    }
+
+    const consentBoxes = document.querySelectorAll('.consent');
+    const startBtn = document.getElementById('start-btn');
+    consentBoxes.forEach(cb=>cb.addEventListener('change', ()=>{
+      startBtn.disabled = !Array.from(consentBoxes).every(x=>x.checked);
     }));
 
-    function updateActivityLabel(val) {
-      const label = document.getElementById('val-act');
-      const numeric = Number(val);
-      const level = numeric <= 30 ? 'ต่ำ' : (numeric <= 60 ? 'ปานกลาง' : 'สูง');
-      label.innerText = `${level} (${numeric} นาที)`;
-    }
+    const sleepInput = document.getElementById('sleep-input');
+    const screenInput = document.getElementById('screen-input');
+    const activityInput = document.getElementById('activity-input');
+    sleepInput.addEventListener('input', ()=> document.getElementById('sleep-label').textContent = `${sleepInput.value} ชม.`);
+    screenInput.addEventListener('input', ()=> document.getElementById('screen-label').textContent = `${screenInput.value} ชม.`);
+    activityInput.addEventListener('input', ()=> document.getElementById('activity-label').textContent = activityText(parseInt(activityInput.value)));
 
-    function selectSeg(el, parent) {
-      document.querySelectorAll(`#${parent} .seg-btn`).forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      state.routine = el.getAttribute('data-val');
-    }
-
-    function selectEmoji(el) {
-      document.querySelectorAll('.emoji-row span').forEach(s => s.classList.remove('selected'));
-      el.classList.add('selected');
-      state.mood = Number(el.getAttribute('data-val'));
-    }
-
-    function updateCheckinSummary() {
-      const tempSleep = Number(document.getElementById('in-sleep').value);
-      const tempScreen = Number(document.getElementById('in-screen').value);
-      const tempActivity = Number(document.getElementById('in-act').value);
-      const routineBtn = document.querySelector('#routine-seg .seg-btn.active');
-      const routineVal = routineBtn ? routineBtn.getAttribute('data-val') : state.routine;
-      const selectedMood = document.querySelector('#emoji-group span.selected');
-      const moodVal = selectedMood ? Number(selectedMood.getAttribute('data-val')) : state.mood;
-
-      const notes = [];
-      if (tempSleep < BASE.sleep - 1) notes.push('เวลานอนต่ำกว่า baseline');
-      if (tempScreen > BASE.screen + 2) notes.push('เวลาหน้าจอสูงกว่าปกติ');
-      if (tempActivity < 30) notes.push('กิจกรรมกายยังต่ำ');
-      if (routineVal === 'unstable') notes.push('กิจวัตรเริ่มแกว่ง');
-      if (moodVal <= 2) notes.push('อารมณ์วันนี้ค่อนข้างต่ำ');
-
-      const summary = document.getElementById('checkin-summary');
-      summary.innerText = notes.length
-        ? `วันนี้ระบบมองเห็นว่า ${notes.join(' • ')} ซึ่งอาจเพิ่มระดับความเสี่ยงเบื้องต้นได้`
-        : 'ข้อมูลวันนี้อยู่ในเกณฑ์ค่อนข้างสมดุล ระบบคาดว่าระดับความเสี่ยงยังไม่น่ากังวล';
-    }
-
-    function saveDataAndGo() {
-      state.sleep = Number(document.getElementById('in-sleep').value);
-      state.screen = Number(document.getElementById('in-screen').value);
-      state.activity = Number(document.getElementById('in-act').value);
-      const routineBtn = document.querySelector('#routine-seg .seg-btn.active');
-      if (routineBtn) state.routine = routineBtn.getAttribute('data-val');
-      const selectedMood = document.querySelector('#emoji-group span.selected');
-      if (selectedMood) state.mood = Number(selectedMood.getAttribute('data-val'));
-      nav('screen-3');
-    }
-
-    function calculateRisk() {
-      state.reasons = [];
-      state.actions = [];
-      let score = 0;
-
-      const sleepGap = Math.max(0, BASE.sleep - state.sleep);
-      const screenGap = Math.max(0, state.screen - BASE.screen);
-      const actGap = Math.max(0, BASE.activity - state.activity);
-
-      if (sleepGap > 1) {
-        score += sleepGap > 2 ? 2.2 : 1.8;
-        state.reasons.push({ key: 'sleep', label: 'Sleep Deficit', detail: `เวลานอนต่ำกว่า Baseline ${sleepGap.toFixed(1)} ชม.`, severity: 'warning' });
-        state.actions.push('Sleep Reset: เข้านอนเร็วขึ้น 1 ชั่วโมงในคืนนี้');
-      }
-      if (screenGap > 2) {
-        score += screenGap > 4 ? 2.2 : 1.8;
-        state.reasons.push({ key: 'screen', label: 'Screen Overload', detail: `เวลาหน้าจอสูงกว่า Baseline ${screenGap.toFixed(1)} ชม.`, severity: 'danger' });
-        state.actions.push('Screen Detox: งดมือถือ 45 นาทีก่อนนอน');
-      }
-      if (actGap > 10 || state.routine === 'unstable') {
-        score += 1.5;
-        state.reasons.push({ key: 'routine', label: 'Routine / Activity Deviation', detail: 'กิจกรรมกายลดลงหรือกิจวัตรไม่สม่ำเสมอ', severity: 'warning' });
-        state.actions.push('Routine Anchor: เดินรับแดดหรือขยับตัวช่วงเช้า 15 นาที');
-      }
-      if (state.mood <= 2) {
-        score += 1.4;
-        state.reasons.push({ key: 'mood', label: 'Mood Check-in ต่ำ', detail: 'อารมณ์วันนี้อยู่ในระดับต่ำ ควรจับตาต่อเนื่อง', severity: 'danger' });
-        state.actions.push('Mental Break: หยุดพักและทำกิจกรรมผ่อนคลาย 20–30 นาที');
-      }
-
-      state.riskScore = score;
-      state.riskLevel = score >= 4.2 ? 'high' : (score >= 2 ? 'mod' : 'low');
-
-      if (!state.actions.length) {
-        state.actions.push('Keep it up: รักษาสมดุลพฤติกรรมแบบนี้ต่อไป');
-      }
-    }
-
-    function renderInsights() {
-      const completeness = `${state.completenessDays}/7 Days`;
-      document.getElementById('data-completeness').innerText = `Completeness: ${completeness}`;
-      const confidenceText = state.completenessDays >= 5 ? 'Confidence: High ✅' : 'Confidence: Moderate ⏳';
-      document.getElementById('data-confidence').innerText = confidenceText;
-      document.getElementById('data-confidence').style.color = state.completenessDays >= 5 ? 'var(--success)' : '#fbbf24';
-
-      const circle = document.getElementById('risk-circle');
-      const riskText = document.getElementById('risk-text');
-      const riskMap = {
-        low: { text: 'LOW', color: 'var(--success)' },
-        mod: { text: 'MOD', color: 'var(--warning)' },
-        high: { text: 'HIGH', color: 'var(--danger)' }
+    function activityText(v){ return `${v<=30?'ต่ำ':v<=60?'ปานกลาง':'สูง'} (${v} นาที)`; }
+    function goToCheckin(){ showStudentScreen('screen-checkin'); }
+    function showStudentScreen(id){ document.querySelectorAll('.phone .screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); syncNav(id); }
+    function syncNav(id){
+      document.querySelectorAll('.bottom-nav').forEach(nav => {
+        nav.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      });
+      const map = {
+        'screen-home':0,'screen-sleep':1,'screen-insights':2,'screen-simulation':3
       };
-      circle.style.borderColor = riskMap[state.riskLevel].color;
-      circle.style.boxShadow = `0 0 22px ${riskMap[state.riskLevel].color.replace('var(','').includes('danger') ? 'rgba(239,68,68,0.22)' : state.riskLevel === 'mod' ? 'rgba(245,158,11,0.22)' : 'rgba(16,185,129,0.22)'}`;
-      riskText.style.color = riskMap[state.riskLevel].color;
-      riskText.innerText = riskMap[state.riskLevel].text;
+      const idx = map[id];
+      if(idx===undefined) return;
+      document.querySelectorAll('.bottom-nav').forEach(nav=>{ if(nav.children[idx]) nav.children[idx].classList.add('active'); });
+    }
+    function setRoutine(btn){ document.querySelectorAll('#routine-group button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.routine = btn.dataset.val; }
+    function setMood(el){ document.querySelectorAll('#mood-group .emoji').forEach(e=>e.classList.remove('selected')); el.classList.add('selected'); state.mood = Number(el.dataset.val); }
 
-      const factors = document.getElementById('insight-factors');
-      if (!state.reasons.length) {
-        factors.innerHTML = '<p style="color: var(--success); font-size: 12px;">✅ พฤติกรรมโดยรวมสมดุลดี ระบบยังไม่พบปัจจัยเสี่ยงเด่น</p>';
-      } else {
-        factors.innerHTML = state.reasons.map((r) => {
-          const color = r.severity === 'danger' ? 'var(--danger)' : 'var(--warning)';
-          const border = r.severity === 'danger' ? 'rgba(239,68,68,0.36)' : 'rgba(245,158,11,0.32)';
-          return `<div class="factor-card" style="border-left-color:${color}; border:1px solid ${border};">
-            <div style="font-size: 12px; font-weight: 700; color:${color};">⚠️ ${r.label}</div>
-            <div style="font-size: 11px; color:#fff; margin-top: 4px;">${r.detail}</div>
-          </div>`;
-        }).join('');
+    function saveCheckin(){
+      state.sleep = Number(sleepInput.value);
+      state.screen = Number(screenInput.value);
+      state.activity = Number(activityInput.value);
+      calculateRisk();
+      const today = new Date();
+      const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      state.history.push({
+        sleep: state.sleep,
+        screen: state.screen,
+        activity: state.activity,
+        routine: state.routine,
+        mood: state.mood,
+        risk: state.riskScore,
+        label: labels[today.getDay()]
+      });
+      state.history = state.history.slice(-14);
+      state.baselineDay = clamp((state.baselineDay || 3) + 1, 1, 7);
+      state.futureDays = 7; state.simSleep = 0; state.simScreen = 0; state.simActivity = 0;
+      renderAll();
+      saveState();
+      showStudentScreen('screen-home');
+    }
+
+    function completenessText(){ return `Completeness: ${clamp(Math.min(state.baselineDay, 7),1,7)}/7 Days`; }
+    function confidenceText(){
+      const d = clamp(Math.min(state.baselineDay, 7),1,7);
+      if(d <= 3) return 'Confidence: Moderate ⏳';
+      if(d <= 5) return 'Confidence: Improving ↗';
+      return 'Confidence: High ✅';
+    }
+
+    function renderAll(){
+      document.getElementById('baseline-day').textContent = state.baselineDay;
+      renderHome();
+      renderSleepScreen();
+      renderInsights();
+      renderSimulation();
+      renderSupport();
+      updateDashboard(document.getElementById('dash-select').value || 'reg');
+      syncFormFromState();
+    }
+
+    function syncFormFromState(){
+      sleepInput.value = state.sleep; screenInput.value = state.screen; activityInput.value = state.activity;
+      document.getElementById('sleep-label').textContent = `${state.sleep} ชม.`;
+      document.getElementById('screen-label').textContent = `${state.screen} ชม.`;
+      document.getElementById('activity-label').textContent = activityText(state.activity);
+      document.querySelectorAll('#routine-group button').forEach(b=>b.classList.toggle('active', b.dataset.val===state.routine));
+      document.querySelectorAll('#mood-group .emoji').forEach(e=>e.classList.toggle('selected', Number(e.dataset.val)===state.mood));
+      document.getElementById('insight-confidence').innerHTML = `<span>${completenessText()}</span><span>${confidenceText()}</span>`;
+    }
+
+    function renderHome(){
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting').textContent = `${greeting}, Alex! 👋`;
+      document.getElementById('score-num').textContent = state.riskScore;
+      const homeBadge = document.getElementById('home-badge');
+      homeBadge.className = `pill ${riskClass()}`;
+      homeBadge.textContent = `${state.riskLabel} RISK`;
+      const inline = document.getElementById('risk-badge-inline');
+      inline.className = state.riskLevel==='high' ? 'risk-high' : state.riskLevel==='mod' ? 'risk-mod' : 'risk-low';
+      inline.textContent = state.riskLabel;
+      document.getElementById('risk-summary').textContent = homeSummary();
+      setGauge();
+      renderTrendChart(document.getElementById('trend-svg'), getRiskHistorySeries(7));
+      document.getElementById('trend-delta').textContent = trendDeltaText();
+      document.getElementById('factor-ranking').innerHTML = state.ranking.slice(0,4).map(item=>`
+        <div class="insight-row">
+          <div class="icon-badge">${item.emoji}</div>
+          <div>
+            <div style="display:flex;justify-content:space-between;gap:8px"><span>${item.label}</span><span>${item.score}/100</span></div>
+            <div class="insight-bar"><div class="insight-fill" style="width:${item.score}%;background:${item.color}"></div></div>
+          </div>
+          <div style="font-size:11px;color:#c7d5f6">${impactWord(item.score)}</div>
+        </div>
+      `).join('');
+      const pred3 = clamp(Math.round(state.riskScore + noChangeRiskIncrease(3)), 10, 99);
+      const pred7 = clamp(Math.round(state.riskScore + noChangeRiskIncrease(7)), 10, 99);
+      document.getElementById('pred-3').textContent = pred3;
+      document.getElementById('pred-7').textContent = pred7;
+      document.getElementById('pred-3-label').textContent = pred3 >= 78 ? 'High Risk' : pred3 >= 52 ? 'Moderate Risk' : 'Low Risk';
+      document.getElementById('pred-7-label').textContent = pred7 >= 86 ? 'Critical Trend' : pred7 >= 78 ? 'High Risk' : 'Moderate Trend';
+      document.getElementById('home-actions').innerHTML = state.recommendations.slice(0,3).map(r=>`
+        <div class="action-chip"><div style="font-size:18px">${r.icon}</div><div style="font-size:12px;font-weight:600;margin-top:6px">${r.title}</div><small>Impact: -${r.impact}%</small></div>
+      `).join('');
+    }
+
+    function noChangeRiskIncrease(days){
+      const driver = (state.screen > BASE.screen + 2 ? 6 : 3) + (state.sleep < BASE.sleep - 1 ? 5 : 2) + (state.routine === 'unstable' ? 4 : 1);
+      return clamp(Math.round(driver * (days / 5)), 4, 20);
+    }
+
+    function setGauge(){
+      const gauge = document.getElementById('gauge');
+      const pct = state.riskScore / 100;
+      const deg = Math.round(360 * pct);
+      const color = state.riskLevel==='high' ? 'var(--danger)' : state.riskLevel==='mod' ? 'var(--warning)' : 'var(--success)';
+      gauge.style.background = `conic-gradient(${color} 0deg ${deg}deg, rgba(255,255,255,.08) ${deg}deg 360deg)`;
+    }
+
+    function getRiskHistorySeries(days=7){
+      const hist = state.history.slice(-days).map(h=>h.risk);
+      if(!hist.length) return buildFallbackSeries(days);
+      if(hist.length < days){
+        const fill = Array(days - hist.length).fill(hist[0]);
+        return fill.concat(hist);
       }
+      return hist;
+    }
 
-      const charts = document.getElementById('insight-charts');
-      charts.innerHTML = [
-        makeChart('การนอน', state.sleep, BASE.sleep, 12, state.sleep < BASE.sleep ? 'var(--warning)' : 'var(--success)', `${state.sleep.toFixed(1)}h / ${BASE.sleep.toFixed(1)}h`),
-        makeChart('หน้าจอ', state.screen, BASE.screen, 15, state.screen > BASE.screen ? 'var(--danger)' : 'var(--success)', `${state.screen.toFixed(1)}h / ${BASE.screen.toFixed(1)}h`),
-        makeChart('กิจกรรม', state.activity, BASE.activity, 120, state.activity < BASE.activity ? 'var(--warning)' : 'var(--success)', `${state.activity}m / ${BASE.activity}m`),
-        makeChart('กิจวัตร', routineScore(state.routine), BASE.routine, 3, state.routine === 'unstable' ? 'var(--warning)' : 'var(--success)', `${routineLabel(state.routine)} / Stable`),
-        makeChart('Mood', state.mood, BASE.mood, 5, state.mood <= 2 ? 'var(--danger)' : 'var(--success)', `${moodLabel(state.mood)} / Neutral`)
+    function buildFallbackSeries(days=7){
+      const current = state.riskScore;
+      const start = clamp(current - (state.riskLevel==='high'?24:state.riskLevel==='mod'?18:10), 18, 90);
+      return Array.from({length:days}).map((_,i)=>{
+        const t = i/(days-1||1);
+        return Math.round(start + (current-start)*(0.55 + t*0.45));
+      });
+    }
+
+    function renderTrendChart(svgEl, values){
+      const width = svgEl.id==='dash-svg' ? 620 : 320;
+      const height = svgEl.id==='future-svg' ? 140 : svgEl.id==='dash-svg' ? 180 : 160;
+      const pad = svgEl.id==='dash-svg' ? 24 : 18;
+      const stepX = (width - pad*2) / Math.max(1,(values.length - 1));
+      const points = values.map((v,i)=>`${pad + i*stepX},${height-pad - (v/100)*(height-pad*2)}`).join(' ');
+      const labels = svgEl.id==='dash-svg' ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : values.length===7 ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : values.map((_,i)=>i%2===0?`D${i+1}`:'');
+      const gridVals = svgEl.id==='dash-svg' ? [20,40,60,80] : [20,40,60,80,100];
+      const grid = gridVals.map(v=>{ const y=height-pad-(v/100)*(height-pad*2); return `<line x1="${pad}" y1="${y}" x2="${width-pad}" y2="${y}" stroke="rgba(255,255,255,.05)"></line>`; }).join('');
+      const dots = values.map((v,i)=>{
+        const x=pad+i*stepX; const y=height-pad-(v/100)*(height-pad*2);
+        const color = v>=78 ? '#ff6b74' : v>=52 ? '#ffb14a' : '#48d58a';
+        return `<circle cx="${x}" cy="${y}" r="4" fill="${svgEl.id==='dash-svg'?'#6f82ff':color}" stroke="#091123" stroke-width="3"></circle>${svgEl.id==='dash-svg'?'':`<text x="${x}" y="${y-12}" text-anchor="middle" font-size="10" fill="${color}">${v}</text>`}<text x="${x}" y="${height-6}" text-anchor="middle" font-size="10" fill="#7f95c4">${labels[i]||''}</text>`;
+      }).join('');
+      const fillColor = svgEl.id==='future-svg' ? 'rgba(72,213,138,.08)' : svgEl.id==='dash-svg' ? 'rgba(78,134,255,.06)' : 'rgba(78,134,255,.08)';
+      const areaPoints = `${pad},${height-pad} ${points} ${width-pad},${height-pad}`;
+      svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svgEl.innerHTML = `${grid}<polygon points="${areaPoints}" fill="${fillColor}"></polygon><polyline points="${points}" fill="none" stroke="${svgEl.id==='dash-svg' ? '#4e86ff' : '#6f82ff'}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>${dots}`;
+    }
+
+    function trendDeltaText(){
+      const hist = getRiskHistorySeries(7);
+      const delta = hist.length > 1 ? Math.round(((hist[hist.length-1] - hist[0]) / Math.max(1,hist[0])) * 100) : 0;
+      if(delta <= 0) return 'Your risk stayed relatively stable over the past 7 days.';
+      return `Your risk has increased by ${delta}% in the past 7 days.`;
+    }
+    function riskClass(){ return state.riskLevel==='high' ? 'danger' : state.riskLevel==='mod' ? 'warn' : 'success'; }
+    function impactWord(score){ return score >= 78 ? 'High' : score >= 52 ? 'Moderate' : 'Low'; }
+    function homeSummary(){
+      if(state.riskLevel==='high') return 'ความเสี่ยงของคุณอยู่ในระดับสูงจากการนอนต่ำกว่า baseline, routine แกว่ง และ mood ต่ำ';
+      if(state.riskLevel==='mod') return 'ความเสี่ยงของคุณเพิ่มขึ้นจากการนอนต่ำกว่า baseline และการใช้หน้าจอช่วงดึก';
+      return 'พฤติกรรมโดยรวมยังสมดุลดี รักษาความสม่ำเสมอนี้ไว้';
+    }
+
+    function renderSleepScreen(){
+      const score = clamp(100 - Math.round((BASE.sleep - state.sleep) * 14 + (state.screen - BASE.screen) * 5), 35, 95);
+      document.getElementById('sleep-score').textContent = score;
+      const badge = document.getElementById('sleep-badge');
+      badge.className = `pill ${score < 55 ? 'danger' : score < 72 ? 'warn' : 'success'}`;
+      badge.textContent = score < 55 ? 'Poor' : score < 72 ? 'Fair' : 'Good';
+      document.getElementById('sleep-tip-copy').textContent = state.sleep < BASE.sleep ? 'คุณเข้านอนช้ากว่าเวลาปกติของตัวเอง' : 'ช่วงเวลานอนของคุณใกล้ baseline มากขึ้น';
+      const sleepSeries = state.history.slice(-7).map(h=>h.sleep);
+      document.getElementById('sleep-bars').innerHTML = sleepSeries.map(v=>`<div class="sleep-bar" style="height:${clamp((v/9)*100,22,100)}%"></div>`).join('');
+      document.getElementById('sleep-days').innerHTML = state.history.slice(-7).map((h,i)=>`<span>${h.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}</span>`).join('');
+      document.getElementById('sleep-tip').textContent = state.sleep < BASE.sleep ? 'ลองเข้านอนก่อน 23:00 น. และลดหน้าจอ 45 นาทีสุดท้ายของวัน เพื่อช่วยให้ recovery ดีขึ้น' : 'รูปแบบการนอนใกล้ baseline แล้ว รักษาเวลานอนให้คงที่ต่อไป';
+      document.getElementById('sleep-legend').textContent = `Baseline duration ≈ ${BASE.sleep.toFixed(1)}h`;
+    }
+
+    function renderInsights(){
+      document.getElementById('insight-confidence').innerHTML = `<span>${completenessText()}</span><span>${confidenceText()}</span>`;
+      document.getElementById('insight-summary').innerHTML = `
+        <div class="summary-card"><div>🧠 Risk Level</div><strong>${state.riskLabel}</strong><p>${state.riskLevel==='high'?'Needs urgent attention':state.riskLevel==='mod'?'Increasing':'Stable'}</p></div>
+        <div class="summary-card"><div>📈 Trend</div><strong>${state.riskLevel==='high'?'Worsening':state.riskLevel==='mod'?'Watch closely':'Stable'}</strong><p>${trendDeltaText()}</p></div>
+        <div class="summary-card"><div>💙 Mood Stability</div><strong>${state.mood<=2?'Low':state.mood===3?'Moderate':'Good'}</strong><p>${state.mood<=2?'Needs attention':'Check daily'}</p></div>
+        <div class="summary-card"><div>🔋 Energy Level</div><strong>${state.activity<30?'Low':state.activity<60?'Moderate':'Good'}</strong><p>${state.activity<30?'Below average':'Recovering'}</p></div>`;
+
+      document.getElementById('factor-cards').innerHTML = state.ranking.slice(0,5).map(item=>`
+        <div class="reason-box"><div style="display:flex;justify-content:space-between;gap:10px"><strong>${item.emoji} ${item.label}</strong><span style="color:${item.color}">${item.score}/100</span></div><p style="margin-top:6px">${factorNarrative(item.key)}</p></div>
+      `).join('');
+
+      document.getElementById('baseline-compare').innerHTML = [
+        compareRow('Sleep', state.sleep, BASE.sleep, 12, state.sleep < BASE.sleep ? '#ff8b5c':'#48d58a', `${state.sleep}h`, `${BASE.sleep.toFixed(1)}h`),
+        compareRow('Screen', state.screen, BASE.screen, 15, state.screen > BASE.screen ? '#ff5c79':'#48d58a', `${state.screen}h`, `${BASE.screen.toFixed(1)}h`),
+        compareRow('Activity', state.activity, BASE.activity, 120, state.activity < BASE.activity ? '#ffb14a':'#48d58a', `${state.activity}m`, `${BASE.activity}m`),
+        compareRow('Routine', routinePct(state.routine), BASE.routinePct, 100, state.routine==='unstable' ? '#ffd24c' : '#48d58a', routineLabel(state.routine), 'Stable'),
+        compareRow('Mood', state.mood, BASE.mood, 5, state.mood < BASE.mood ? '#58b8ff':'#48d58a', `${state.mood}/5`, `${BASE.mood.toFixed(1)}/5`)
       ].join('');
 
-      const trendHeights = [35, 42, 40, 52, 60, 70];
-      const today = state.riskLevel === 'high' ? 88 : (state.riskLevel === 'mod' ? 66 : 28);
-      trendHeights.push(today);
-      document.getElementById('trend-strip').innerHTML = trendHeights.map(h => {
-        const color = h > 75 ? 'var(--danger)' : (h > 50 ? 'var(--warning)' : 'var(--success)');
-        return `<div class="trend-dot" style="height:${h}%; background:${color};"></div>`;
-      }).join('');
-      document.getElementById('trend-caption').innerText = state.riskLevel === 'high'
-        ? 'ระบบพบแนวโน้มสะสมความเสี่ยงสูงขึ้น ควรรีบปรับพฤติกรรมและติดตามใกล้ชิด'
-        : state.riskLevel === 'mod'
-          ? 'ระบบพบความเบี่ยงเบนจาก Baseline หลายจุด ควรเริ่มปรับพฤติกรรมตั้งแต่ตอนนี้'
-          : 'แนวโน้มโดยรวมยังอยู่ในเกณฑ์คงที่ ระบบแนะนำให้รักษารูทีนต่อเนื่อง';
+      document.getElementById('insight-narrative').textContent = buildNarrative();
     }
 
-    function makeChart(label, value, baseline, max, color, valueText) {
-      const fill = Math.min((value / max) * 100, 100);
-      const basePos = Math.min((baseline / max) * 100, 100);
-      return `<div class="chart-row">
-        <span class="chart-label">${label}</span>
-        <div class="chart-bar-bg">
-          <div class="chart-bar-fill" style="width:${fill}%; background:${color};"></div>
-          <div class="chart-bar-baseline" style="left:${basePos}%;"></div>
-        </div>
-        <span class="chart-label" style="text-align:right; width:86px;">${valueText}</span>
-      </div>`;
+    function factorNarrative(key){
+      if(key==='sleep') return `คะแนนด้านการนอนสูง เพราะเวลานอนของคุณต่ำกว่า baseline ${Math.abs((BASE.sleep-state.sleep)).toFixed(1)} ชั่วโมง`; 
+      if(key==='screen') return `หน้าจอเป็นตัวขับสำคัญ เนื่องจากเวลาหน้าจอสูงกว่าปกติ ${Math.max(0,state.screen-BASE.screen).toFixed(1)} ชั่วโมง`; 
+      if(key==='activity') return `กิจกรรมทางกายต่ำกว่าระดับที่ช่วยฟื้นตัวและสมดุลพลังงาน`; 
+      if(key==='routine') return `กิจวัตรประจำวัน${state.routine==='unstable'?'แกว่งและไม่คงที่':'เริ่มเสียสมดุล'}มากกว่าปกติ`; 
+      return state.mood<=2 ? 'mood check-in วันนี้อยู่ในระดับต่ำและควรติดตามต่อเนื่อง' : 'mood วันนี้เริ่มทรงตัวเมื่อเทียบกับ baseline';
+    }
+    function compareRow(label,val,base,max,color,displayVal,displayBase){
+      const pct = clamp((val/max)*100, 4, 100);
+      const basePct = clamp((base/max)*100, 4, 100);
+      return `
+        <div class="baseline-card">
+          <div class="baseline-card-head">
+            <div class="baseline-card-title">${label}</div>
+            <div class="baseline-card-values">${displayVal} <span>/ ${displayBase}</span></div>
+          </div>
+          <div class="baseline-track">
+            <div class="baseline-fill" style="width:${pct}%;background:${color}"></div>
+            <div class="baseline-marker" style="left:${basePct}%"></div>
+          </div>
+          <div class="baseline-legend">
+            <span class="baseline-pill"><span class="baseline-dot" style="background:${color}"></span>Current</span>
+            <span class="baseline-pill"><span class="baseline-dot" style="background:#ffffff"></span>Baseline</span>
+          </div>
+        </div>`;
+    }
+    function buildNarrative(){
+      if(state.riskLevel==='high') return 'Your current pattern suggests a worsening trend driven by late sleep, high screen time, low activity, and unstable routine. Small changes today can still improve your next 7–14 days.';
+      if(state.riskLevel==='mod') return 'คุณมีความเสี่ยงเพิ่มขึ้นจาก late sleep, screen overload และการฟื้นตัวที่ยังไม่เต็มที่ หากเริ่มปรับวันนี้ แนวโน้มในสัปดาห์ถัดไปจะดีขึ้นชัดเจน';
+      return 'Your behavior is relatively balanced. The goal now is to preserve consistency and prevent future deviation.';
     }
 
-    function routineScore(routine) {
-      if (routine === 'stable') return 3;
-      if (routine === 'mod') return 2;
-      return 1;
+    function setSimDays(d){
+      state.futureDays = d;
+      document.getElementById('sim-tab-7').classList.toggle('active', d===7);
+      document.getElementById('sim-tab-14').classList.toggle('active', d===14);
+      renderSimulation();
     }
-    function routineLabel(routine) {
-      return routine === 'stable' ? 'Stable' : (routine === 'mod' ? 'Moderate' : 'Unstable');
+    document.getElementById('sim-sleep').addEventListener('input', ()=>{ state.simSleep = Number(document.getElementById('sim-sleep').value); clearPreset(); renderSimulation(); });
+    document.getElementById('sim-screen').addEventListener('input', ()=>{ state.simScreen = Number(document.getElementById('sim-screen').value); clearPreset(); renderSimulation(); });
+    document.getElementById('sim-activity').addEventListener('input', ()=>{ state.simActivity = Number(document.getElementById('sim-activity').value); clearPreset(); renderSimulation(); });
+
+    function applyPreset(mode){
+      document.querySelectorAll('[id^="preset-"]').forEach(el=>el.classList.remove('active'));
+      document.getElementById(`preset-${mode}`).classList.add('active');
+      if(mode==='a'){ state.simSleep=0; state.simScreen=0; state.simActivity=0; }
+      if(mode==='b'){ state.simSleep=1; state.simScreen=20; state.simActivity=1; }
+      if(mode==='c'){ state.simSleep=2; state.simScreen=40; state.simActivity=2; }
+      document.getElementById('sim-sleep').value = state.simSleep;
+      document.getElementById('sim-screen').value = state.simScreen;
+      document.getElementById('sim-activity').value = state.simActivity;
+      renderSimulation();
     }
-    function moodLabel(mood) {
-      return mood <= 1 ? 'Very Low' : mood === 2 ? 'Low' : mood === 3 ? 'Neutral' : mood === 4 ? 'Good' : 'Very Good';
+    function clearPreset(){ document.querySelectorAll('[id^="preset-"]').forEach(el=>el.classList.remove('active')); }
+    function simulationReduction(){ return clamp(Math.round(state.simSleep*10 + state.simScreen*0.35 + state.simActivity*8), 0, 38); }
+    function noChangeTarget(){ return clamp(state.riskScore + noChangeRiskIncrease(state.futureDays), 18, 98); }
+    function renderSimulation(){
+      document.getElementById('sim-sleep-label').textContent = `+${state.simSleep} ชม.`;
+      document.getElementById('sim-screen-label').textContent = `-${state.simScreen}%`;
+      document.getElementById('sim-act-label').textContent = ['คงเดิม','เพิ่มขึ้น','เต็มที่'][state.simActivity];
+      const reduction = simulationReduction();
+      const futureRisk = reduction===0 ? noChangeTarget() : clamp(state.riskScore - reduction, 18, 96);
+      const pill = document.getElementById('future-mode-pill');
+      if(reduction===0){ pill.className = 'pill danger'; pill.textContent='If nothing changes'; document.getElementById('future-avatar').textContent='😔'; }
+      else if(reduction>=25){ pill.className = 'pill success'; pill.textContent='Better Outcome'; document.getElementById('future-avatar').textContent='🙂'; }
+      else { pill.className = 'pill warn'; pill.textContent='Partial Recovery'; document.getElementById('future-avatar').textContent='😐'; }
+      document.getElementById('future-risk').textContent = futureRisk;
+      document.getElementById('future-copy').textContent = reduction===0 ? 'If current behavior continues, your wellbeing risk may continue rising.' : reduction>=25 ? 'Your future looks calmer with better sleep, lower stress, and more connection.' : 'Small changes help, but consistency will matter over the next few days.';
+      const positive = reduction>0;
+      document.getElementById('sim-actions').innerHTML = (positive ? [
+        {icon:'✅', title:'Better sleep', sub:'More energy'},
+        {icon:'🌿', title:'Calmer mood', sub:'Less stress'},
+        {icon:'👥', title:'More connection', sub:'Happier you'}
+      ] : [
+        {icon:'🛌', title:'Poor sleep', sub:'Low energy'},
+        {icon:'😠', title:'Irritable mood', sub:'More stress'},
+        {icon:'👥', title:'Social withdrawal', sub:'Avoiding people'}
+      ]).map((item, idx)=>`<div class="change-item"><div class="icon-badge" style="background:${positive?'rgba(72,213,138,.14)':'rgba(255,255,255,.06)'}">${item.icon}</div><div><div style="font-weight:600">${item.title}</div><p style="margin:0">${item.sub}</p></div><div class="impact">${positive?(idx===0?`-${Math.max(10, Math.round(reduction*0.45))}%`:idx===1?`-${Math.max(8, Math.round(reduction*0.32))}%`:`-${Math.max(6, Math.round(reduction*0.23))}%`):'+0%'}</div></div>`).join('');
+      renderTrendChart(document.getElementById('future-svg'), buildFutureSeries(futureRisk, reduction===0));
+      document.getElementById('sim-foot').textContent = reduction===0 ? `If nothing changes, risk may rise from ${state.riskScore} to ${futureRisk}.` : `Projected risk improves from ${state.riskScore} to ${futureRisk} in ${state.futureDays} days.`;
     }
-
-    function setChartDays(days) {
-      chartDays = days;
-      document.getElementById('tab-7d').classList.toggle('active', days === 7);
-      document.getElementById('tab-14d').classList.toggle('active', days === 14);
-      runSim(false);
-    }
-
-    const simSleep = document.getElementById('sim-sleep');
-    const simScreen = document.getElementById('sim-screen');
-    const simAct = document.getElementById('sim-act');
-
-    function applyPreset(id, sleepAdj, screenAdj, actAdj) {
-      document.querySelectorAll('.scen-card').forEach(c => c.classList.remove('active'));
-      document.getElementById(`scen-${id}`).classList.add('active');
-      simSleep.value = sleepAdj;
-      simScreen.value = screenAdj;
-      simAct.value = actAdj;
-      runSim(false);
-    }
-
-    function runSim(manual = false) {
-      if (manual) {
-        document.querySelectorAll('.scen-card').forEach(c => c.classList.remove('active'));
-      }
-      const sleepAdj = Number(simSleep.value);
-      const screenAdj = Number(simScreen.value);
-      const actAdj = Number(simAct.value);
-      document.getElementById('sim-sleep-val').innerText = `+${sleepAdj} ชม.`;
-      document.getElementById('sim-screen-val').innerText = `-${screenAdj}%`;
-      document.getElementById('sim-act-val').innerText = ['คงเดิม', 'เพิ่มขึ้น', 'เพิ่มขึ้นมาก'][actAdj];
-
-      const startRisk = state.riskLevel === 'high' ? 84 : (state.riskLevel === 'mod' ? 64 : 40);
-      const improvement = (sleepAdj * 15) + (screenAdj * 0.8) + (actAdj * 10);
-      const arr = chartPresets[chartDays];
-      const color = improvement > 34 ? 'var(--success)' : (improvement > 0 ? '#fbbf24' : 'var(--warning)');
-
-      const bars = arr.map((v, i) => {
-        const drift = improvement === 0 ? i * (chartDays === 14 ? 2.3 : 4) : -(improvement * (chartDays === 14 ? i * 0.12 : i * 0.28));
-        const height = Math.max(18, Math.min(100, startRisk + drift));
-        return { height };
+    function buildFutureSeries(target, worsening=false){
+      const current = state.riskScore; const n = state.futureDays;
+      return Array.from({length:n}).map((_,i)=>{
+        const t = i/(n-1 || 1);
+        const eased = worsening ? (0.25 + t*0.75) : (0.2 + t*0.8);
+        return Math.round(current + (target-current)*eased);
       });
-
-      document.getElementById('future-chart').innerHTML = bars.map((b, i) => {
-        const label = chartDays === 14 ? (i % 2 === 0 ? `D${i+1}` : '') : `D${i+1}`;
-        return `<div class="bar-col"><div class="bar" style="height:${b.height}%; background:${color};"></div><div class="day-label">${label}</div></div>`;
-      }).join('');
-
-      const status = document.getElementById('sim-status');
-      const explain = document.getElementById('sim-explain');
-      if (improvement === 0) {
-        status.innerText = 'แนวโน้ม: เสี่ยงสะสม ⚠️';
-        status.style.color = 'var(--warning)';
-        explain.innerText = 'หากยังคงพฤติกรรมเดิม ระบบคาดว่า stress accumulation จะเพิ่มขึ้นต่อเนื่องจาก baseline ปัจจุบัน';
-      } else if (improvement > 34) {
-        status.innerText = 'แนวโน้ม: ฟื้นตัวชัดเจน 🌿';
-        status.style.color = 'var(--success)';
-        explain.innerText = 'การเพิ่มเวลานอน ลดหน้าจอ และเพิ่มกิจกรรมกายพร้อมกัน ช่วยให้ projected risk ลดลงอย่างชัดเจนภายใน 4–6 วัน';
-      } else {
-        status.innerText = 'แนวโน้ม: เริ่มทรงตัว 🌤️';
-        status.style.color = '#fbbf24';
-        explain.innerText = 'การปรับพฤติกรรมบางส่วนช่วยชะลอการสะสมของความเครียดได้ แต่ยังควรติดตามต่อเนื่อง';
-      }
     }
 
-    simSleep.addEventListener('input', () => runSim(true));
-    simScreen.addEventListener('input', () => runSim(true));
-    simAct.addEventListener('input', () => runSim(true));
-
-    function renderSupport() {
-      calculateRisk();
-      switchTab(state.riskLevel);
-
-      document.getElementById('sup-reason').innerText = state.reasons.length
-        ? `ระบบเลือก intervention นี้เพราะ ${state.reasons.map(r => r.label).join(' + ')}`
-        : 'ระบบไม่พบปัจจัยเสี่ยงเด่นในขณะนี้';
-
-      document.getElementById('act-low').innerHTML = `
-        <p style="font-size:12px; color:#fff; margin-bottom:6px;">• รักษารูทีนการนอนและเวลาพักผ่อนต่อไป</p>
-        <p style="font-size:12px; color:#fff; margin-bottom:6px;">• เช็กอินอารมณ์สัปดาห์ละ 1 ครั้งเพื่อดูแนวโน้ม</p>`;
-
-      document.getElementById('act-mod').innerHTML = state.actions.map(a => `<p style="font-size:12px; color:#fff; margin-bottom:6px;">• ${a}</p>`).join('');
+    function renderSupport(){
+      switchSupport(state.riskLevel);
+      document.getElementById('support-reason').textContent = `ระบบแนะนำแผนนี้เพราะ ${state.reasons.join(' และ ')}`;
+      document.getElementById('low-actions').innerHTML = `
+        <div class="action-item"><div class="icon-badge">✅</div><div><strong>รักษารูปแบบการนอนเดิม</strong><p style="margin:0">เข้านอนและตื่นในเวลาใกล้เคียงเดิมต่อไป</p></div></div>
+        <div class="action-item"><div class="icon-badge">🧘</div><div><strong>Weekly check</strong><p style="margin:0">เช็กอินอารมณ์และกิจวัตรสัปดาห์ละครั้ง</p></div></div>`;
+      document.getElementById('mod-actions').innerHTML = state.recommendations.slice(0,4).map(r=>`<div class="action-item"><div class="icon-badge">${r.icon}</div><div><strong>${r.title}</strong><p style="margin:0">${r.desc} • Impact -${r.impact}%</p></div></div>`).join('');
+    }
+    function switchSupport(level){
+      ['low','mod','high'].forEach(l=>{
+        document.getElementById(`tab-${l}`).className = 'support-tab';
+        document.getElementById(`panel-${l}`).classList.remove('active');
+      });
+      document.getElementById(`tab-${level}`).classList.add('active', level);
+      document.getElementById(`panel-${level}`).classList.add('active');
     }
 
-    function switchTab(level) {
-      document.querySelectorAll('.support-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.support-content').forEach(c => c.classList.remove('active'));
-      const tab = document.querySelector(`.support-tab[data-level="${level}"]`);
-      const panel = document.getElementById(`sup-${level}`);
-      if (tab) tab.classList.add('active');
-      if (panel) panel.classList.add('active');
+    function openDashboard(){ document.getElementById('dashboard').classList.add('active'); document.getElementById('student-app').classList.add('hidden'); updateDashboard(document.getElementById('dash-select').value); }
+    function closeDashboard(){ document.getElementById('dashboard').classList.remove('active'); document.getElementById('student-app').classList.remove('hidden'); }
+    function updateDashboard(mode){
+      const data = dashboardScenarios[mode];
+      document.getElementById('dash-active').textContent = data.active;
+      document.getElementById('dash-risk').textContent = data.risk;
+      document.getElementById('dash-sleep').textContent = data.sleep;
+      document.getElementById('dash-what').textContent = data.what;
+      document.getElementById('dash-why').textContent = data.why;
+      document.getElementById('dash-rec').innerHTML = data.rec;
+      renderTrendChart(document.getElementById('dash-svg'), data.trend);
     }
 
-    function updateDashboard(mode) {
-      const statActive = document.getElementById('stat-active');
-      const statRisk = document.getElementById('stat-risk');
-      const statSleep = document.getElementById('stat-sleep');
-      const statRoutine = document.getElementById('stat-routine');
-      const what = document.getElementById('dash-what');
-      const why = document.getElementById('dash-why');
-      const rec = document.getElementById('dash-rec');
-
-      if (mode === 'exam') {
-        statActive.innerText = '1,420';
-        statRisk.innerText = '28%';
-        statSleep.innerText = '-1.2h';
-        statRoutine.innerText = '54%';
-        what.innerText = 'สัดส่วนนักศึกษาที่มีความเสี่ยงระดับปานกลาง–สูงเพิ่มขึ้น 25% ในช่วงก่อนสอบ โดยเฉพาะกลุ่มที่นอนน้อยและใช้หน้าจอช่วงดึก';
-        why.innerText = 'Average Sleep Trend ลดลง ขณะที่ Screen Overload และ Routine Deviation สูงขึ้น ทำให้ภาระความเครียดสะสมเพิ่มแบบเป็นช่วงเวลา';
-        rec.innerHTML = '• ขยายเวลา Drop-in Counseling Hour<br>• จัดกิจกรรม Digital Detox Space และ Sleep Hygiene Campaign ในสัปดาห์ก่อนสอบ';
-      } else if (mode === 'proj') {
-        statActive.innerText = '1,180';
-        statRisk.innerText = '24%';
-        statSleep.innerText = '-0.9h';
-        statRoutine.innerText = '49%';
-        what.innerText = 'ช่วงส่งโปรเจกต์พบว่า Routine Stability ลดลงมากที่สุด และนักศึกษาหลายคนมีแนวโน้มพักผ่อนไม่ต่อเนื่อง';
-        why.innerText = 'Project deadlines ทำให้เวลาตื่น–นอนแกว่งและ activity ลดลง ส่งผลต่อ recovery ในระยะสั้น';
-        rec.innerHTML = '• เพิ่มการสื่อสารเรื่อง structured break ระหว่างทำโปรเจกต์<br>• สนับสนุน quiet recovery corners และ nudges เรื่อง movement breaks';
-      } else {
-        statActive.innerText = '1,350';
-        statRisk.innerText = '20%';
-        statSleep.innerText = '-0.4h';
-        statRoutine.innerText = '62%';
-        what.innerText = 'ระดับความเสี่ยงโดยรวมอยู่ในเกณฑ์ทรงตัว (Low 70%, Mod 20%, High 10%) และยังไม่พบ deviation เป็นวงกว้าง';
-        why.innerText = 'กิจวัตรส่วนใหญ่ยังคงเสถียร ทำให้ burden ของความเครียดสะสมไม่เพิ่มขึ้นผิดปกติ';
-        rec.innerHTML = '• สื่อสารเรื่อง Sleep Hygiene และการรักษา routine พื้นฐานอย่างต่อเนื่องในระดับมหาวิทยาลัย';
-      }
-    }
-
-    updateCheckinSummary();
+    calculateRisk();
+    syncFormFromState();
+    renderAll();
+    saveState();
   </script>
 </body>
 </html>
