@@ -953,7 +953,7 @@
     function renderHome(){
       const hour = new Date().getHours();
       const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-      document.getElementById('greeting').textContent = `${greeting}, Alex! 👋`;
+      document.getElementById('greeting').textContent = `${greeting}, Ploy! 👋`;
       document.getElementById('score-num').textContent = state.riskScore;
       const homeBadge = document.getElementById('home-badge');
       homeBadge.className = `pill ${riskClass()}`;
